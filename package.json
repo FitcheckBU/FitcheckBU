@@ -69,7 +69,7 @@
   "description": "An Ionic project",
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix --max-warnings=0 --ignore-pattern 'eslint.config.*' --ignore-pattern 'vite.config.*' --ignore-pattern 'cypress.config.*'",
+      "eslint --fix --no-warn-ignored --max-warnings=0 --ignore-pattern 'eslint.config.*' --ignore-pattern 'vite.config.*' --ignore-pattern 'cypress.config.*'",
       "prettier --write"
     ],
     "*.{json,md,css,html}": [
