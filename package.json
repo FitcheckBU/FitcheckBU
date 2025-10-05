@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "7.4.3",
+    "@eslint/compat": "^1.4.0",
     "@testing-library/dom": ">=7.21.4",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^16.3.0",
@@ -68,7 +69,10 @@
   "description": "An Ionic project",
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
+      "eslint --fix --max-warnings=0 --ignore-pattern 'eslint.config.*' --ignore-pattern 'vite.config.*' --ignore-pattern 'cypress.config.*'",
+      "prettier --write"
+    ],
+    "*.{json,md,css,html}": [
       "prettier --write"
     ]
   }
