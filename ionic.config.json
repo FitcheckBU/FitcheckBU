@@ -1,0 +1,7 @@
+{
+  "name": "FitcheckBU",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
