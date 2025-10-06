@@ -1,9 +1,9 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, type FirebaseOptions } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-const firebaseConfig = {
+const requiredConfig: Record<string, string | undefined> = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
@@ -12,7 +12,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const missingConfigKeys = Object.entries(firebaseConfig)
+const missingConfigKeys = Object.entries(requiredConfig)
   .filter(([, value]) => !value)
   .map(([key]) => key);
 
@@ -21,6 +21,23 @@ if (missingConfigKeys.length > 0) {
     `Missing Firebase configuration values: ${missingConfigKeys.join(", ")}. ` +
       "Check your Vite environment variables.",
   );
+}
+
+const firebaseConfig: FirebaseOptions = {
+  apiKey: requiredConfig.apiKey!,
+  authDomain: requiredConfig.authDomain!,
+  projectId: requiredConfig.projectId!,
+  storageBucket: requiredConfig.storageBucket!,
+  messagingSenderId: requiredConfig.messagingSenderId!,
+  appId: requiredConfig.appId!,
+};
+
+if (import.meta.env.VITE_FIREBASE_MEASUREMENT_ID) {
+  firebaseConfig.measurementId = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID;
+}
+
+if (import.meta.env.VITE_FIREBASE_DATABASE_URL) {
+  firebaseConfig.databaseURL = import.meta.env.VITE_FIREBASE_DATABASE_URL;
 }
 
 const app = initializeApp(firebaseConfig);
