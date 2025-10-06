@@ -1,4 +1,4 @@
-# FitcheckBU
+# FitcheckBU 🌿
 
 ## Getting Started
 
