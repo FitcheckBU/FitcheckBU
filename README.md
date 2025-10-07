@@ -22,6 +22,9 @@ To get started with the FitcheckBU application, follow these steps:
     ```
 
 3.  **Run the Application**: Start the development server.
+
     ```bash
     npm run dev
     ```
+
+    - To access the app from a phone on the same network, start the dev server with `npm run dev -- --host` and open the shown network URL on your device.
