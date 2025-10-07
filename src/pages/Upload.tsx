@@ -15,19 +15,30 @@ import {
 import { cloudUploadOutline, trashOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 
+type SelectedImage = {
+  id: string;
+  name: string;
+  url: string;
+  size: number;
+};
+
 const Upload: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>();
-  const [fileName, setFileName] = useState<string>();
+  const [selectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
   const [error, setError] = useState<string>();
+  const selectedImagesRef = useRef<SelectedImage[]>([]);
+
+  useEffect(() => {
+    selectedImagesRef.current = selectedImages;
+  }, [selectedImages]);
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      selectedImagesRef.current.forEach((image) =>
+        URL.revokeObjectURL(image.url),
+      );
     };
-  }, [previewUrl]);
+  }, []);
 
   const triggerFilePicker = () => {
     setError(undefined);
@@ -37,41 +48,65 @@ const Upload: React.FC = () => {
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files ?? []);
 
-    if (!file) {
+    if (files.length === 0) {
       return;
     }
 
-    if (!file.type.startsWith("image/")) {
-      setError("Please select an image file.");
-      clearSelection();
-      return;
+    let nonImageDetected = false;
+
+    const newSelections: SelectedImage[] = files
+      .filter((file) => {
+        const isImage = file.type.startsWith("image/");
+
+        if (!isImage) {
+          nonImageDetected = true;
+        }
+
+        return isImage;
+      })
+      .map((file, index) => ({
+        id: `${file.name}-${Date.now()}-${index}`,
+        name: file.name,
+        url: URL.createObjectURL(file),
+        size: file.size,
+      }));
+
+    if (newSelections.length > 0) {
+      setSelectedImages((current) => [...current, ...newSelections]);
     }
 
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl((currentUrl) => {
-      if (currentUrl) {
-        URL.revokeObjectURL(currentUrl);
-      }
-      console.log(objectUrl);
-      return objectUrl;
-    });
-    setFileName(file.name);
-    setError(undefined);
-  };
-
-  const clearSelection = () => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-
-    setPreviewUrl(undefined);
-    setFileName(undefined);
+    setError(
+      nonImageDetected
+        ? "Some files were skipped because they are not images. Please choose image files only."
+        : undefined,
+    );
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const clearSelection = () => {
+    selectedImages.forEach((image) => URL.revokeObjectURL(image.url));
+    setSelectedImages([]);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const removeImage = (id: string) => {
+    setSelectedImages((current) => {
+      const imageToRemove = current.find((image) => image.id === id);
+
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.url);
+      }
+
+      return current.filter((image) => image.id !== id);
+    });
   };
 
   return (
@@ -86,6 +121,7 @@ const Upload: React.FC = () => {
           ref={fileInputRef}
           type="file"
           accept="image/*"
+          multiple
           style={{ display: "none" }}
           onChange={handleFileChange}
         />
@@ -97,8 +133,8 @@ const Upload: React.FC = () => {
           <IonCardContent>
             <IonText color="medium">
               <p>
-                Select an image from your device or open the camera to capture a
-                new one.
+                Select one or more images from your device or open the camera to
+                capture new ones.
               </p>
             </IonText>
 
@@ -109,29 +145,74 @@ const Upload: React.FC = () => {
               </IonButton>
             </div>
 
-            {fileName && (
-              <IonText color="medium">
-                <p className="ion-margin-top">Selected file: {fileName}</p>
-              </IonText>
-            )}
+            {selectedImages.length > 0 && (
+              <>
+                <IonText color="medium">
+                  <p className="ion-margin-top">
+                    Selected images ({selectedImages.length}):
+                  </p>
+                </IonText>
 
-            {previewUrl && (
-              <div className="ion-margin-top">
-                <img
-                  src={previewUrl}
-                  alt="Upload preview"
-                  style={{ width: "100%", borderRadius: "12px" }}
-                />
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                    gap: "12px",
+                    marginTop: "12px",
+                  }}
+                >
+                  {selectedImages.map((image) => (
+                    <div
+                      key={image.id}
+                      style={{
+                        borderRadius: "12px",
+                        border: "1px solid var(--ion-color-medium-tint)",
+                        padding: "8px",
+                      }}
+                    >
+                      <img
+                        src={image.url}
+                        alt={image.name}
+                        style={{
+                          width: "100%",
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                          height: "120px",
+                        }}
+                      />
+                      <IonText color="medium">
+                        <p
+                          style={{
+                            marginTop: "8px",
+                            fontSize: "0.8rem",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {image.name}
+                        </p>
+                      </IonText>
+                      <IonButton
+                        color="danger"
+                        fill="clear"
+                        size="small"
+                        onClick={() => removeImage(image.id)}
+                      >
+                        <IonIcon slot="start" icon={trashOutline} />
+                        Remove
+                      </IonButton>
+                    </div>
+                  ))}
+                </div>
+
                 <IonButton
                   className="ion-margin-top"
-                  fill="clear"
-                  color="danger"
+                  color="medium"
+                  fill="outline"
                   onClick={clearSelection}
                 >
-                  <IonIcon slot="start" icon={trashOutline} />
-                  Clear selection
+                  Clear all
                 </IonButton>
-              </div>
+              </>
             )}
 
             {error && (
