@@ -1,0 +1,108 @@
+import { IonButton, IonIcon, IonSpinner, IonText } from "@ionic/react";
+import { cloudUploadSharp } from "ionicons/icons";
+import { ref, uploadBytes } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { storage } from "../lib/firebaseClient";
+
+type UploadableFile = {
+  id: string;
+  name: string;
+  file: File;
+};
+
+interface StorageUploadButtonProps {
+  files: UploadableFile[];
+  disabled?: boolean;
+  onUploadComplete?: () => void;
+  onUploadingChange?: (uploading: boolean) => void;
+}
+
+type StatusState = {
+  message: string;
+  tone: "success" | "danger" | "";
+};
+
+const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
+  files,
+  disabled = false,
+  onUploadComplete,
+  onUploadingChange,
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const [status, setStatus] = useState<StatusState>({ message: "", tone: "" });
+
+  useEffect(() => {
+    if (files.length > 0) {
+      setStatus({ message: "", tone: "" });
+    }
+  }, [files]);
+
+  const setUploadingState = (value: boolean) => {
+    setUploading(value);
+    onUploadingChange?.(value);
+  };
+
+  const handleUpload = async () => {
+    if (files.length === 0 || uploading) {
+      return;
+    }
+
+    setStatus({ message: "", tone: "" });
+    setUploadingState(true);
+
+    try {
+      const uploads = files.map(async ({ file, name }) => {
+        const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const uniqueSuffix = `${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 10)}`;
+        const storagePath = `uploads/${uniqueSuffix}-${safeName}`;
+        const storageRef = ref(storage, storagePath);
+        await uploadBytes(storageRef, file);
+      });
+
+      await Promise.all(uploads);
+      onUploadComplete?.();
+      setStatus({
+        message: `${files.length} image${files.length > 1 ? "s" : ""} uploaded successfully.`,
+        tone: "success",
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred while uploading.";
+      setStatus({ message, tone: "danger" });
+    } finally {
+      setUploadingState(false);
+    }
+  };
+
+  const uploadDisabled = disabled || uploading || files.length === 0;
+
+  return (
+    <>
+      <IonButton
+        className="ion-margin-top"
+        color="primary"
+        expand="block"
+        disabled={uploadDisabled}
+        onClick={handleUpload}
+      >
+        {uploading ? (
+          <IonSpinner slot="start" name="crescent" />
+        ) : (
+          <IonIcon slot="start" icon={cloudUploadSharp} />
+        )}
+        {uploading ? "Uploading..." : "Upload selected"}
+      </IonButton>
+      {status.message && (
+        <IonText color={status.tone === "" ? undefined : status.tone}>
+          <p className="ion-margin-top">{status.message}</p>
+        </IonText>
+      )}
+    </>
+  );
+};
+
+export default StorageUploadButton;

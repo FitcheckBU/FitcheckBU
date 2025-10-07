@@ -14,18 +14,21 @@ import {
 } from "@ionic/react";
 import { cloudUploadOutline, trashOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
+import StorageUploadButton from "../components/StorageUploadButton";
 
 type SelectedImage = {
   id: string;
   name: string;
   url: string;
   size: number;
+  file: File;
 };
 
 const Upload: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
   const [error, setError] = useState<string>();
+  const [uploading, setUploading] = useState(false);
   const selectedImagesRef = useRef<SelectedImage[]>([]);
 
   useEffect(() => {
@@ -41,6 +44,10 @@ const Upload: React.FC = () => {
   }, []);
 
   const triggerFilePicker = () => {
+    if (uploading) {
+      return;
+    }
+
     setError(undefined);
     fileInputRef.current?.click();
   };
@@ -71,6 +78,7 @@ const Upload: React.FC = () => {
         name: file.name,
         url: URL.createObjectURL(file),
         size: file.size,
+        file,
       }));
 
     if (newSelections.length > 0) {
@@ -139,7 +147,11 @@ const Upload: React.FC = () => {
             </IonText>
 
             <div className="ion-margin-top ion-text-center">
-              <IonButton expand="block" onClick={triggerFilePicker}>
+              <IonButton
+                expand="block"
+                onClick={triggerFilePicker}
+                disabled={uploading}
+              >
                 <IonIcon slot="start" icon={cloudUploadOutline} />
                 Use Camera / Library
               </IonButton>
@@ -195,6 +207,7 @@ const Upload: React.FC = () => {
                         color="danger"
                         fill="clear"
                         size="small"
+                        disabled={uploading}
                         onClick={() => removeImage(image.id)}
                       >
                         <IonIcon slot="start" icon={trashOutline} />
@@ -204,10 +217,22 @@ const Upload: React.FC = () => {
                   ))}
                 </div>
 
+                <StorageUploadButton
+                  files={selectedImages.map(({ id, name, file }) => ({
+                    id,
+                    name,
+                    file,
+                  }))}
+                  disabled={uploading}
+                  onUploadingChange={setUploading}
+                  onUploadComplete={clearSelection}
+                />
+
                 <IonButton
                   className="ion-margin-top"
                   color="medium"
                   fill="outline"
+                  disabled={uploading}
                   onClick={clearSelection}
                 >
                   Clear all
