@@ -1,0 +1,177 @@
+//-------------IMPORTS------------------
+import { db } from "./firebaseClient";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  getDocs,
+  getDoc,
+  query,
+  where,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
+
+//-------------TYPES------------------
+export interface InventoryItem {
+  id?: string; // Firestore document ID
+  name: string;
+  category: string;
+  brand: string;
+  color: string;
+  condition: string;
+  price: number;
+  decade: string;
+  style: string;
+  isSold: boolean;
+  dateAdded: Timestamp;
+
+  //additional fields can be added later
+
+  //imageUrls?: string[];
+  //description?: string;
+  //size?: string;
+  //material?: string;
+}
+
+//-------------CRUD OPERATIONS------------------
+
+//add
+export const addItem = async (
+  itemData: Omit<InventoryItem, "id" | "dateAdded" | "isSold">,
+): Promise<string> => {
+  const itemsRef = collection(db, "items");
+  const docRef = await addDoc(itemsRef, {
+    ...itemData,
+    dateAdded: serverTimestamp(),
+    isSold: false,
+  });
+  return docRef.id;
+};
+
+//update
+export const updateItem = async (
+  itemId: string,
+  updates: Partial<Omit<InventoryItem, "id" | "dateAdded">>,
+): Promise<void> => {
+  const itemRef = doc(db, "items", itemId);
+  await updateDoc(itemRef, updates);
+};
+
+//get all
+export const getAllItems = async (): Promise<InventoryItem[]> => {
+  const itemsRef = collection(db, "items");
+  const snapshot = await getDocs(itemsRef);
+  return snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      }) as InventoryItem,
+  );
+};
+
+//get unsold
+export const getUnsoldItems = async (): Promise<InventoryItem[]> => {
+  const itemsRef = collection(db, "items");
+  const q = query(itemsRef, where("isSold", "==", false));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      }) as InventoryItem,
+  );
+};
+
+//get sold items
+export const getSoldItems = async (): Promise<InventoryItem[]> => {
+  const itemsRef = collection(db, "items");
+  const q = query(itemsRef, where("isSold", "==", true));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      }) as InventoryItem,
+  );
+};
+
+//get by id
+export const getItemById = async (
+  itemId: string,
+): Promise<InventoryItem | null> => {
+  const itemRef = doc(db, "items", itemId);
+  const docSnap = await getDoc(itemRef);
+
+  if (docSnap.exists()) {
+    return {
+      id: docSnap.id,
+      ...docSnap.data(),
+    } as InventoryItem;
+  }
+  return null;
+};
+
+//get by category
+export const getItemsByCategory = async (
+  category: string,
+): Promise<InventoryItem[]> => {
+  const itemsRef = collection(db, "items");
+  const q = query(itemsRef, where("category", "==", category));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      }) as InventoryItem,
+  );
+};
+
+//get by decade
+export const getItemsByDecade = async (
+  decade: string,
+): Promise<InventoryItem[]> => {
+  const itemsRef = collection(db, "items");
+  const q = query(itemsRef, where("decade", "==", decade));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      }) as InventoryItem,
+  );
+};
+
+//get by style
+export const getItemsByStyle = async (
+  style: string,
+): Promise<InventoryItem[]> => {
+  const itemsRef = collection(db, "items");
+  const q = query(itemsRef, where("style", "==", style));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      }) as InventoryItem,
+  );
+};
+
+//---------------CONVENIENCE METHODS------------------
+
+//mark as sold
+export const markAsSold = async (itemId: string): Promise<void> => {
+  await updateItem(itemId, { isSold: true });
+};
+
+//mark as unsold(available)
+export const markAsUnsold = async (itemId: string): Promise<void> => {
+  await updateItem(itemId, { isSold: false });
+};
