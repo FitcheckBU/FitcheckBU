@@ -1,12 +1,12 @@
 // eslint.config.ts — ESLint 9 flat-config
 import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
+import prettier from "eslint-config-prettier";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
-import jsxA11y from "eslint-plugin-jsx-a11y";
-import prettier from "eslint-config-prettier";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
 export default [
   // 1️⃣  Base configs (no “extends” keyword anywhere)
@@ -22,6 +22,7 @@ export default [
       "cypress.config.ts",
       "eslint.config.*",
       "vite.config.*",
+      "functions/**/.eslintrc.js",
     ],
 
     files: ["**/*.{ts,tsx}"],
