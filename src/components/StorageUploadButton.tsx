@@ -1,7 +1,8 @@
 import { IonButton, IonIcon, IonSpinner, IonText } from "@ionic/react";
-import { cloudUploadSharp } from "ionicons/icons";
 import { ref, uploadBytes } from "firebase/storage";
+import { cloudUploadSharp } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { storage } from "../lib/firebaseClient";
 
 type UploadableFile = {
@@ -51,12 +52,12 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
     setUploadingState(true);
 
     try {
+      // Generate one sessionId shared by all uploaded photos
+      const sessionId = uuidv4();
+
       const uploads = files.map(async ({ file, name }) => {
         const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const uniqueSuffix = `${Date.now()}-${Math.random()
-          .toString(36)
-          .slice(2, 10)}`;
-        const storagePath = `uploads/${uniqueSuffix}-${safeName}`;
+        const storagePath = `uploads/${sessionId}/${safeName}`;
         const storageRef = ref(storage, storagePath);
         await uploadBytes(storageRef, file);
       });
