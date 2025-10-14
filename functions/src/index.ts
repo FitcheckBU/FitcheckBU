@@ -1,16 +1,14 @@
 import vision, { protos } from "@google-cloud/vision";
 import * as admin from "firebase-admin";
-import { onObjectFinalized } from "firebase-functions/v2/storage";
+import { getFirestore } from "firebase-admin/firestore";
 import { defineString } from "firebase-functions/params";
+import { onObjectFinalized } from "firebase-functions/v2/storage";
 
 admin.initializeApp();
 
 const visionClient = new vision.ImageAnnotatorClient();
 const firestoreDatabaseId = defineString("FIRESTORE_DATABASE_ID");
-const firestore = admin.firestore(
-  admin.app(),
-  firestoreDatabaseId.value() || undefined,
-);
+const firestore = getFirestore(admin.app(), firestoreDatabaseId.value());
 
 // Temporary in-memory session tracking
 const sessionTracker: Record<string, string[]> = {};
