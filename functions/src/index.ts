@@ -24,11 +24,11 @@ export const onBatchImageUpload = onObjectFinalized(
 
     console.log(`🆕 New image in session ${sessionId}: ${fileName}`);
 
-    // 1️⃣ Track images uploaded in this session
+    // Track images uploaded in this session
     if (!sessionTracker[sessionId]) sessionTracker[sessionId] = [];
     sessionTracker[sessionId].push(filePath);
 
-    // 2️⃣ Wait until enough images uploaded before analysis
+    // Wait until enough images uploaded before analysis
     if (sessionTracker[sessionId].length < 1) {
       console.log(
         `Session ${sessionId}: waiting for more images (${sessionTracker[sessionId].length}/3).`,
@@ -36,15 +36,15 @@ export const onBatchImageUpload = onObjectFinalized(
       return;
     }
 
-    // 3️⃣ Delay to ensure GCS replication (prevents partial reads)
+    // Delay to ensure GCS replication (prevents partial reads)
     console.log(
-      `🕒 Waiting 5 seconds before Vision analysis for session ${sessionId}...`,
+      `Waiting 5 seconds before Vision analysis for session ${sessionId}...`,
     );
     await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    console.log(`🧠 Running batch analysis for session ${sessionId}...`);
+    console.log(`Running batch analysis for session ${sessionId}...`);
 
-    // 4️⃣ Prepare Vision API batch requests
+    // Prepare Vision API batch requests
     const requests: protos.google.cloud.vision.v1.IAnnotateImageRequest[] =
       sessionTracker[sessionId].map((path) => ({
         image: { source: { imageUri: `gs://${bucketName}/${path}` } },
@@ -52,16 +52,16 @@ export const onBatchImageUpload = onObjectFinalized(
       }));
 
     console.log(
-      "📸 Images to analyze:",
+      " Images to analyze:",
       requests.map((r) => r.image?.source?.imageUri),
     );
 
-    // 5️⃣ Run Vision API
+    //  Run Vision API
     const [batchResponse] = await visionClient.batchAnnotateImages({
       requests,
     });
 
-    // 6️⃣ Log results
+    // Log results
     const responses = batchResponse.responses ?? [];
     responses.forEach((res, i) => {
       const image = sessionTracker[sessionId][i];
@@ -72,13 +72,13 @@ export const onBatchImageUpload = onObjectFinalized(
         })) ?? [];
 
       if (labels.length === 0) {
-        console.warn(`⚠️ No labels detected for ${image}`);
+        console.warn(` No labels detected for ${image}`);
       } else {
-        console.log(`✅ Labels for ${image}:`, JSON.stringify(labels, null, 2));
+        console.log(`Labels for ${image}:`, JSON.stringify(labels, null, 2));
       }
     });
 
-    // 7️⃣ Cleanup tracker (to avoid duplicate runs)
+    // Cleanup tracker (to avoid duplicate runs)
     delete sessionTracker[sessionId];
     console.log(`🧹 Cleaned up session tracker for ${sessionId}`);
   },
