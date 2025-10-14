@@ -17,6 +17,7 @@ interface StorageUploadButtonProps {
   disabled?: boolean;
   onUploadComplete?: () => void;
   onUploadingChange?: (uploading: boolean) => void;
+  onItemCreated?: (itemId: string, sessionId: string) => void;
 }
 
 type StatusState = {
@@ -29,6 +30,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
   disabled = false,
   onUploadComplete,
   onUploadingChange,
+  onItemCreated,
 }) => {
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<StatusState>({ message: "", tone: "" });
@@ -65,7 +67,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
       });
 
       await Promise.all(uploads);
-      await addItem({
+      const itemId = await addItem({
         name: "New item",
         category: "uncategorized",
         brand: "",
@@ -77,6 +79,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
         sessionId,
         imageStoragePaths: storagePaths,
       });
+      onItemCreated?.(itemId, sessionId);
       onUploadComplete?.();
       setStatus({
         message: `${files.length} image${files.length > 1 ? "s" : ""} uploaded successfully.`,
