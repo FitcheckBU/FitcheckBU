@@ -11,7 +11,7 @@ const firestore = firestoreDatabaseId.value()
   : getFirestore(admin.initializeApp());
 
 // Temporary in-memory session tracking
-const sessionTracker: Record<string, string[]> = {};
+const sessionTracker: Record<string, string[]> = {}; // This keeps track of all images associated in one session
 
 export const onBatchImageUpload = onObjectFinalized(
   { region: "us-east1" },
@@ -26,7 +26,7 @@ export const onBatchImageUpload = onObjectFinalized(
     const [_, sessionId, fileName] = filePath.split("/");
     if (!sessionId) return;
 
-    console.log(`🆕 New image in session ${sessionId}: ${fileName}`);
+    console.log(`New image in session ${sessionId}: ${fileName}`);
 
     // Track images uploaded in this session
     if (!sessionTracker[sessionId]) sessionTracker[sessionId] = [];
@@ -48,7 +48,7 @@ export const onBatchImageUpload = onObjectFinalized(
 
     console.log(`Running batch analysis for session ${sessionId}...`);
 
-    // Prepare Vision API batch requests
+    // Prepare Vision API batch requests for every image in session tracker
     const requests: protos.google.cloud.vision.v1.IAnnotateImageRequest[] =
       sessionTracker[sessionId].map((path) => ({
         image: { source: { imageUri: `gs://${bucketName}/${path}` } },
@@ -59,8 +59,9 @@ export const onBatchImageUpload = onObjectFinalized(
       " Images to analyze:",
       requests.map((r) => r.image?.source?.imageUri),
     );
+    //Logs all image URLs in requests
 
-    //  Run Vision API
+    //  Run Vision API, batchResponse.responses is a group of requests for each image
     const [batchResponse] = await visionClient.batchAnnotateImages({
       requests,
     });
@@ -80,6 +81,7 @@ export const onBatchImageUpload = onObjectFinalized(
       } else {
         console.log(`Labels for ${image}:`, JSON.stringify(labels, null, 2));
       }
+      //So we should see log for every image that was properly analyzed
     });
 
     // Aggregate labels across the batch
