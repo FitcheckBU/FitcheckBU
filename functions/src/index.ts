@@ -4,11 +4,11 @@ import { getFirestore } from "firebase-admin/firestore";
 import { defineString } from "firebase-functions/params";
 import { onObjectFinalized } from "firebase-functions/v2/storage";
 
-admin.initializeApp();
-
-const visionClient = new vision.ImageAnnotatorClient();
 const firestoreDatabaseId = defineString("FIRESTORE_DATABASE_ID");
-const firestore = getFirestore(admin.app(), firestoreDatabaseId.value());
+const visionClient = new vision.ImageAnnotatorClient();
+const firestore = firestoreDatabaseId.value()
+  ? getFirestore(admin.initializeApp(), firestoreDatabaseId.value())
+  : getFirestore(admin.initializeApp());
 
 // Temporary in-memory session tracking
 const sessionTracker: Record<string, string[]> = {};
