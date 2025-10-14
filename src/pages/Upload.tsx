@@ -11,8 +11,10 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  IonButtons,
+  IonBackButton,
 } from "@ionic/react";
-import { cloudUploadOutline, trashOutline } from "ionicons/icons";
+import { cloudUploadOutline, trashOutline, chevronBack } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import StorageUploadButton from "../components/StorageUploadButton";
 import { InventoryItem } from "../lib/inventoryService";
@@ -151,6 +153,9 @@ const Upload: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/home" icon={chevronBack} />
+          </IonButtons>
           <IonTitle>Upload</IonTitle>
         </IonToolbar>
       </IonHeader>
