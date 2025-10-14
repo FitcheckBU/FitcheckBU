@@ -4,6 +4,7 @@ import { cloudUploadSharp } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { storage } from "../lib/firebaseClient";
+import { addItem } from "../lib/inventoryService";
 
 type UploadableFile = {
   id: string;
@@ -54,15 +55,28 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
     try {
       // Generate one sessionId shared by all uploaded photos
       const sessionId = uuidv4();
-
+      const storagePaths: string[] = [];
       const uploads = files.map(async ({ file, name }) => {
         const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const storagePath = `uploads/${sessionId}/${safeName}`;
         const storageRef = ref(storage, storagePath);
+        storagePaths.push(storagePath);
         await uploadBytes(storageRef, file);
       });
 
       await Promise.all(uploads);
+      await addItem({
+        name: "New item",
+        category: "uncategorized",
+        brand: "",
+        color: "",
+        condition: "unknown",
+        price: 0,
+        decade: "",
+        style: "",
+        sessionId,
+        imageStoragePaths: storagePaths,
+      });
       onUploadComplete?.();
       setStatus({
         message: `${files.length} image${files.length > 1 ? "s" : ""} uploaded successfully.`,
