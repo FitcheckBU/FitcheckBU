@@ -1,6 +1,6 @@
 import { initializeApp, type FirebaseOptions } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, initializeFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const requiredConfig: Record<string, string | undefined> = {
@@ -41,7 +41,11 @@ if (import.meta.env.VITE_FIREBASE_DATABASE_URL) {
 }
 
 const app = initializeApp(firebaseConfig);
+const databaseId =
+  import.meta.env.VITE_FIRESTORE_DATABASE_ID?.trim() || undefined;
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = databaseId
+  ? initializeFirestore(app, {}, databaseId)
+  : getFirestore(app);
 export const storage = getStorage(app);
