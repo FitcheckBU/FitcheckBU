@@ -6,7 +6,6 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import ExploreContainer from "../components/ExploreContainer";
 import "./Home.css";
 
 const Home: React.FC = () => {
@@ -28,7 +27,6 @@ const Home: React.FC = () => {
             Go to Upload
           </IonButton>
         </div>
-        <ExploreContainer />
       </IonContent>
     </IonPage>
   );
