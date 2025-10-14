@@ -1,5 +1,4 @@
-// index.ts
-import vision from "@google-cloud/vision";
+import vision, { protos } from "@google-cloud/vision";
 import * as admin from "firebase-admin";
 import { onObjectFinalized } from "firebase-functions/v2/storage";
 
@@ -7,31 +6,80 @@ admin.initializeApp();
 
 const visionClient = new vision.ImageAnnotatorClient();
 
-export const onImageUpload = onObjectFinalized(
+// Temporary in-memory session tracking
+const sessionTracker: Record<string, string[]> = {};
+
+export const onBatchImageUpload = onObjectFinalized(
   { region: "us-east1" },
   async (event) => {
     const object = event.data;
-    const bucketName = object.bucket;
     const filePath = object.name;
-    const contentType = object.contentType;
+    const bucketName = object.bucket;
 
-    if (!filePath || !filePath.startsWith("uploads/")) {
-      console.log("Not an upload in the uploads/ folder, skipping.");
+    if (!filePath?.startsWith("uploads/")) return;
+    if (!object.contentType?.startsWith("image/")) return;
+
+    const [_, sessionId, fileName] = filePath.split("/");
+    if (!sessionId) return;
+
+    console.log(`🆕 New image in session ${sessionId}: ${fileName}`);
+
+    // 1️⃣ Track images uploaded in this session
+    if (!sessionTracker[sessionId]) sessionTracker[sessionId] = [];
+    sessionTracker[sessionId].push(filePath);
+
+    // 2️⃣ Wait until enough images uploaded before analysis
+    if (sessionTracker[sessionId].length < 1) {
+      console.log(
+        `Session ${sessionId}: waiting for more images (${sessionTracker[sessionId].length}/3).`,
+      );
       return;
     }
 
-    if (!contentType?.startsWith("image/")) {
-      console.log(`Skipping non-image file: ${filePath}`);
-      return;
-    }
+    // 3️⃣ Delay to ensure GCS replication (prevents partial reads)
+    console.log(
+      `🕒 Waiting 5 seconds before Vision analysis for session ${sessionId}...`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    const gcsUri = `gs://${bucketName}/${filePath}`;
-    const [result] = await visionClient.labelDetection(gcsUri);
-    const labels = result.labelAnnotations?.map((l) => ({
-      description: l.description,
-      score: l.score,
-    }));
+    console.log(`🧠 Running batch analysis for session ${sessionId}...`);
 
-    console.log(`Labels for ${filePath}:`, labels);
+    // 4️⃣ Prepare Vision API batch requests
+    const requests: protos.google.cloud.vision.v1.IAnnotateImageRequest[] =
+      sessionTracker[sessionId].map((path) => ({
+        image: { source: { imageUri: `gs://${bucketName}/${path}` } },
+        features: [{ type: "LABEL_DETECTION" as const }],
+      }));
+
+    console.log(
+      "📸 Images to analyze:",
+      requests.map((r) => r.image?.source?.imageUri),
+    );
+
+    // 5️⃣ Run Vision API
+    const [batchResponse] = await visionClient.batchAnnotateImages({
+      requests,
+    });
+
+    // 6️⃣ Log results
+    const responses = batchResponse.responses ?? [];
+    responses.forEach((res, i) => {
+      const image = sessionTracker[sessionId][i];
+      const labels =
+        res.labelAnnotations?.map((l) => ({
+          description: l.description,
+          score: l.score,
+        })) ?? [];
+
+      if (labels.length === 0) {
+        console.warn(`⚠️ No labels detected for ${image}`);
+      } else {
+        console.log(`✅ Labels for ${image}:`, JSON.stringify(labels, null, 2));
+      }
+    });
+
+    // 7️⃣ Cleanup tracker (to avoid duplicate runs)
+    delete sessionTracker[sessionId];
+    console.log(`🧹 Cleaned up session tracker for ${sessionId}`);
   },
 );
