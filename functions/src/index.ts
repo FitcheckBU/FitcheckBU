@@ -31,7 +31,7 @@ export const onBatchImageUpload = onObjectFinalized(
     // Wait until enough images uploaded before analysis
     if (sessionTracker[sessionId].length < 1) {
       console.log(
-        `Session ${sessionId}: waiting for more images (${sessionTracker[sessionId].length}/3).`,
+        `Session ${sessionId}: waiting for more images (${sessionTracker[sessionId].length}/1).`,
       );
       return;
     }
