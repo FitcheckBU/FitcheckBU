@@ -1,10 +1,16 @@
 import vision, { protos } from "@google-cloud/vision";
 import * as admin from "firebase-admin";
 import { onObjectFinalized } from "firebase-functions/v2/storage";
+import { defineString } from "firebase-functions/params";
 
 admin.initializeApp();
 
 const visionClient = new vision.ImageAnnotatorClient();
+const firestoreDatabaseId = defineString("FIRESTORE_DATABASE_ID");
+const firestore = admin.firestore(
+  admin.app(),
+  firestoreDatabaseId.value() || undefined,
+);
 
 // Temporary in-memory session tracking
 const sessionTracker: Record<string, string[]> = {};
@@ -77,6 +83,57 @@ export const onBatchImageUpload = onObjectFinalized(
         console.log(`Labels for ${image}:`, JSON.stringify(labels, null, 2));
       }
     });
+
+    // Aggregate labels across the batch
+    const aggregatedLabels = new Map<string, number>();
+    responses.forEach((res) => {
+      res.labelAnnotations?.forEach((label) => {
+        if (!label.description || label.score === undefined) return;
+        const existingScore = aggregatedLabels.get(label.description) ?? 0;
+        const score = label.score ?? 0;
+        if (score > existingScore) {
+          aggregatedLabels.set(label.description, score);
+        }
+      });
+    });
+
+    const labelList = Array.from(aggregatedLabels.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([description]) => description)
+      .slice(0, 10);
+
+    // Update Firestore document linked to this session
+    try {
+      const snapshot = await firestore
+        .collection("items")
+        .where("sessionId", "==", sessionId)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        console.warn(`No inventory item found for session ${sessionId}`);
+      } else {
+        const docRef = snapshot.docs[0].ref;
+        const updatePayload: Record<string, unknown> = {
+          labels: labelList,
+        };
+
+        const currentDescription = snapshot.docs[0].get("description");
+        if (!currentDescription && labelList.length > 0) {
+          updatePayload.description = labelList.join(", ");
+        }
+
+        await docRef.update(updatePayload);
+        console.log(
+          `Updated item ${docRef.id} with ${labelList.length} labels.`,
+        );
+      }
+    } catch (updateError) {
+      console.error(
+        `Failed to update inventory item for session ${sessionId}:`,
+        updateError,
+      );
+    }
 
     // Cleanup tracker (to avoid duplicate runs)
     delete sessionTracker[sessionId];
