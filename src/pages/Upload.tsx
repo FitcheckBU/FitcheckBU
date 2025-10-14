@@ -131,6 +131,8 @@ const Upload: React.FC = () => {
           accept="image/*"
           multiple
           style={{ display: "none" }}
+          //capture="camera" // uncomment this to use the camera directly
+
           onChange={handleFileChange}
         />
 
