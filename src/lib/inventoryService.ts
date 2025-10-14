@@ -28,6 +28,8 @@ export interface InventoryItem {
   dateAdded: Timestamp;
   description?: string; // human-written or AI-generated
   labels?: string[]; // Vision-generated tags
+  sessionId?: string; // upload session identifier
+  imageStoragePaths?: string[]; // Storage paths for uploaded images
 
   //additional fields can be added later
 
@@ -48,6 +50,7 @@ export const addItem = async (
     ...itemData,
     description: itemData.description ?? "",
     labels: [],
+    imageStoragePaths: itemData.imageStoragePaths ?? [],
     dateAdded: serverTimestamp(),
     isSold: false,
   });
