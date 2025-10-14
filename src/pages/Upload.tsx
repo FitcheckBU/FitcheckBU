@@ -15,6 +15,9 @@ import {
 import { cloudUploadOutline, trashOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import StorageUploadButton from "../components/StorageUploadButton";
+import { InventoryItem } from "../lib/inventoryService";
+import { db } from "../lib/firebaseClient";
+import { doc, onSnapshot, Unsubscribe } from "firebase/firestore";
 
 type SelectedImage = {
   id: string;
@@ -29,7 +32,10 @@ const Upload: React.FC = () => {
   const [selectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
   const [error, setError] = useState<string>();
   const [uploading, setUploading] = useState(false);
+  const [latestItem, setLatestItem] = useState<InventoryItem | null>(null);
+  const [latestSessionId, setLatestSessionId] = useState<string>();
   const selectedImagesRef = useRef<SelectedImage[]>([]);
+  const itemListenerRef = useRef<Unsubscribe | null>(null);
 
   useEffect(() => {
     selectedImagesRef.current = selectedImages;
@@ -40,6 +46,8 @@ const Upload: React.FC = () => {
       selectedImagesRef.current.forEach((image) =>
         URL.revokeObjectURL(image.url),
       );
+      itemListenerRef.current?.();
+      itemListenerRef.current = null;
     };
   }, []);
 
@@ -117,6 +125,28 @@ const Upload: React.FC = () => {
     });
   };
 
+  const handleItemCreated = (itemId: string, sessionId: string) => {
+    setLatestSessionId(sessionId);
+    itemListenerRef.current?.();
+    itemListenerRef.current = null;
+
+    const itemRef = doc(db, "items", itemId);
+    itemListenerRef.current = onSnapshot(
+      itemRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setLatestItem({
+            id: snapshot.id,
+            ...snapshot.data(),
+          } as InventoryItem);
+        }
+      },
+      (listenerError) => {
+        console.error("Failed to subscribe to item updates:", listenerError);
+      },
+    );
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -132,6 +162,7 @@ const Upload: React.FC = () => {
           multiple
           style={{ display: "none" }}
           //capture="camera" // uncomment this to use the camera directly
+
           onChange={handleFileChange}
         />
 
@@ -227,6 +258,7 @@ const Upload: React.FC = () => {
                   disabled={uploading}
                   onUploadingChange={setUploading}
                   onUploadComplete={clearSelection}
+                  onItemCreated={handleItemCreated}
                 />
 
                 <IonButton
@@ -245,6 +277,32 @@ const Upload: React.FC = () => {
               <IonText color="danger">
                 <p className="ion-margin-top">{error}</p>
               </IonText>
+            )}
+            {latestItem && (
+              <IonCard className="ion-margin-top">
+                <IonCardHeader>
+                  <IonCardTitle>
+                    Vision Analysis (Session {latestSessionId})
+                  </IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  <IonText color="medium">
+                    <p>Description: {latestItem.description || "Pending..."}</p>
+                    <p>
+                      Labels:
+                      {latestItem.labels && latestItem.labels.length > 0 ? (
+                        <code
+                          style={{ display: "block", whiteSpace: "pre-wrap" }}
+                        >
+                          {JSON.stringify(latestItem.labels, null, 2)}
+                        </code>
+                      ) : (
+                        " Pending Vision results..."
+                      )}
+                    </p>
+                  </IonText>
+                </IonCardContent>
+              </IonCard>
             )}
           </IonCardContent>
         </IonCard>

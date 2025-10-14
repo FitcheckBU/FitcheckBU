@@ -1,17 +1,17 @@
 //-------------IMPORTS------------------
-import { db } from "./firebaseClient";
 import {
-  collection,
   addDoc,
-  updateDoc,
+  collection,
   doc,
-  getDocs,
   getDoc,
+  getDocs,
   query,
-  where,
   serverTimestamp,
   Timestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
+import { db } from "./firebaseClient";
 
 //-------------TYPES------------------
 export interface InventoryItem {
@@ -26,6 +26,10 @@ export interface InventoryItem {
   style: string;
   isSold: boolean;
   dateAdded: Timestamp;
+  description?: string; // human-written or AI-generated
+  labels?: string[]; // Vision-generated tags
+  sessionId?: string; // upload session identifier
+  imageStoragePaths?: string[]; // Storage paths for uploaded images
 
   //additional fields can be added later
 
@@ -44,6 +48,9 @@ export const addItem = async (
   const itemsRef = collection(db, "items");
   const docRef = await addDoc(itemsRef, {
     ...itemData,
+    description: itemData.description ?? "",
+    labels: [],
+    imageStoragePaths: itemData.imageStoragePaths ?? [],
     dateAdded: serverTimestamp(),
     isSold: false,
   });

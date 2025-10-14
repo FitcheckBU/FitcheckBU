@@ -23,8 +23,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+firebase-debug.log*
 
 # Optional eslint cache
 .eslintcache
 
 .vercel
+automatic-map-473619-b7-firebase-adminsdk-fbsvc-b9ac9f3c28.json
