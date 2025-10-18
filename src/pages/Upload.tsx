@@ -5,21 +5,17 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonContent,
-  IonHeader,
   IonIcon,
   IonPage,
   IonText,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
-  IonBackButton,
 } from "@ionic/react";
-import { cloudUploadOutline, trashOutline, chevronBack } from "ionicons/icons";
+import { cloudUploadOutline, trashOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import StorageUploadButton from "../components/StorageUploadButton";
 import { InventoryItem } from "../lib/inventoryService";
 import { db } from "../lib/firebaseClient";
 import { doc, onSnapshot, Unsubscribe } from "firebase/firestore";
+import "../components/PageContent.css";
 
 type SelectedImage = {
   id: string;
@@ -151,166 +147,163 @@ const Upload: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/home" icon={chevronBack} />
-          </IonButtons>
-          <IonTitle>Upload</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent className="ion-padding">
+      <IonContent className="ion-padding page-content">
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
           multiple
           style={{ display: "none" }}
-          //capture="camera" // uncomment this to use the camera directly
-
+          capture="environment" // Use the camera directly
           onChange={handleFileChange}
         />
 
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>Capture or Upload</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            <IonText color="medium">
-              <p>
-                Select one or more images from your device or open the camera to
-                capture new ones.
-              </p>
+        {selectedImages.length === 0 ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+            onClick={triggerFilePicker}
+          >
+            <img
+              src="/Qr Icon.png"
+              alt="Scan QR Code"
+              style={{ width: "100px", height: "100px" }}
+            />
+            <IonText>
+              <p>Tap to Scan</p>
             </IonText>
-
-            <div className="ion-margin-top ion-text-center">
-              <IonButton
-                expand="block"
-                onClick={triggerFilePicker}
-                disabled={uploading}
-              >
-                <IonIcon slot="start" icon={cloudUploadOutline} />
-                Use Camera / Library
-              </IonButton>
-            </div>
-
-            {selectedImages.length > 0 && (
-              <>
-                <IonText color="medium">
-                  <p className="ion-margin-top">
-                    Selected images ({selectedImages.length}):
-                  </p>
-                </IonText>
-
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-                    gap: "12px",
-                    marginTop: "12px",
-                  }}
-                >
-                  {selectedImages.map((image) => (
-                    <div
-                      key={image.id}
-                      style={{
-                        borderRadius: "12px",
-                        border: "1px solid var(--ion-color-medium-tint)",
-                        padding: "8px",
-                      }}
-                    >
-                      <img
-                        src={image.url}
-                        alt={image.name}
-                        style={{
-                          width: "100%",
-                          borderRadius: "8px",
-                          objectFit: "cover",
-                          height: "120px",
-                        }}
-                      />
-                      <IonText color="medium">
-                        <p
-                          style={{
-                            marginTop: "8px",
-                            fontSize: "0.8rem",
-                            wordBreak: "break-word",
-                          }}
-                        >
-                          {image.name}
-                        </p>
-                      </IonText>
-                      <IonButton
-                        color="danger"
-                        fill="clear"
-                        size="small"
-                        disabled={uploading}
-                        onClick={() => removeImage(image.id)}
-                      >
-                        <IonIcon slot="start" icon={trashOutline} />
-                        Remove
-                      </IonButton>
-                    </div>
-                  ))}
-                </div>
-
-                <StorageUploadButton
-                  files={selectedImages.map(({ id, name, file }) => ({
-                    id,
-                    name,
-                    file,
-                  }))}
-                  disabled={uploading}
-                  onUploadingChange={setUploading}
-                  onUploadComplete={clearSelection}
-                  onItemCreated={handleItemCreated}
-                />
-
+          </div>
+        ) : (
+          <IonCard>
+            <IonCardContent>
+              <div className="ion-margin-top ion-text-center">
                 <IonButton
-                  className="ion-margin-top"
-                  color="medium"
-                  fill="outline"
+                  expand="block"
+                  onClick={triggerFilePicker}
                   disabled={uploading}
-                  onClick={clearSelection}
                 >
-                  Clear all
+                  <IonIcon slot="start" icon={cloudUploadOutline} />
+                  Use Camera / Library
                 </IonButton>
-              </>
-            )}
+              </div>
 
-            {error && (
-              <IonText color="danger">
-                <p className="ion-margin-top">{error}</p>
-              </IonText>
-            )}
-            {latestItem && (
-              <IonCard className="ion-margin-top">
-                <IonCardHeader>
-                  <IonCardTitle>
-                    Vision Analysis (Session {latestSessionId})
-                  </IonCardTitle>
-                </IonCardHeader>
-                <IonCardContent>
-                  <IonText color="medium">
-                    <p>Description: {latestItem.description || "Pending..."}</p>
-                    <p>
-                      Labels:
-                      {latestItem.labels && latestItem.labels.length > 0 ? (
-                        <code
-                          style={{ display: "block", whiteSpace: "pre-wrap" }}
-                        >
-                          {JSON.stringify(latestItem.labels, null, 2)}
-                        </code>
-                      ) : (
-                        " Pending Vision results..."
-                      )}
-                    </p>
-                  </IonText>
-                </IonCardContent>
-              </IonCard>
-            )}
-          </IonCardContent>
-        </IonCard>
+              {error && (
+                <IonText color="danger">
+                  <p className="ion-margin-top">{error}</p>
+                </IonText>
+              )}
+              {latestItem && (
+                <IonCard className="ion-margin-top">
+                  <IonCardHeader>
+                    <IonCardTitle>
+                      Vision Analysis (Session {latestSessionId})
+                    </IonCardTitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <IonText color="medium">
+                      <p>
+                        Description: {latestItem.description || "Pending..."}
+                      </p>
+                      <p>
+                        Labels:
+                        {latestItem.labels && latestItem.labels.length > 0 ? (
+                          <code
+                            style={{
+                              display: "block",
+                              whiteSpace: "pre-wrap",
+                            }}
+                          >
+                            {JSON.stringify(latestItem.labels, null, 2)}
+                          </code>
+                        ) : (
+                          " Pending Vision results..."
+                        )}
+                      </p>
+                    </IonText>
+                  </IonCardContent>
+                </IonCard>
+              )}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                  gap: "12px",
+                  marginTop: "12px",
+                }}
+              >
+                {selectedImages.map((image) => (
+                  <div
+                    key={image.id}
+                    style={{
+                      borderRadius: "12px",
+                      border: "1px solid var(--ion-color-medium-tint)",
+                      padding: "8px",
+                    }}
+                  >
+                    <img
+                      src={image.url}
+                      alt={image.name}
+                      style={{
+                        width: "100%",
+                        borderRadius: "8px",
+                        objectFit: "cover",
+                        height: "120px",
+                      }}
+                    />
+                    <IonText color="medium">
+                      <p
+                        style={{
+                          marginTop: "8px",
+                          fontSize: "0.8rem",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {image.name}
+                      </p>
+                    </IonText>
+                    <IonButton
+                      color="danger"
+                      fill="clear"
+                      size="small"
+                      disabled={uploading}
+                      onClick={() => removeImage(image.id)}
+                    >
+                      <IonIcon slot="start" icon={trashOutline} />
+                      Remove
+                    </IonButton>
+                  </div>
+                ))}
+              </div>
+
+              <StorageUploadButton
+                files={selectedImages.map(({ id, name, file }) => ({
+                  id,
+                  name,
+                  file,
+                }))}
+                disabled={uploading}
+                onUploadingChange={setUploading}
+                onUploadComplete={clearSelection}
+                onItemCreated={handleItemCreated}
+              />
+
+              <IonButton
+                className="ion-margin-top"
+                color="medium"
+                fill="outline"
+                disabled={uploading}
+                onClick={clearSelection}
+              >
+                Clear all
+              </IonButton>
+            </IonCardContent>
+          </IonCard>
+        )}
       </IonContent>
     </IonPage>
   );

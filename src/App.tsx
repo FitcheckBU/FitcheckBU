@@ -3,6 +3,8 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
+import Menu from "./components/Menu";
+import TopNavBar from "./components/TopNavBar";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -39,7 +41,9 @@ setupIonicReact();
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
-      <IonRouterOutlet>
+      <Menu />
+      <TopNavBar />
+      <IonRouterOutlet id="main">
         <Route exact path="/home">
           <Home />
         </Route>
