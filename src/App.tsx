@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Menu from "./components/Menu";
 import TopNavBar from "./components/TopNavBar";
+import CameraPage from "./pages/CameraPage";
+import { PhotoProvider } from "./context/PhotoContext";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -40,21 +42,26 @@ setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
-    <IonReactRouter>
-      <Menu />
-      <TopNavBar />
-      <IonRouterOutlet id="main">
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/upload">
-          <Upload />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
+    <PhotoProvider>
+      <IonReactRouter>
+        <Menu />
+        <TopNavBar />
+        <IonRouterOutlet id="main">
+          <Route exact path="/home">
+            <Home />
+          </Route>
+          <Route exact path="/upload">
+            <Upload />
+          </Route>
+          <Route exact path="/camera">
+            <CameraPage />
+          </Route>
+          <Route exact path="/">
+            <Redirect to="/home" />
+          </Route>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </PhotoProvider>
   </IonApp>
 );
 

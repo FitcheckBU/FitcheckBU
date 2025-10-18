@@ -16,6 +16,9 @@ import { InventoryItem } from "../lib/inventoryService";
 import { db } from "../lib/firebaseClient";
 import { doc, onSnapshot, Unsubscribe } from "firebase/firestore";
 import "../components/PageContent.css";
+// import { getCapturedPhotos, clearCapturedPhotos } from '../lib/photo-storage'; // No longer needed
+import { useHistory } from "react-router-dom";
+import { usePhotoContext } from "../context/PhotoContext";
 
 type SelectedImage = {
   id: string;
@@ -34,20 +37,49 @@ const Upload: React.FC = () => {
   const [latestSessionId, setLatestSessionId] = useState<string>();
   const selectedImagesRef = useRef<SelectedImage[]>([]);
   const itemListenerRef = useRef<Unsubscribe | null>(null);
+  const history = useHistory();
+  const { photos, clearPhotos } = usePhotoContext(); // Use context here
+  const processedPhotosCountRef = useRef(0); // New ref to track processed photos
 
   useEffect(() => {
     selectedImagesRef.current = selectedImages;
   }, [selectedImages]);
 
   useEffect(() => {
-    return () => {
-      selectedImagesRef.current.forEach((image) =>
-        URL.revokeObjectURL(image.url),
+    if (photos.length > processedPhotosCountRef.current) {
+      const newPhotosToProcess = photos.slice(processedPhotosCountRef.current);
+      const newSelections: SelectedImage[] = newPhotosToProcess.map(
+        (dataUrl, index) => {
+          const filename = `camera_photo_${Date.now()}_${processedPhotosCountRef.current + index}.jpeg`;
+          // Convert dataUrl to File object for StorageUploadButton
+          const byteString = atob(dataUrl.split(",")[1]);
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+          }
+          const file = new File([ab], filename, { type: "image/jpeg" });
+          return {
+            id: `${filename}-${Date.now()}-${processedPhotosCountRef.current + index}`,
+            name: filename,
+            url: dataUrl,
+            size: file.size,
+            file: file,
+          };
+        },
       );
-      itemListenerRef.current?.();
-      itemListenerRef.current = null;
-    };
-  }, []);
+      setSelectedImages((current) => [...current, ...newSelections]);
+      processedPhotosCountRef.current = photos.length; // Update count after processing
+    } else if (photos.length === 0) {
+      // If photos in context are cleared, clear local state and reset counter
+      if (selectedImages.length > 0) {
+        // Only revoke URLs if there are images
+        selectedImages.forEach((image) => URL.revokeObjectURL(image.url));
+      }
+      setSelectedImages([]);
+      processedPhotosCountRef.current = 0;
+    }
+  }, [photos, selectedImages.length]); // Depend on photos from context and selectedImages.length to handle clearing
 
   const triggerFilePicker = () => {
     if (uploading) {
@@ -55,7 +87,7 @@ const Upload: React.FC = () => {
     }
 
     setError(undefined);
-    fileInputRef.current?.click();
+    history.push("/camera");
   };
 
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
@@ -105,6 +137,8 @@ const Upload: React.FC = () => {
   const clearSelection = () => {
     selectedImages.forEach((image) => URL.revokeObjectURL(image.url));
     setSelectedImages([]);
+    clearPhotos(); // Clear photos from context
+    processedPhotosCountRef.current = 0; // Reset processed count
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -119,7 +153,11 @@ const Upload: React.FC = () => {
         URL.revokeObjectURL(imageToRemove.url);
       }
 
-      return current.filter((image) => image.id !== id);
+      const updatedImages = current.filter((image) => image.id !== id);
+      if (updatedImages.length === 0) {
+        clearPhotos(); // Clear context if no images left
+      }
+      return updatedImages;
     });
   };
 
@@ -165,26 +203,37 @@ const Upload: React.FC = () => {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              height: "100%",
+              height: "100%", // Ensure this div takes full height
+              gap: "10px", // Add gap for spacing between text and image
             }}
             onClick={triggerFilePicker}
           >
+            <IonText color="primary" style={{ textAlign: "center" }}>
+              <p style={{ margin: "0" }}>Tap to Scan</p>{" "}
+              {/* Remove default paragraph margin */}
+            </IonText>
             <img
               src="/Qr Icon.png"
               alt="Scan QR Code"
-              style={{ width: "100px", height: "100px" }}
+              style={{ width: "100px", height: "100px" }} // Remove margin: auto
             />
-            <IonText>
-              <p>Tap to Scan</p>
-            </IonText>
           </div>
         ) : (
           <IonCard>
+            <IonCardHeader>
+              <IonCardTitle>Capture or Upload</IonCardTitle>
+            </IonCardHeader>
             <IonCardContent>
+              <IonText color="medium">
+                <p>
+                  Select one or more images from your device or open the camera
+                  to capture new ones.
+                </p>
+              </IonText>
               <div className="ion-margin-top ion-text-center">
                 <IonButton
                   expand="block"
-                  onClick={triggerFilePicker}
+                  onClick={triggerFilePicker} // This will now go to camera page
                   disabled={uploading}
                 >
                   <IonIcon slot="start" icon={cloudUploadOutline} />
