@@ -1,5 +1,19 @@
 /* src/pages/Upload.css */
 
+.upload-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.back-button {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
 .upload-page-content {
   height: 100%;
 }

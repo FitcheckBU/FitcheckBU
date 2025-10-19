@@ -7,6 +7,7 @@ import {
   IonContent,
   IonPage,
   IonText,
+  IonBackButton,
 } from "@ionic/react";
 import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
@@ -219,13 +220,9 @@ const UploadFlowPage: React.FC = () => {
           {...(!isLibraryMode && { capture: "environment" })}
         />
 
-        {selectedImages.length === 0 ? (
-          <TapToScan
-            onClick={triggerFilePicker}
-            isLibraryMode={isLibraryMode}
-          />
-        ) : (
-          <>
+        <div className="upload-page-header">
+          <IonBackButton defaultHref="/upload" className="back-button" />
+          {selectedImages.length > 0 && (
             <div className="clear-all-button-container">
               <IonButton
                 color="medium"
@@ -236,6 +233,16 @@ const UploadFlowPage: React.FC = () => {
                 Clear all
               </IonButton>
             </div>
+          )}
+        </div>
+
+        {selectedImages.length === 0 ? (
+          <TapToScan
+            onClick={triggerFilePicker}
+            isLibraryMode={isLibraryMode}
+          />
+        ) : (
+          <>
             {latestItem && latestSessionId && (
               <VisionAnalysis item={latestItem} sessionId={latestSessionId} />
             )}
