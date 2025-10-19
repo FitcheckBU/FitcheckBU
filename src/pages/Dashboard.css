@@ -1,0 +1,45 @@
+/* Dashboard page styles */
+.dashboard-container {
+  height: 100%;
+  background-color: #f5e6c8;
+}
+
+.dashboard-header {
+  --background: #1b4d4d;
+  --color: #f5e6c8;
+}
+
+.dashboard-content {
+  --background: #f5e6c8;
+}
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: #1b4d4d;
+  opacity: 0.6;
+  text-align: center;
+  padding: 20px;
+}
+
+.empty-state ion-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
