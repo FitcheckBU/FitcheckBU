@@ -1,12 +1,19 @@
 import { Redirect, Route } from "react-router-dom";
-import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
+import {
+  IonApp,
+  IonRouterOutlet,
+  setupIonicReact,
+  IonPage,
+  IonContent,
+} from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
-import Menu from "./components/Menu";
 import TopNavBar from "./components/TopNavBar";
 import CameraPage from "./pages/CameraPage";
 import { PhotoProvider } from "./context/PhotoContext";
+import Sidebar from "./components/Sidebar";
+import { useState } from "react";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -40,29 +47,40 @@ import "./theme/variables.css";
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <PhotoProvider>
-      <IonReactRouter>
-        <Menu />
-        <TopNavBar />
-        <IonRouterOutlet id="main">
-          <Route exact path="/home">
-            <Home />
-          </Route>
-          <Route exact path="/upload">
-            <Upload />
-          </Route>
-          <Route exact path="/camera">
-            <CameraPage />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/home" />
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </PhotoProvider>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  return (
+    <IonApp>
+      <PhotoProvider>
+        <IonReactRouter>
+          <IonPage>
+            <TopNavBar onMenuClick={() => setSidebarOpen(true)} />
+            <Sidebar
+              isOpen={isSidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
+            <IonContent>
+              <IonRouterOutlet id="main">
+                <Route exact path="/home">
+                  <Home />
+                </Route>
+                <Route exact path="/upload">
+                  <Upload />
+                </Route>
+                <Route exact path="/camera">
+                  <CameraPage />
+                </Route>
+                <Route exact path="/">
+                  <Redirect to="/home" />
+                </Route>
+              </IonRouterOutlet>
+            </IonContent>
+          </IonPage>
+        </IonReactRouter>
+      </PhotoProvider>
+    </IonApp>
+  );
+};
 
 export default App;

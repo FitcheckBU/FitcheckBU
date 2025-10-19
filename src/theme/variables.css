@@ -2,6 +2,7 @@
 http://ionicframework.com/docs/theming/ */
 
 :root {
+  --top-navbar-height: 60px;
   --ion-color-primary: #023e38;
   --ion-color-primary-rgb: 2, 62, 56;
   --ion-color-primary-contrast: #ffffff;

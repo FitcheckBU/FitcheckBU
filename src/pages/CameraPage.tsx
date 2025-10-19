@@ -11,6 +11,7 @@ import {
 import { cameraReverse, checkmarkDoneCircle } from "ionicons/icons";
 // import { saveCapturedPhotos } from '../lib/photo-storage'; // No longer needed
 import { usePhotoContext } from "../context/PhotoContext";
+import "./CameraPage.css";
 
 const CameraPage: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -102,119 +103,75 @@ const CameraPage: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent
-        scroll-y="false"
-        style={{
-          "--background": "#000",
-          "--padding-start": "0",
-          "--padding-end": "0",
-          "--padding-top": "0",
-          "--padding-bottom": "0",
-        }}
-      >
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            height: "100vh",
-            overflow: "hidden",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+      <IonContent scroll-y="false" className="camera-content">
+        <div className="camera-container">
           <canvas ref={canvasRef} style={{ display: "none" }} />
 
           <video
             ref={videoRef}
             autoPlay
             playsInline
-            style={{ width: "100%", height: "100%", objectFit: "cover" }} // Video will fill the 100vh container
+            className="camera-video-preview"
           />
+
+          {/* Top half for spacing */}
+          <div className="camera-top-spacer" />
 
           {/* Scan Overlay */}
-          <img
-            src="/Scan.png"
-            alt="Scan Overlay"
-            style={{
-              position: "absolute",
-              top: "45%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: "70%", // Adjust size as needed
-              maxWidth: "300px",
-              opacity: "0.7",
-              pointerEvents: "none", // Allow interaction with elements behind it
-            }}
-          />
+          <div className="camera-overlay-container">
+            <img
+              src="/Scan.png"
+              alt="Scan Overlay"
+              className="camera-overlay-image"
+            />
+          </div>
 
-          {/* Top-Left Close Button */}
-          <IonFab
-            vertical="top"
-            horizontal="start"
-            slot="fixed"
-            style={{ marginTop: "50px" }}
-          >
-            <IonFabButton onClick={handleBack} color="light" size="small">
-              <img
-                src="/Close.png"
-                alt="Close"
-                style={{ width: "24px", height: "24px" }}
-              />
-            </IonFabButton>
-          </IonFab>
-
-          {/* Top-Right Flip Camera Button */}
-          <IonFab
-            vertical="top"
-            horizontal="end"
-            slot="fixed"
-            style={{ marginTop: "50px" }}
-          >
-            <IonFabButton onClick={handleFlipCamera} color="light" size="small">
-              <IonIcon icon={cameraReverse} />
-            </IonFabButton>
-          </IonFab>
-
-          {/* Bottom Center Take Photo Button */}
-          <IonFab
-            vertical="bottom"
-            horizontal="center"
-            slot="fixed"
-            style={{ marginBottom: "100px" }}
-          >
-            <IonFabButton
-              onClick={handleTakePhoto}
-              disabled={isCapturing} // Disable button when capturing
-              style={{
-                "--background": "white",
-                "--background-activated": "lightgray",
-                "--border-color": "grey",
-                "--border-style": "solid",
-                "--border-width": "4px",
-                "--box-shadow": "none",
-                width: "70px",
-                height: "70px",
-                borderRadius: "50%",
-              }}
-            ></IonFabButton>
-          </IonFab>
-
-          {/* Bottom Right Done Button (if photos taken) */}
-          {photos.length > 0 && (
-            <IonFab
-              vertical="bottom"
-              horizontal="end"
-              slot="fixed"
-              style={{ marginBottom: "100px" }}
-            >
-              <IonFabButton onClick={handleDone} color="success">
-                <IonIcon icon={checkmarkDoneCircle} />
-                <IonText>{photos.length}</IonText>
-              </IonFabButton>
+          {/* Bottom half for button positioning */}
+          <div className="camera-bottom-section">
+            {/* Vertically Centered Take Photo Button */}
+            <IonFab>
+              <IonFabButton
+                onClick={handleTakePhoto}
+                disabled={isCapturing} // Disable button when capturing
+                className="take-photo-button"
+              ></IonFabButton>
             </IonFab>
-          )}
+
+            {/* Aligned Done Button (if photos taken) */}
+            {photos.length > 0 && (
+              <IonFab className="done-button-fab">
+                <IonFabButton onClick={handleDone} color="success">
+                  <IonIcon icon={checkmarkDoneCircle} />
+                  <IonText>{photos.length}</IonText>
+                </IonFabButton>
+              </IonFab>
+            )}
+          </div>
         </div>
+
+        {/* Top-Left Close Button */}
+        <IonFab
+          vertical="top"
+          horizontal="start"
+          slot="fixed"
+          className="camera-top-button"
+        >
+          <IonFabButton onClick={handleBack} color="light" size="small">
+            <img src="/Close.png" alt="Close" className="close-button-icon" />
+          </IonFabButton>
+        </IonFab>
+
+        {/* Top-Right Flip Camera Button */}
+        <IonFab
+          vertical="top"
+          horizontal="end"
+          slot="fixed"
+          className="camera-top-button"
+        >
+          <IonFabButton onClick={handleFlipCamera} color="light" size="small">
+            <IonIcon icon={cameraReverse} />
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );

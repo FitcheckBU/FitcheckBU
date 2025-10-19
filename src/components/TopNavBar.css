@@ -1,4 +1,10 @@
 .top-navbar {
+  height: var(--top-navbar-height);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;

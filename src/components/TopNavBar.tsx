@@ -1,8 +1,12 @@
-import { IonHeader, IonToolbar, IonButtons, IonMenuButton } from "@ionic/react";
+import { IonToolbar, IonButtons, IonButton } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./TopNavBar.css";
 
-export const TopNavBar: React.FC = () => {
+interface TopNavBarProps {
+  onMenuClick: () => void;
+}
+
+export const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuClick }) => {
   const history = useHistory();
 
   const goHome = () => {
@@ -10,7 +14,7 @@ export const TopNavBar: React.FC = () => {
   };
 
   return (
-    <IonHeader>
+    <div className="top-navbar">
       <IonToolbar color="primary">
         <img
           src="/Logo.png"
@@ -19,12 +23,12 @@ export const TopNavBar: React.FC = () => {
           onClick={goHome}
         />
         <IonButtons slot="end">
-          <IonMenuButton>
+          <IonButton onClick={onMenuClick}>
             <img src="/Hamburger.png" alt="Menu" className="navbar-hamburger" />
-          </IonMenuButton>
+          </IonButton>
         </IonButtons>
       </IonToolbar>
-    </IonHeader>
+    </div>
   );
 };
 
