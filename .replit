@@ -3,6 +3,7 @@ modules = ["nodejs-20"]
 [[ports]]
 localPort = 5173
 externalPort = 5173
+exposeLocalhost = true
 
 [[ports]]
 localPort = 5174
@@ -19,3 +20,6 @@ channel = "stable-25_05"
 build = ["sh", "-c", "npm run build"]
 run = ["sh", "-c", "npx serve dist -l 43179"]
 deploymentTarget = "cloudrun"
+
+[run]
+args = ["npm", "run", "dev"]
