@@ -5,6 +5,8 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import fs from "fs"; // Import Node.js File System module
 
+const isProduction = process.env.NODE_ENV === "production";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -14,10 +16,14 @@ export default defineConfig({
   ],
   server: {
     host: "0.0.0.0", // Ensures it's accessible over network IP
-    https: {
-      key: fs.readFileSync("./localhost+1-key.pem"),
-      cert: fs.readFileSync("./localhost+1.pem"),
-    },
+    ...(isProduction
+      ? {}
+      : {
+          https: {
+            key: fs.readFileSync("./localhost+1-key.pem"),
+            cert: fs.readFileSync("./localhost+1.pem"),
+          },
+        }),
   },
   test: {
     globals: true,
