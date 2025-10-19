@@ -18,10 +18,6 @@ export default defineConfig({
       key: fs.readFileSync("./localhost+1-key.pem"),
       cert: fs.readFileSync("./localhost+1.pem"),
     },
-    hmr: {
-      // Disable HMR overlay to prevent potential SSL handshake issues
-      overlay: false,
-    },
   },
   test: {
     globals: true,
