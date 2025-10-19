@@ -1,73 +1,17 @@
-/* src/pages/Upload.css */
-
-.upload-page-content {
-  height: 100%;
-}
-
-.hidden-input {
-  display: none;
-}
-
-.tap-to-scan-container {
+.upload-selection-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100%;
-  gap: 10px;
+  padding: 0 20px;
 }
 
-.tap-to-scan-text {
-  text-align: center;
-}
-
-.tap-to-scan-text p {
-  margin: 0;
-}
-
-.qr-icon {
-  width: 100px;
-  height: 100px;
-}
-
-.clear-all-button-container {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.vision-analysis-labels {
-  display: block;
-  white-space: pre-wrap;
-}
-
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.image-grid-item {
-  border-radius: 12px;
-  padding: 8px;
-  position: relative;
-}
-
-.image-grid-item-img {
+.upload-selection-button {
+  margin: 10px 0;
   width: 100%;
-  border-radius: 4px;
-  object-fit: cover;
-  height: 100%;
-}
-
-.remove-image-icon {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  padding: 4px;
+  max-width: 400px;
+  --border-radius: 15px;
+  height: 50px;
+  font-size: 1.1rem;
 }

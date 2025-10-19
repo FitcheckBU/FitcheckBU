@@ -8,12 +8,14 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
-import Upload from "./pages/Upload";
+// import Upload from "./pages/Upload";
 import TopNavBar from "./components/TopNavBar";
 import CameraPage from "./pages/CameraPage";
 import { PhotoProvider } from "./context/PhotoContext";
 import Sidebar from "./components/Sidebar";
 import { useState } from "react";
+import Upload from "./pages/Upload";
+import UploadFlow from "./pages/UploadFlowPage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -67,6 +69,9 @@ const App: React.FC = () => {
                 </Route>
                 <Route exact path="/upload">
                   <Upload />
+                </Route>
+                <Route exact path="/upload-flow">
+                  <UploadFlow />
                 </Route>
                 <Route exact path="/camera">
                   <CameraPage />
