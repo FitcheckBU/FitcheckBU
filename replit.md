@@ -2,7 +2,7 @@
 
 ## Overview
 
-FitcheckBU is a mobile-first inventory management application for fashion items, built with Ionic React and Firebase. The application enables users to photograph clothing items, upload them to cloud storage, and automatically analyze them using Google Cloud Vision API. The system generates detailed metadata about fashion items including category, brand, color, condition, and style tags, creating a searchable digital inventory for fashion resale or personal collection management.
+FitcheckBU is a mobile-first inventory management application for secondhand clothing sellers, built using the Ionic React framework. The app enables users to upload clothing images, automatically analyze them using Google Cloud Vision API, and manage their inventory. The application supports both web and native mobile platforms through Capacitor, with a focus on providing a streamlined experience for cataloging and selling vintage/secondhand fashion items.
 
 ## User Preferences
 
@@ -12,119 +12,167 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend Architecture
 
-**Framework Choice: Ionic React**
-- **Problem**: Need a cross-platform mobile application that works on iOS, Android, and web with a single codebase
-- **Solution**: Ionic React with Capacitor for native mobile capabilities
-- **Rationale**: Provides native-like UI components, access to device features (camera, storage), and seamless deployment across platforms
-- **Trade-offs**: Slightly less performant than native apps, but significantly faster development cycle
+**Framework & UI Library**
+- **Ionic React v8.5**: Chosen as the primary UI framework to provide native-like mobile experiences with web technologies
+- **React 19**: Modern React version with latest features and performance improvements
+- **TypeScript**: Strict typing enabled for type safety and better developer experience
+- **Vite**: Build tool for fast development and optimized production builds
 
-**State Management: React Hooks**
-- **Problem**: Managing component state and side effects for file uploads and real-time data
-- **Solution**: Built-in React hooks (useState, useEffect, useRef) for local component state
-- **Rationale**: Sufficient for current application complexity; avoids overhead of external state management libraries
-- **Trade-offs**: May need Redux or Zustand if state sharing across components becomes complex
+**Routing & Navigation**
+- **React Router v5**: Client-side routing with React Router DOM
+- **Ionic Router**: Integration layer between Ionic and React Router for mobile navigation patterns
+- **Tab-based Navigation**: Primary navigation structure using IonTabs with Home, Upload, and Dashboard routes
 
-**Routing: React Router v5**
-- **Problem**: Navigation between Upload and Home pages
-- **Solution**: React Router DOM v5 with Ionic's router integration
-- **Rationale**: Industry standard for React applications, well-integrated with Ionic
-- **Trade-offs**: Using older v5 instead of v6 for Ionic compatibility
+**State Management**
+- Local component state using React hooks (useState, useEffect)
+- Real-time Firestore listeners for inventory synchronization
+- Session-based upload tracking using refs to prevent memory leaks
 
-**Build System: Vite**
-- **Problem**: Fast development experience and optimized production builds
-- **Solution**: Vite with React plugin and legacy browser support
-- **Rationale**: Significantly faster hot module replacement than webpack, modern ESM-based architecture
-- **Trade-offs**: Requires polyfills for older browsers (handled via @vitejs/plugin-legacy)
+**Mobile Capabilities**
+- **Capacitor v7**: Native runtime for deploying to iOS/Android
+- Plugins: App, Haptics, Keyboard, Status Bar for native device features
+- Progressive Web App (PWA) support with manifest.json
 
 ### Backend Architecture
 
-**Serverless Functions: Firebase Cloud Functions**
-- **Problem**: Need server-side processing for image analysis without managing infrastructure
-- **Solution**: Firebase Cloud Functions (v2) with TypeScript
-- **Rationale**: Serverless architecture scales automatically, integrates seamlessly with Firebase ecosystem
-- **Trade-offs**: Cold start latency, vendor lock-in to Firebase
+**Firebase Services**
+- **Firebase Authentication**: User authentication and authorization (configured but implementation in progress)
+- **Cloud Firestore**: NoSQL document database for inventory items
+  - Collection: `items` storing InventoryItem documents
+  - Real-time listeners for live updates
+  - Server-side timestamps for data consistency
+- **Cloud Storage**: Image storage with path structure `uploads/{sessionId}/{fileName}`
+- **Cloud Functions v2**: Serverless backend processing (Node.js 22 runtime)
 
 **Image Processing Pipeline**
-- **Problem**: Analyze uploaded fashion photos to extract metadata automatically
-- **Solution**: Cloud Functions trigger on Storage object finalization, invoke Google Cloud Vision API for label detection
-- **Architecture Flow**:
-  1. User uploads images to Firebase Storage (`uploads/{sessionId}/{filename}`)
-  2. Cloud Function `onBatchImageUpload` triggers on file creation
-  3. Session tracking accumulates related images (currently set to 1 image minimum)
-  4. After 5-second delay (for GCS replication), Vision API analyzes images
-  5. Results written to Firestore as inventory items
-- **Rationale**: Event-driven architecture ensures processing happens automatically without client polling
-- **Trade-offs**: 5-second artificial delay to avoid race conditions; could be optimized with better state management
+- **Google Cloud Vision API**: Automatic image analysis and labeling
+- **Batch Upload Pattern**: Groups multiple images by sessionId for efficient processing
+- **Delayed Processing**: 5-second delay after upload to ensure GCS replication before Vision API analysis
+- **Session Tracking**: In-memory tracking of related images within upload sessions
 
-**Session-Based Upload Tracking**
-- **Problem**: Group multiple images from a single upload session together
-- **Solution**: In-memory session tracker using UUID-based session IDs
-- **Rationale**: Lightweight approach for MVP; allows batch processing of related images
-- **Trade-offs**: Sessions lost on function cold starts; should migrate to Firestore or Redis for production
+**Data Model**
+```typescript
+InventoryItem {
+  id: string (Firestore document ID)
+  name: string
+  category: string
+  brand: string
+  color: string
+  condition: string
+  price: number
+  decade: string
+  style: string
+  isSold: boolean
+  dateAdded: Timestamp
+  sessionId: string (upload session identifier)
+  imageStoragePaths: string[] (Cloud Storage paths)
+  labels: string[] (Vision API generated tags)
+  description?: string (optional)
+}
+```
 
-### Data Storage
+### Application Features
 
-**Primary Database: Cloud Firestore**
-- **Problem**: Store inventory items with real-time sync capabilities
-- **Solution**: Firestore NoSQL database with optional custom database ID support
-- **Schema Design**:
-  - Collection: `items`
-  - Document structure: InventoryItem interface with metadata (name, category, brand, color, condition, price, decade, style, labels, etc.)
-  - Includes Vision API labels, storage paths, session IDs, and timestamps
-- **Rationale**: Real-time updates enable instant UI feedback; NoSQL structure accommodates evolving fashion metadata schema
-- **Trade-offs**: No relational queries; must denormalize data for complex queries
+**Upload Flow**
+1. User selects multiple images via file input
+2. Images previewed locally with size validation
+3. Single upload action triggers batch upload to Cloud Storage
+4. Cloud Function monitors uploads by session
+5. Vision API analyzes images and extracts labels
+6. Firestore document created with metadata and Vision labels
+7. Real-time listener updates UI with processed item
 
-**File Storage: Firebase Cloud Storage**
-- **Problem**: Store uploaded fashion photographs securely and scalably
-- **Solution**: Firebase Storage with organized path structure (`uploads/{sessionId}/{filename}`)
-- **Rationale**: Integrated with Firebase Auth for security rules, CDN-backed for fast image delivery
-- **Trade-offs**: Costs scale with storage and bandwidth; no built-in image optimization
+**Inventory Management**
+- Dashboard view with search and filter capabilities
+- Filter by: sizes, sexes, colors, materials
+- Item detail modal with full image gallery
+- Mark items as sold functionality
+- Pull-to-refresh for data synchronization
 
-**Real-Time Data Sync**
-- **Problem**: Update UI immediately when Cloud Functions complete image analysis
-- **Solution**: Firestore real-time listeners (onSnapshot) in React components
-- **Rationale**: Provides seamless user experience without manual refresh
-- **Trade-offs**: Increased read operations cost; potential memory leaks if listeners not cleaned up properly
+**Responsive Design**
+- Mobile-first approach with Ionic components
+- Dark mode support via CSS system preference detection
+- Figma-aligned styling for consistent brand experience
 
-### Authentication & Authorization
+### Testing Strategy
 
-**Authentication: Firebase Authentication**
-- **Problem**: Secure user accounts and data access
-- **Solution**: Firebase Auth SDK integrated in frontend
-- **Current State**: Infrastructure configured but authentication flow not yet implemented
-- **Rationale**: Supports multiple auth providers, integrates with Firestore security rules
-- **Trade-offs**: Vendor lock-in; requires careful security rule configuration
+**Unit Testing**
+- Vitest for component and service testing
+- React Testing Library for component interaction tests
+- JSDOM environment for DOM simulation
+- Coverage reporting with v8
 
-### External Dependencies
+**E2E Testing**
+- Cypress for end-to-end testing
+- Base URL: localhost:5173 (Vite dev server)
 
-**Google Cloud Vision API**
-- **Purpose**: Automatic image analysis for fashion item categorization and labeling
-- **Integration**: Called from Cloud Functions using `@google-cloud/vision` SDK
-- **Authentication**: Service account credentials (managed by Firebase/GCP)
-- **Features Used**: Label detection for identifying clothing attributes
-- **Rationale**: Industry-leading computer vision accuracy for object and attribute recognition
+**Quality Assurance**
+- ESLint 9 with flat config
+- TypeScript strict mode
+- Prettier for code formatting
+- Husky for pre-commit hooks
 
-**Firebase Platform**
-- **Services Used**:
-  - Authentication (configured, not yet active)
-  - Cloud Firestore (primary database)
-  - Cloud Storage (image storage)
-  - Cloud Functions (serverless backend)
-- **Authentication**: Environment variables for client SDK, service accounts for admin SDK
-- **Rationale**: Fully integrated platform reduces operational complexity
+### Build & Deployment
 
-**Capacitor Native Bridge**
-- **Purpose**: Access native device features (camera, file system, status bar, haptics, keyboard)
-- **Plugins Used**: @capacitor/app, @capacitor/core, @capacitor/haptics, @capacitor/keyboard, @capacitor/status-bar
-- **Rationale**: Provides consistent API for native features across iOS and Android
+**Development**
+- Vite dev server with HMR
+- `--host` flag for mobile device testing on local network
+- Firebase emulators for local Cloud Functions testing
 
-**Development & Testing Tools**
-- **Testing**: Vitest for unit tests, Testing Library for component tests, Cypress for E2E tests
-- **Linting**: ESLint 9 with flat config, TypeScript ESLint, React plugins
-- **Formatting**: Prettier with Husky pre-commit hooks
-- **Rationale**: Comprehensive testing and code quality tooling ensures maintainability
+**Production**
+- TypeScript compilation + Vite production build
+- Legacy browser support via @vitejs/plugin-legacy
+- Vercel deployment with SPA routing configuration
+- Firebase Functions deployment to us-east1 region
 
-**Deployment**
-- **Hosting**: Configured for Vercel with SPA fallback routing
-- **Mobile**: Capacitor builds for iOS/Android app stores
-- **Rationale**: Multi-platform deployment from single codebase
+## External Dependencies
+
+### Third-Party Services
+
+**Google Cloud Platform**
+- **Cloud Vision API v5.3.4**: Image content analysis, object detection, and label generation
+- Credentials managed through Firebase Admin SDK
+- Regional deployment: us-east1
+
+**Firebase (v12.3.0)**
+- Authentication: User management and session handling
+- Firestore: Real-time NoSQL database with optional database ID configuration
+- Cloud Storage: Image and asset storage
+- Cloud Functions: Serverless compute for background processing
+- Admin SDK v13.5.0 for privileged server-side operations
+
+### NPM Packages
+
+**Core Dependencies**
+- `ionicons` v7.4.0: Icon library
+- `uuid` v13.0.0: Session ID generation
+- `react-router`/`react-router-dom` v5.3.4: Client routing
+
+**Development Tools**
+- `eslint` v9.37.0 with TypeScript support
+- `cypress` v13.17.0: E2E testing framework
+- `vitest` v3.2.4: Unit testing with coverage
+- `firebase-functions-test` v3.1.0: Cloud Functions testing utilities
+
+### Configuration Requirements
+
+**Environment Variables**
+```
+VITE_FIREBASE_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_PROJECT_ID
+VITE_FIREBASE_STORAGE_BUCKET
+VITE_FIREBASE_MESSAGING_SENDER_ID
+VITE_FIREBASE_APP_ID
+VITE_FIRESTORE_DATABASE_ID (optional)
+VITE_FIREBASE_MEASUREMENT_ID (optional)
+VITE_FIREBASE_DATABASE_URL (optional)
+```
+
+**Firebase Functions Parameters**
+- `FIRESTORE_DATABASE_ID`: Optional Firestore database identifier for multi-database setups
+
+### Browser Compatibility
+- Modern browsers with ES2022 support
+- Legacy browser support through polyfills
+- Mobile Safari and Chrome optimized
