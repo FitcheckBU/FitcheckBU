@@ -57,4 +57,4 @@ To get started with the FitcheckBU application, follow these steps:
     npm run dev
     ```
 
-    - To access the app from a phone on the same network, start the dev server with `npm run dev -- --host` and open the shown network URL on your device. The `host: '0.0.0.0'` in `vite.config.ts` makes it accessible on the network.
+    - To access the app from a phone on the same network, start the dev server with `npm run dev -- --host` and open the shown network URL on your device.
