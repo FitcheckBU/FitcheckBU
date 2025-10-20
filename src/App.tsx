@@ -1,5 +1,15 @@
 import { Redirect, Route } from "react-router-dom";
-import { IonApp, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, setupIonicReact, IonPage, IonContent } from "@ionic/react";
+import {
+  IonApp,
+  IonIcon,
+  IonLabel,
+  IonRouterOutlet,
+  IonTabBar,
+  IonTabButton,
+  setupIonicReact,
+  IonPage,
+  IonContent,
+} from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { homeOutline, cloudUploadOutline, gridOutline } from "ionicons/icons";
 import Home from "./pages/Home";
@@ -84,11 +94,19 @@ const App: React.FC = () => {
                   <IonIcon icon={homeOutline} />
                   <IonLabel>Home</IonLabel>
                 </IonTabButton>
-                <IonTabButton tab="upload" href="/upload" data-testid="tab-upload">
+                <IonTabButton
+                  tab="upload"
+                  href="/upload"
+                  data-testid="tab-upload"
+                >
                   <IonIcon icon={cloudUploadOutline} />
                   <IonLabel>Upload</IonLabel>
                 </IonTabButton>
-                <IonTabButton tab="dashboard" href="/dashboard" data-testid="tab-dashboard">
+                <IonTabButton
+                  tab="dashboard"
+                  href="/dashboard"
+                  data-testid="tab-dashboard"
+                >
                   <IonIcon icon={gridOutline} />
                   <IonLabel>Dashboard</IonLabel>
                 </IonTabButton>
