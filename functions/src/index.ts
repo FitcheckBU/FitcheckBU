@@ -2,19 +2,16 @@ import vision, { protos } from "@google-cloud/vision";
 import * as admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
-import { defineString } from "firebase-functions/params";
 import { onObjectFinalized } from "firebase-functions/v2/storage";
 import {
   onDocumentCreated,
   onDocumentDeleted,
 } from "firebase-functions/v2/firestore";
 
-const firestoreDatabaseId = defineString("FIRESTORE_DATABASE_ID");
 const visionClient = new vision.ImageAnnotatorClient();
-const firestore = firestoreDatabaseId.value()
-  ? getFirestore(admin.initializeApp(), firestoreDatabaseId.value())
-  : getFirestore(admin.initializeApp());
-const storage = getStorage();
+const app = admin.initializeApp();
+const firestore = getFirestore(app, "fitcheck-db");
+const storage = getStorage(app);
 
 // Temporary in-memory session tracking
 const sessionTracker: Record<string, string[]> = {}; // This keeps track of all images associated in one session
@@ -26,7 +23,11 @@ export const onBatchImageUpload = onObjectFinalized(
     const filePath = object.name;
     const bucketName = object.bucket;
 
-    if (!filePath?.startsWith("uploads/") && !filePath?.startsWith("temp/"))
+    if (
+      !filePath?.startsWith("uploads/") &&
+      !filePath?.startsWith("temp/") &&
+      !filePath?.startsWith("items/")
+    )
       return;
     if (!object.contentType?.startsWith("image/")) return;
 
@@ -109,37 +110,57 @@ export const onBatchImageUpload = onObjectFinalized(
       .map(([description]) => description)
       .slice(0, 10);
 
-    // Update Firestore document linked to this session
+    // Update Firestore document linked to this session or itemId
     try {
-      const snapshot = await firestore
-        .collection("items")
-        .where("sessionId", "==", sessionId)
-        .limit(1)
-        .get();
+      let docRef = null;
 
-      if (snapshot.empty) {
-        console.warn(`No inventory item found for session ${sessionId}`);
-      } else {
-        const docRef = snapshot.docs[0].ref;
-        const updatePayload: Record<string, unknown> = {
-          labels: labelList,
-        };
+      // Check if we're dealing with moved images in items/ folder
+      if (sessionTracker[sessionId][0].startsWith("items/")) {
+        // Extract itemId from path: items/{itemId}/filename.jpg
+        const itemId = sessionTracker[sessionId][0].split("/")[1];
+        docRef = firestore.collection("items").doc(itemId);
+        const doc = await docRef.get();
 
-        const currentDescription = snapshot.docs[0].get("description");
-        if (!currentDescription && labelList.length > 0) {
-          updatePayload.description = labelList.join(", ");
+        if (!doc.exists) {
+          console.warn(`No inventory item found for itemId ${itemId}`);
+          delete sessionTracker[sessionId];
+          return;
         }
+        console.log(`Found item by itemId: ${itemId}`);
+      } else {
+        // Original logic: search by sessionId for temp/ folder
+        const snapshot = await firestore
+          .collection("items")
+          .where("sessionId", "==", sessionId)
+          .limit(1)
+          .get();
 
-        await docRef.update(updatePayload);
-        console.log(
-          `Updated item ${docRef.id} with ${labelList.length} labels.`,
-        );
+        if (snapshot.empty) {
+          console.warn(`No inventory item found for session ${sessionId}`);
+          delete sessionTracker[sessionId];
+          return;
+        }
+        docRef = snapshot.docs[0].ref;
+        console.log(`Found item by sessionId: ${sessionId}`);
       }
-    } catch (updateError) {
-      console.error(
-        `Failed to update inventory item for session ${sessionId}:`,
-        updateError,
+
+      // Update with labels
+      const updatePayload: Record<string, unknown> = {
+        labels: labelList,
+      };
+
+      const currentDoc = await docRef.get();
+      const currentDescription = currentDoc.get("description");
+      if (!currentDescription && labelList.length > 0) {
+        updatePayload.description = labelList.join(", ");
+      }
+
+      await docRef.update(updatePayload);
+      console.log(
+        `✅ Updated item ${docRef.id} with ${labelList.length} labels.`,
       );
+    } catch (updateError) {
+      console.error(`Failed to update inventory item:`, updateError);
     }
 
     // Cleanup tracker (to avoid duplicate runs)
@@ -153,6 +174,7 @@ export const processNewItem = onDocumentCreated(
   {
     document: "items/{itemId}",
     region: "us-east1",
+    database: "fitcheck-db",
   },
   async (event) => {
     const itemId = event.params.itemId;
@@ -228,11 +250,12 @@ export const processNewItem = onDocumentCreated(
   },
 );
 
-// NEW: Clean up images when item is deleted
+// Clean up images when item is deleted
 export const cleanupItemImages = onDocumentDeleted(
   {
     document: "items/{itemId}",
     region: "us-east1",
+    database: "fitcheck-db",
   },
   async (event) => {
     const itemId = event.params.itemId;
