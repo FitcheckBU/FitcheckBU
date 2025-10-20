@@ -1,6 +1,9 @@
 import {
-  IonCard,
   IonIcon,
+  IonItemSliding,
+  IonItem,
+  IonItemOptions,
+  IonItemOption,
 } from "@ionic/react";
 import { createOutline, eyeOutline } from "ionicons/icons";
 import { InventoryItem } from "../lib/inventoryService";
@@ -40,66 +43,73 @@ const ItemCard: React.FC<ItemCardProps> = ({
     ? "figma-item-card sold" 
     : "figma-item-card";
 
-  return (
-    <IonCard
-      className={cardClassName}
-      button={true}
-      onClick={onClick}
-      data-testid={`card-item-${item.id}`}
-    >
-      <div className="figma-card-content">
-        <div className="figma-image-container">
-          {imageUrl ? (
-            <img src={imageUrl} alt={item.name} className="figma-item-image" />
-          ) : (
-            <div className="figma-image-placeholder">
-              <span>No Image</span>
-            </div>
-          )}
-        </div>
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("Edit item:", item.id);
+  };
 
-        <div className="figma-item-info">
-          <div className="figma-item-name">{item.name || item.brand || "Unknown Item"}</div>
-          <div className="figma-item-details">
-            <div className="figma-detail-row">
-              <span className="figma-detail-label">Size:</span>
-              <span className="figma-detail-value">Medium</span>
-            </div>
-            <div className="figma-detail-row">
-              <span className="figma-detail-label">Condition:</span>
-              <span className="figma-detail-value">{item.condition || "Worn"}</span>
-            </div>
-            <div className="figma-detail-row">
-              <span className="figma-detail-label">Color:</span>
-              <span className="figma-detail-value">{item.color || "Unknown"}</span>
+  const handleView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClick?.();
+  };
+
+  return (
+    <IonItemSliding>
+      <IonItem
+        button={true}
+        onClick={onClick}
+        lines="none"
+        className={cardClassName}
+        data-testid={`card-item-${item.id}`}
+      >
+        <div className="figma-card-content">
+          <div className="figma-image-container">
+            {imageUrl ? (
+              <img src={imageUrl} alt={item.name} className="figma-item-image" />
+            ) : (
+              <div className="figma-image-placeholder">
+                <span>No Image</span>
+              </div>
+            )}
+          </div>
+
+          <div className="figma-item-info">
+            <div className="figma-item-name">{item.name || item.brand || "Unknown Item"}</div>
+            <div className="figma-item-details">
+              <div className="figma-detail-row">
+                <span className="figma-detail-label">Size:</span>
+                <span className="figma-detail-value">Medium</span>
+              </div>
+              <div className="figma-detail-row">
+                <span className="figma-detail-label">Condition:</span>
+                <span className="figma-detail-value">{item.condition || "Worn"}</span>
+              </div>
+              <div className="figma-detail-row">
+                <span className="figma-detail-label">Color:</span>
+                <span className="figma-detail-value">{item.color || "Unknown"}</span>
+              </div>
             </div>
           </div>
         </div>
+      </IonItem>
 
-        <div className="figma-item-actions">
-          <button 
-            className="figma-action-button"
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log("Edit item:", item.id);
-            }}
-            data-testid={`button-edit-${item.id}`}
-          >
-            <IonIcon icon={createOutline} />
-          </button>
-          <button 
-            className="figma-action-button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick?.();
-            }}
-            data-testid={`button-view-${item.id}`}
-          >
-            <IonIcon icon={eyeOutline} />
-          </button>
-        </div>
-      </div>
-    </IonCard>
+      <IonItemOptions side="end">
+        <IonItemOption 
+          color="primary"
+          onClick={handleView}
+          data-testid={`button-view-${item.id}`}
+        >
+          <IonIcon icon={eyeOutline} slot="icon-only" />
+        </IonItemOption>
+        <IonItemOption 
+          color="warning"
+          onClick={handleEdit}
+          data-testid={`button-edit-${item.id}`}
+        >
+          <IonIcon icon={createOutline} slot="icon-only" />
+        </IonItemOption>
+      </IonItemOptions>
+    </IonItemSliding>
   );
 };
 

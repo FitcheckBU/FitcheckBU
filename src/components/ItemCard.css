@@ -1,21 +1,22 @@
 /* Item Card Styles - Matching Figma */
 
-.figma-item-card {
-  margin: 0 0 12px 0;
+ion-item.figma-item-card {
+  --background: #FFFFFF;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  margin: 0;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  background: #FFFFFF;
-  --background: #FFFFFF;
-  padding: 0;
   border-left: 4px solid #3B82F6;
-  position: relative;
+  overflow: hidden;
 }
 
-.figma-item-card.sold {
+ion-item.figma-item-card.sold {
   border-left-color: #EF4444;
 }
 
-.figma-item-card.pending {
+ion-item.figma-item-card.pending {
   border-left-color: #F59E0B;
 }
 
@@ -91,33 +92,18 @@
   font-weight: 500;
 }
 
-.figma-item-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-shrink: 0;
+/* Swipeable action styles handled by Ionic */
+ion-item-sliding {
+  margin-bottom: 12px;
 }
 
-.figma-action-button {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  border: 1px solid #D1D5DB;
-  background: #FFFFFF;
+ion-item-option {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  padding: 0;
+  min-width: 70px;
 }
 
-.figma-action-button:active {
-  background: #F3F4F6;
-  transform: scale(0.95);
-}
-
-.figma-action-button ion-icon {
-  font-size: 20px;
-  color: #1F2937;
+ion-item-option ion-icon {
+  font-size: 24px;
 }

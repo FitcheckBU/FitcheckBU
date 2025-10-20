@@ -12,7 +12,7 @@ import {
   IonRefresherContent,
   RefresherEventDetail,
 } from "@ionic/react";
-import { arrowBackOutline, funnelOutline } from "ionicons/icons";
+import { funnelOutline } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import { getAllItems, InventoryItem } from "../lib/inventoryService";
 import ItemCard from "../components/ItemCard";
@@ -122,11 +122,6 @@ const Dashboard: React.FC = () => {
     <IonPage>
       <IonHeader className="dashboard-header">
         <IonToolbar className="dashboard-toolbar">
-          <IonButtons slot="start">
-            <IonButton>
-              <IonIcon icon={arrowBackOutline} className="header-icon" />
-            </IonButton>
-          </IonButtons>
           <IonTitle className="header-title">User Dashboard</IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => setShowFilterSheet(true)}>
