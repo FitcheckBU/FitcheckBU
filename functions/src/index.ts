@@ -1,14 +1,20 @@
 import vision, { protos } from "@google-cloud/vision";
 import * as admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import { defineString } from "firebase-functions/params";
 import { onObjectFinalized } from "firebase-functions/v2/storage";
+import {
+  onDocumentCreated,
+  onDocumentDeleted,
+} from "firebase-functions/v2/firestore";
 
 const firestoreDatabaseId = defineString("FIRESTORE_DATABASE_ID");
 const visionClient = new vision.ImageAnnotatorClient();
 const firestore = firestoreDatabaseId.value()
   ? getFirestore(admin.initializeApp(), firestoreDatabaseId.value())
   : getFirestore(admin.initializeApp());
+const storage = getStorage();
 
 // Temporary in-memory session tracking
 const sessionTracker: Record<string, string[]> = {}; // This keeps track of all images associated in one session
@@ -20,7 +26,8 @@ export const onBatchImageUpload = onObjectFinalized(
     const filePath = object.name;
     const bucketName = object.bucket;
 
-    if (!filePath?.startsWith("uploads/")) return;
+    if (!filePath?.startsWith("uploads/") && !filePath?.startsWith("temp/"))
+      return;
     if (!object.contentType?.startsWith("image/")) return;
 
     const [_, sessionId, fileName] = filePath.split("/");
@@ -138,5 +145,126 @@ export const onBatchImageUpload = onObjectFinalized(
     // Cleanup tracker (to avoid duplicate runs)
     delete sessionTracker[sessionId];
     console.log(`🧹 Cleaned up session tracker for ${sessionId}`);
+  },
+);
+
+// Move images from temp to permanent location after item creation
+export const processNewItem = onDocumentCreated(
+  {
+    document: "items/{itemId}",
+    region: "us-east1",
+  },
+  async (event) => {
+    const itemId = event.params.itemId;
+    const data = event.data?.data();
+
+    if (!data?.imageStoragePaths || data.imageStoragePaths.length === 0) {
+      console.log(`No images to process for item ${itemId}`);
+      return;
+    }
+
+    // Only process if images are still in temp folder
+    const firstPath = data.imageStoragePaths[0];
+    if (!firstPath.startsWith("temp/")) {
+      console.log(`Images already processed for item ${itemId}`);
+      return;
+    }
+
+    console.log(
+      `Processing ${data.imageStoragePaths.length} images for item ${itemId}`,
+    );
+
+    const bucket = storage.bucket();
+    const newPaths: string[] = [];
+
+    try {
+      // Move each image from temp to items/{itemId}
+      for (let i = 0; i < data.imageStoragePaths.length; i++) {
+        const tempPath = data.imageStoragePaths[i];
+        const fileExtension = tempPath.split(".").pop() || "jpg";
+        const fileName =
+          i === 0
+            ? `thumbnail.${fileExtension}`
+            : `image_${String(i).padStart(3, "0")}.${fileExtension}`;
+        const newPath = `items/${itemId}/${fileName}`;
+
+        try {
+          await bucket.file(tempPath).move(bucket.file(newPath));
+          newPaths.push(newPath);
+          console.log(`Moved ${tempPath} → ${newPath}`);
+        } catch (moveError) {
+          console.error(`Failed to move ${tempPath}:`, moveError);
+          // Keep the temp path if move fails
+          newPaths.push(tempPath);
+        }
+      }
+
+      // Update item with new permanent paths
+      await event.data?.ref.update({
+        imageStoragePaths: newPaths,
+      });
+
+      console.log(
+        `✅ Updated item ${itemId} with ${newPaths.length} permanent paths`,
+      );
+
+      // Clean up empty temp folder
+      const sessionId = data.sessionId;
+      if (sessionId) {
+        try {
+          const [files] = await bucket.getFiles({
+            prefix: `temp/${sessionId}/`,
+          });
+          if (files.length === 0) {
+            console.log(`Temp folder temp/${sessionId}/ is empty (cleaned up)`);
+          }
+        } catch (cleanupError) {
+          console.error(`Failed to check temp folder:`, cleanupError);
+        }
+      }
+    } catch (error) {
+      console.error(`Error processing images for item ${itemId}:`, error);
+    }
+  },
+);
+
+// NEW: Clean up images when item is deleted
+export const cleanupItemImages = onDocumentDeleted(
+  {
+    document: "items/{itemId}",
+    region: "us-east1",
+  },
+  async (event) => {
+    const itemId = event.params.itemId;
+    const data = event.data?.data();
+
+    if (!data?.imageStoragePaths || data.imageStoragePaths.length === 0) {
+      console.log(`No images to cleanup for item ${itemId}`);
+      return;
+    }
+
+    console.log(
+      `Cleaning up ${data.imageStoragePaths.length} images for deleted item ${itemId}`,
+    );
+
+    const bucket = storage.bucket();
+
+    try {
+      // Delete all images for this item
+      const deletePromises = data.imageStoragePaths.map((path: string) =>
+        bucket
+          .file(path)
+          .delete()
+          .catch((error) => {
+            console.warn(`Failed to delete ${path}:`, error.message);
+            // Don't throw - continue deleting other files
+          }),
+      );
+
+      await Promise.all(deletePromises);
+      console.log(`✅ Cleaned up images for item ${itemId}`);
+    } catch (error) {
+      console.error(`Error during cleanup for item ${itemId}:`, error);
+    }
   },
 );
