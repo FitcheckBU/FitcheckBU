@@ -72,6 +72,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
         category: "uncategorized",
         brand: "",
         color: "",
+        size: "",
         condition: "unknown",
         price: 0,
         decade: "",

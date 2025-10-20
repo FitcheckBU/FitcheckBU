@@ -24,32 +24,33 @@ To get started with the FitcheckBU application, follow these steps:
 3.  **Enable HTTPS for Local Development (Optional but Recommended)**:
     For camera access on mobile devices and other secure features, it's required to run the development server with HTTPS. We use `mkcert` for locally trusted development certificates.
 
-    a. **Install `mkcert`**:
-    Follow the instructions for your operating system: - **macOS (Homebrew)**:
-    `bash
+        a. **Install `mkcert`**:
+        Follow the instructions for your operating system: - **macOS (Homebrew)**:
+        `bash
         brew install mkcert
         brew install nss # if using Firefox
         ` - **Windows (Chocolatey)**:
-    `bash
+        `bash
         choco install mkcert
         choco install nss # if using Firefox
         ` - **Linux (apt)**:
-    `bash
+        `bash
         sudo apt install mkcert
         sudo apt install libnss3-tools # if using Firefox
         `
 
-    b. **Install local CA**:
-    `bash
+        b. **Install local CA**:
+        `bash
+
     mkcert -install
     `
 
-    c. **Generate Certificates**:
-    Generate certificates for `localhost` and your local IP address. Make sure to replace `YOUR_LOCAL_IP_ADDRESS` with your actual local IP (e.g., `192.168.1.x`).
-    `bash
+        c. **Generate Certificates**:
+        Generate certificates for `localhost` and your local IP address. Make sure to replace `YOUR_LOCAL_IP_ADDRESS` with your actual local IP (e.g., `192.168.1.x`).
+        `bash
+
     mkcert localhost YOUR_LOCAL_IP_ADDRESS
-    `
-    This will create `localhost+1.pem` (certificate) and `localhost+1-key.pem` (private key) files in the directory where you run the command.
+    `    This will create`localhost+1.pem`(certificate) and`localhost+1-key.pem` (private key) files in the directory where you run the command.
 
 4.  **Run the Application**: Start the development server.
 
@@ -58,3 +59,7 @@ To get started with the FitcheckBU application, follow these steps:
     ```
 
     - To access the app from a phone on the same network, start the dev server with `npm run dev -- --host` and open the shown network URL on your device.
+
+## Data Model
+
+- See `docs/data-model.md` for the canonical Firestore schema used by the app (fields, types, and sources).
