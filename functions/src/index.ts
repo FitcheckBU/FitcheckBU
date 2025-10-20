@@ -5,10 +5,74 @@ import { defineString } from "firebase-functions/params";
 import { onObjectFinalized } from "firebase-functions/v2/storage";
 
 const firestoreDatabaseId = defineString("FIRESTORE_DATABASE_ID");
+
+const parseFirebaseConfig = ():
+  | { projectId?: string; storageBucket?: string }
+  | undefined => {
+  const config = process.env.FIREBASE_CONFIG;
+  if (!config) return undefined;
+  try {
+    return JSON.parse(config) as { projectId?: string; storageBucket?: string };
+  } catch (parseError) {
+    console.warn("Unable to parse FIREBASE_CONFIG:", parseError);
+    return undefined;
+  }
+};
+
+const firebaseConfig = parseFirebaseConfig();
+
+const resolveProjectId = (): string | undefined => {
+  return (
+    process.env.GCLOUD_PROJECT ??
+    process.env.GCP_PROJECT ??
+    process.env.GOOGLE_CLOUD_PROJECT ??
+    process.env.PROJECT_ID ??
+    firebaseConfig?.projectId
+  );
+};
+
+const resolveStorageBucket = (): string | undefined => {
+  if (firebaseConfig?.storageBucket) return firebaseConfig.storageBucket;
+
+  const explicit =
+    process.env.STORAGE_BUCKET ??
+    process.env.GCS_BUCKET ??
+    process.env.GCLOUD_STORAGE_BUCKET;
+  if (explicit) return explicit;
+
+  const projectId = resolveProjectId();
+  if (!projectId) return undefined;
+
+  // Prefer new-style default bucket naming.
+  return `${projectId}.firebasestorage.app`;
+};
+
 const visionClient = new vision.ImageAnnotatorClient();
 const firestore = firestoreDatabaseId.value()
   ? getFirestore(admin.initializeApp(), firestoreDatabaseId.value())
   : getFirestore(admin.initializeApp());
+
+const defaultStorageBucket = resolveStorageBucket();
+if (!defaultStorageBucket) {
+  console.warn(
+    "Storage bucket could not be resolved; set FIREBASE_CONFIG or STORAGE_BUCKET to ensure Cloud Storage triggers can initialize during deployment.",
+  );
+  console.warn(
+    "Environment snapshot:",
+    JSON.stringify(
+      {
+        gcloudProject: resolveProjectId(),
+        hasFirebaseConfig: Boolean(firebaseConfig),
+        explicitBucket:
+          process.env.STORAGE_BUCKET ??
+          process.env.GCS_BUCKET ??
+          process.env.GCLOUD_STORAGE_BUCKET,
+      },
+      null,
+      2,
+    ),
+  );
+}
 
 // Temporary in-memory session tracking
 const sessionTracker: Record<string, string[]> = {}; // This keeps track of all images associated in one session
@@ -283,8 +347,15 @@ const shouldUpdateStringField = (current: unknown): boolean => {
   return normalized === "" || normalized === "unknown";
 };
 
+const storageTriggerOptions: Parameters<typeof onObjectFinalized>[0] = {
+  region: "us-east1",
+};
+if (defaultStorageBucket) {
+  storageTriggerOptions.bucket = defaultStorageBucket;
+}
+
 export const onBatchImageUpload = onObjectFinalized(
-  { region: "us-east1" },
+  storageTriggerOptions,
   async (event) => {
     const object = event.data;
     const filePath = object.name;
