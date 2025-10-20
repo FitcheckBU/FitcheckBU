@@ -112,7 +112,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
         ) : (
           <IonIcon slot="start" icon={cloudUploadSharp} />
         )}
-        {uploading ? "Uploading..." : "Upload selected"}
+        {uploading ? "Uploading..." : "Upload"}
       </IonButton>
       {status.message && (
         <IonText color={status.tone === "" ? undefined : status.tone}>

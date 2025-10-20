@@ -1,0 +1,26 @@
+.top-navbar {
+  height: var(--top-navbar-height);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--ion-color-primary);
+  /* Using primary color from variables.css */
+  padding: 10px 15px;
+  color: white;
+}
+
+.navbar-logo {
+  height: 40px;
+  cursor: pointer;
+  margin-left: 16px;
+}
+
+.navbar-hamburger {
+  height: 20px;
+  margin-right: 16px;
+}
