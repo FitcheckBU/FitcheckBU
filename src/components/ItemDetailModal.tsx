@@ -13,6 +13,7 @@ import { InventoryItem, markAsSold } from "../lib/inventoryService";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
 import { useEffect, useState } from "react";
+import { extractSize, extractColor, extractMaterial } from "../lib/metadataParser";
 import "./ItemDetailModal.css";
 
 interface ItemDetailModalProps {
@@ -105,7 +106,7 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
         <div className="detail-header-section">
           <div className="detail-item-name">{item.name || item.brand || "Unknown Item"}</div>
           <div className="detail-item-subtitle">
-            {item.category || "Unknown Category"} • Size: Medium • {item.condition || "Worn"}
+            {item.category || "Unknown Category"} • Size: {extractSize(item.labels)} • {item.condition || "Unknown"}
           </div>
         </div>
 
@@ -142,15 +143,15 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
         <div className="detail-info-section">
           <div className="detail-info-row">
             <span className="detail-info-label">Size:</span>
-            <span className="detail-info-value">Medium (Approx.)</span>
+            <span className="detail-info-value">{extractSize(item.labels)}</span>
           </div>
           <div className="detail-info-row">
             <span className="detail-info-label">Color:</span>
-            <span className="detail-info-value">{item.color || "Unknown"}</span>
+            <span className="detail-info-value">{item.color || extractColor(item.labels)}</span>
           </div>
           <div className="detail-info-row">
             <span className="detail-info-label">Condition:</span>
-            <span className="detail-info-value">{item.condition || "Worn"}</span>
+            <span className="detail-info-value">{item.condition || "Unknown"}</span>
           </div>
           <div className="detail-info-row">
             <span className="detail-info-label">Brand:</span>
@@ -158,13 +159,7 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
           </div>
           <div className="detail-info-row">
             <span className="detail-info-label">Material:</span>
-            <span className="detail-info-value">
-              {item.labels?.find(l => 
-                ['cotton', 'wool', 'polyester', 'silk', 'leather'].some(m => 
-                  l.toLowerCase().includes(m)
-                )
-              ) || "Unknown"}
-            </span>
+            <span className="detail-info-value">{extractMaterial(item.labels)}</span>
           </div>
           {item.price && (
             <div className="detail-info-row">

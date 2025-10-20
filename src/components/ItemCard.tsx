@@ -10,6 +10,7 @@ import { InventoryItem } from "../lib/inventoryService";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
 import { useEffect, useState } from "react";
+import { extractSize, extractColor } from "../lib/metadataParser";
 import "./ItemCard.css";
 
 interface ItemCardProps {
@@ -78,15 +79,15 @@ const ItemCard: React.FC<ItemCardProps> = ({
             <div className="figma-item-details">
               <div className="figma-detail-row">
                 <span className="figma-detail-label">Size:</span>
-                <span className="figma-detail-value">Medium</span>
+                <span className="figma-detail-value">{extractSize(item.labels)}</span>
               </div>
               <div className="figma-detail-row">
                 <span className="figma-detail-label">Condition:</span>
-                <span className="figma-detail-value">{item.condition || "Worn"}</span>
+                <span className="figma-detail-value">{item.condition || "Unknown"}</span>
               </div>
               <div className="figma-detail-row">
                 <span className="figma-detail-label">Color:</span>
-                <span className="figma-detail-value">{item.color || "Unknown"}</span>
+                <span className="figma-detail-value">{item.color || extractColor(item.labels)}</span>
               </div>
             </div>
           </div>
