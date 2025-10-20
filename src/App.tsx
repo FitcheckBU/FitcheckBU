@@ -1,10 +1,17 @@
 import { Redirect, Route } from "react-router-dom";
-import { IonApp, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, setupIonicReact } from "@ionic/react";
+import { IonApp, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, setupIonicReact, IonPage, IonContent } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { homeOutline, cloudUploadOutline, gridOutline } from "ionicons/icons";
 import Home from "./pages/Home";
+// import Upload from "./pages/Upload";
+import TopNavBar from "./components/TopNavBar";
+import CameraPage from "./pages/CameraPage";
+import { PhotoProvider } from "./context/PhotoContext";
+import Sidebar from "./components/Sidebar";
+import { useState } from "react";
 import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
+import UploadFlow from "./pages/UploadFlowPage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -31,48 +38,67 @@ import "@ionic/react/css/display.css";
 
 /* import '@ionic/react/css/palettes/dark.always.css'; */
 /* import '@ionic/react/css/palettes/dark.class.css'; */
-import "@ionic/react/css/palettes/dark.system.css";
+// import "@ionic/react/css/palettes/dark.system.css";
 
 /* Theme variables */
 import "./theme/variables.css";
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route exact path="/home">
-            <Home />
-          </Route>
-          <Route exact path="/upload">
-            <Upload />
-          </Route>
-          <Route exact path="/dashboard">
-            <Dashboard />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/dashboard" />
-          </Route>
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="home" href="/home" data-testid="tab-home">
-            <IonIcon icon={homeOutline} />
-            <IonLabel>Home</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="upload" href="/upload" data-testid="tab-upload">
-            <IonIcon icon={cloudUploadOutline} />
-            <IonLabel>Upload</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="dashboard" href="/dashboard" data-testid="tab-dashboard">
-            <IonIcon icon={gridOutline} />
-            <IonLabel>Dashboard</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  return (
+    <IonApp>
+      <PhotoProvider>
+        <IonReactRouter>
+          <IonPage>
+            <TopNavBar onMenuClick={() => setSidebarOpen(true)} />
+            <Sidebar
+              isOpen={isSidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
+            <IonContent>
+              <IonRouterOutlet id="main">
+                <Route exact path="/home">
+                  <Home />
+                </Route>
+                <Route exact path="/upload">
+                  <Upload />
+                </Route>
+                <Route exact path="/upload-flow">
+                  <UploadFlow />
+                </Route>
+                <Route exact path="/camera">
+                  <CameraPage />
+                </Route>
+                <Route exact path="/dashboard">
+                  <Dashboard />
+                </Route>
+                <Route exact path="/">
+                  <Redirect to="/home" />
+                </Route>
+              </IonRouterOutlet>
+              <IonTabBar slot="bottom">
+                <IonTabButton tab="home" href="/home" data-testid="tab-home">
+                  <IonIcon icon={homeOutline} />
+                  <IonLabel>Home</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="upload" href="/upload" data-testid="tab-upload">
+                  <IonIcon icon={cloudUploadOutline} />
+                  <IonLabel>Upload</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="dashboard" href="/dashboard" data-testid="tab-dashboard">
+                  <IonIcon icon={gridOutline} />
+                  <IonLabel>Dashboard</IonLabel>
+                </IonTabButton>
+              </IonTabBar>
+            </IonContent>
+          </IonPage>
+        </IonReactRouter>
+      </PhotoProvider>
+    </IonApp>
+  );
+};
 
 export default App;

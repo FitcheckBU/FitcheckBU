@@ -20,6 +20,7 @@ export interface InventoryItem {
   category: string;
   brand: string;
   color: string;
+  size: string;
   condition: string;
   price: number;
   decade: string;
@@ -51,6 +52,7 @@ export const addItem = async (
     description: itemData.description ?? "",
     labels: [],
     imageStoragePaths: itemData.imageStoragePaths ?? [],
+    size: itemData.size ?? "",
     dateAdded: serverTimestamp(),
     isSold: false,
   });

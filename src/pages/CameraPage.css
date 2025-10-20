@@ -1,0 +1,82 @@
+/* src/pages/CameraPage.css */
+
+.camera-content {
+  --background: #000;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.camera-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.camera-video-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+  This spacer creates a 9:10 ratio for the content above and below the midline.
+  Adjust the flex value to change the vertical position of the scan overlay.
+*/
+.camera-top-spacer {
+  flex: 0.9;
+}
+
+.camera-overlay-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.camera-overlay-image {
+  width: 70%;
+  max-width: 300px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.camera-bottom-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.take-photo-button {
+  --background: white;
+  --background-activated: lightgray;
+  --border-color: grey;
+  --border-style: solid;
+  --border-width: 4px;
+  --box-shadow: none;
+  width: 70px;
+  height: 70px;
+}
+
+.done-button-fab {
+  position: absolute;
+  right: 16px;
+}
+
+.camera-top-button {
+  margin-top: var(--top-navbar-height);
+}
+
+.close-button-icon {
+  width: 24px;
+  height: 24px;
+}
