@@ -36,9 +36,13 @@ const ItemCard: React.FC<ItemCardProps> = ({
     loadImage();
   }, [item.imageStoragePaths]);
 
+  const cardClassName = item.isSold 
+    ? "figma-item-card sold" 
+    : "figma-item-card";
+
   return (
     <IonCard
-      className="figma-item-card"
+      className={cardClassName}
       button={true}
       onClick={onClick}
       data-testid={`card-item-${item.id}`}

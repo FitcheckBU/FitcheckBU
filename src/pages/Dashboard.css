@@ -9,8 +9,47 @@
   --color: #f5e6c8;
 }
 
+.dashboard-toolbar {
+  --background: #1b4d4d;
+  --color: #f5e6c8;
+}
+
+.header-title {
+  color: #f5e6c8;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.header-icon {
+  color: #f5e6c8;
+  font-size: 24px;
+}
+
+.filter-active {
+  color: #4ECDC4;
+}
+
 .dashboard-content {
   --background: #f5e6c8;
+}
+
+.dashboard-search-section {
+  padding: 16px 16px 8px 16px;
+  background-color: #f5e6c8;
+}
+
+.dashboard-searchbar {
+  --background: #FFFFFF;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --border-radius: 12px;
+  --placeholder-color: #9CA3AF;
+  --icon-color: #9CA3AF;
+  padding: 0;
+}
+
+.dashboard-items {
+  padding: 8px 16px 16px 16px;
 }
 
 .items-grid {

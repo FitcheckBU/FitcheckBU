@@ -12,7 +12,7 @@ import {
   IonRefresherContent,
   RefresherEventDetail,
 } from "@ionic/react";
-import { menuOutline, swapVerticalOutline } from "ionicons/icons";
+import { arrowBackOutline, funnelOutline } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import { getAllItems, InventoryItem } from "../lib/inventoryService";
 import ItemCard from "../components/ItemCard";
@@ -124,14 +124,14 @@ const Dashboard: React.FC = () => {
         <IonToolbar className="dashboard-toolbar">
           <IonButtons slot="start">
             <IonButton>
-              <IonIcon icon={menuOutline} className="header-icon" />
+              <IonIcon icon={arrowBackOutline} className="header-icon" />
             </IonButton>
           </IonButtons>
-          <IonTitle className="header-title">fitcheck</IonTitle>
+          <IonTitle className="header-title">User Dashboard</IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => setShowFilterSheet(true)}>
               <IonIcon 
-                icon={swapVerticalOutline} 
+                icon={funnelOutline} 
                 className={`header-icon ${hasActiveFilters ? 'filter-active' : ''}`}
               />
             </IonButton>
@@ -144,8 +144,14 @@ const Dashboard: React.FC = () => {
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
 
-        <div className="dashboard-title-section">
-          <h1 className="dashboard-title">User Dashboard</h1>
+        <div className="dashboard-search-section">
+          <IonSearchbar
+            value={searchText}
+            onIonInput={(e) => setSearchText(e.detail.value!)}
+            placeholder="Search Name, Size, Color, Etc..."
+            className="dashboard-searchbar"
+            data-testid="input-search"
+          ></IonSearchbar>
         </div>
 
         <div className="dashboard-items">
@@ -162,16 +168,6 @@ const Dashboard: React.FC = () => {
               />
             ))
           )}
-        </div>
-
-        <div className="dashboard-search-bottom">
-          <IonSearchbar
-            value={searchText}
-            onIonInput={(e) => setSearchText(e.detail.value!)}
-            placeholder="Search Name, Size, Color, Etc..."
-            className="bottom-searchbar"
-            data-testid="input-search"
-          ></IonSearchbar>
         </div>
       </IonContent>
 

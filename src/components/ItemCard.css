@@ -7,6 +7,16 @@
   background: #FFFFFF;
   --background: #FFFFFF;
   padding: 0;
+  border-left: 4px solid #3B82F6;
+  position: relative;
+}
+
+.figma-item-card.sold {
+  border-left-color: #EF4444;
+}
+
+.figma-item-card.pending {
+  border-left-color: #F59E0B;
 }
 
 .figma-card-content {
