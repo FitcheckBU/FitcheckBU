@@ -1,18 +1,11 @@
 import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
   IonSearchbar,
   IonButton,
-  IonButtons,
-  IonIcon,
   IonRefresher,
   IonRefresherContent,
   RefresherEventDetail,
 } from "@ionic/react";
-import { funnelOutline } from "ionicons/icons";
+import filterSvg from "../../public/filter.svg"; // Import the SVG directly
 import { useState, useEffect } from "react";
 import { getAllItems, InventoryItem } from "../lib/inventoryService";
 import ItemCard from "../components/ItemCard";
@@ -27,7 +20,7 @@ const Dashboard: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
-  
+
   // Filter states
   const [activeFilters, setActiveFilters] = useState({
     sizes: [] as string[],
@@ -67,35 +60,38 @@ const Dashboard: React.FC = () => {
           item.name?.toLowerCase().includes(search) ||
           item.brand?.toLowerCase().includes(search) ||
           item.category?.toLowerCase().includes(search) ||
-          item.color?.toLowerCase().includes(search)
+          item.color?.toLowerCase().includes(search),
       );
     }
 
     // Apply size filter
     if (activeFilters.sizes.length > 0) {
       filtered = filtered.filter((item) =>
-        activeFilters.sizes.some(size => 
-          item.category?.toLowerCase().includes(size.toLowerCase())
-        )
+        activeFilters.sizes.some((size) =>
+          item.category?.toLowerCase().includes(size.toLowerCase()),
+        ),
       );
     }
 
     // Apply color filter
     if (activeFilters.colors.length > 0) {
       filtered = filtered.filter((item) =>
-        activeFilters.colors.some(color => 
-          item.color?.toLowerCase().includes(color.toLowerCase())
-        )
+        activeFilters.colors.some((color) =>
+          item.color?.toLowerCase().includes(color.toLowerCase()),
+        ),
       );
     }
 
     // Apply material filter
     if (activeFilters.materials.length > 0) {
       filtered = filtered.filter((item) =>
-        activeFilters.materials.some(material => 
-          item.description?.toLowerCase().includes(material.toLowerCase()) ||
-          item.labels?.some(label => label.toLowerCase().includes(material.toLowerCase()))
-        )
+        activeFilters.materials.some(
+          (material) =>
+            item.description?.toLowerCase().includes(material.toLowerCase()) ||
+            item.labels?.some((label) =>
+              label.toLowerCase().includes(material.toLowerCase()),
+            ),
+        ),
       );
     }
 
@@ -119,52 +115,43 @@ const Dashboard: React.FC = () => {
     activeFilters.materials.length > 0;
 
   return (
-    <IonPage>
-      <IonHeader className="dashboard-header">
-        <IonToolbar className="dashboard-toolbar">
-          <IonTitle className="header-title">User Dashboard</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={() => setShowFilterSheet(true)}>
-              <IonIcon 
-                icon={funnelOutline} 
-                className={`header-icon ${hasActiveFilters ? 'filter-active' : ''}`}
-              />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
+    <>
+      <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+        <IonRefresherContent></IonRefresherContent>
+      </IonRefresher>
 
-      <IonContent className="dashboard-content">
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent></IonRefresherContent>
-        </IonRefresher>
+      <div className="dashboard-search-section">
+        <IonSearchbar
+          value={searchText}
+          onIonInput={(e) => setSearchText(e.detail.value!)}
+          placeholder="Search Name, Size, Color, Etc..."
+          className="dashboard-searchbar"
+          data-testid="input-search"
+        ></IonSearchbar>
+        <IonButton onClick={() => setShowFilterSheet(true)} color="secondary">
+          <img
+            src={filterSvg}
+            alt="Filter"
+            className={`header-icon ${hasActiveFilters ? "filter-active" : ""}`}
+          />
+        </IonButton>
+      </div>
 
-        <div className="dashboard-search-section">
-          <IonSearchbar
-            value={searchText}
-            onIonInput={(e) => setSearchText(e.detail.value!)}
-            placeholder="Search Name, Size, Color, Etc..."
-            className="dashboard-searchbar"
-            data-testid="input-search"
-          ></IonSearchbar>
-        </div>
-
-        <div className="dashboard-items">
-          {filteredItems.length === 0 && !loading ? (
-            <div className="empty-state">
-              <p>No items found</p>
-            </div>
-          ) : (
-            filteredItems.map((item) => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                onClick={() => setSelectedItem(item)}
-              />
-            ))
-          )}
-        </div>
-      </IonContent>
+      <div className="dashboard-items">
+        {filteredItems.length === 0 && !loading ? (
+          <div className="empty-state">
+            <p>No items found</p>
+          </div>
+        ) : (
+          filteredItems.map((item) => (
+            <ItemCard
+              key={item.id}
+              item={item}
+              onClick={() => setSelectedItem(item)}
+            />
+          ))
+        )}
+      </div>
 
       <ItemDetailModal
         isOpen={!!selectedItem}
@@ -180,7 +167,7 @@ const Dashboard: React.FC = () => {
         activeFilters={activeFilters}
         items={items}
       />
-    </IonPage>
+    </>
   );
 };
 

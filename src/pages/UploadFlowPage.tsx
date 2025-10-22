@@ -4,14 +4,11 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonContent,
-  IonPage,
   IonText,
   IonBackButton,
 } from "@ionic/react";
 import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import "../components/PageContent.css";
 import { usePhotoContext } from "../context/PhotoContext";
 import { db } from "../lib/firebaseClient";
 import { InventoryItem } from "../lib/inventoryService";
@@ -37,7 +34,7 @@ const TapToScan: React.FC<{ onClick: () => void; isLibraryMode: boolean }> = ({
       <p>{isLibraryMode ? "Select from Library" : "Tap to Scan"}</p>
     </IonText>
     <img
-      src={isLibraryMode ? "/Qr Icon.png" : "/Qr Icon.png"} // Update icon for library mode
+      src={isLibraryMode ? "/qr_icon.svg" : "/qr_icon.svg"} // Update icon for library mode
       alt={isLibraryMode ? "Select from Library" : "Scan QR Code"}
       className="qr-icon"
     />
@@ -208,60 +205,60 @@ const UploadFlowPage: React.FC = () => {
   };
 
   return (
-    <IonPage>
-      <IonContent className="ion-padding page-content upload-page-content">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          className="hidden-input"
-          onChange={handleFileSelection}
-          {...(!isLibraryMode && { capture: "environment" })}
-        />
+    <div className="upload-flow-wrapper">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden-input"
+        onChange={handleFileSelection}
+        {...(!isLibraryMode && { capture: "environment" })}
+      />
 
-        <div className="upload-page-header">
-          <IonBackButton defaultHref="/upload" className="back-button" />
-          {selectedImages.length > 0 && (
-            <div className="clear-all-button-container">
-              <IonButton
-                color="medium"
-                fill="outline"
-                disabled={uploading}
-                onClick={clearSelection}
-              >
-                Clear all
-              </IonButton>
-            </div>
-          )}
-        </div>
+      <div className="upload-page-header">
+        <IonBackButton defaultHref="/upload" className="back-button" />
+        {selectedImages.length > 0 && (
+          <div className="clear-all-button-container">
+            <IonButton
+              color="medium"
+              fill="outline"
+              disabled={uploading}
+              onClick={clearSelection}
+            >
+              Clear all
+            </IonButton>
+          </div>
+        )}
+      </div>
 
-        {selectedImages.length === 0 ? (
+      {selectedImages.length === 0 ? (
+        <div className="upload-flow-content">
           <TapToScan
             onClick={triggerFilePicker}
             isLibraryMode={isLibraryMode}
           />
-        ) : (
-          <>
-            {latestItem && latestSessionId && (
-              <VisionAnalysis item={latestItem} sessionId={latestSessionId} />
-            )}
-            <ImageGrid images={selectedImages} onRemove={removeImage} />
-            <StorageUploadButton
-              files={selectedImages.map(({ id, name, file }) => ({
-                id,
-                name,
-                file,
-              }))}
-              disabled={uploading}
-              onUploadingChange={setUploading}
-              onUploadComplete={clearSelection}
-              onItemCreated={handleItemCreated}
-            />
-          </>
-        )}
-      </IonContent>
-    </IonPage>
+        </div>
+      ) : (
+        <>
+          {latestItem && latestSessionId && (
+            <VisionAnalysis item={latestItem} sessionId={latestSessionId} />
+          )}
+          <ImageGrid images={selectedImages} onRemove={removeImage} />
+          <StorageUploadButton
+            files={selectedImages.map(({ id, name, file }) => ({
+              id,
+              name,
+              file,
+            }))}
+            disabled={uploading}
+            onUploadingChange={setUploading}
+            onUploadComplete={clearSelection}
+            onItemCreated={handleItemCreated}
+          />
+        </>
+      )}
+    </div>
   );
 };
 

@@ -18,6 +18,19 @@
   height: 100%;
 }
 
+.upload-flow-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.upload-flow-content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .hidden-input {
   display: none;
 }
@@ -25,9 +38,7 @@
 .tap-to-scan-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  height: 100%;
   gap: 10px;
 }
 

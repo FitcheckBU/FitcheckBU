@@ -1,8 +1,11 @@
-/* CSS for pages with global TopNavBar */
+:root {
+  --top-navbar-height: 56px;
+  /* Adjust this value to match your TopNavBar's actual height */
+}
+
 .page-content {
   --padding-top: calc(var(--top-navbar-height) + 8px) !important;
   /* Add 8px gap */
-  /* Standard Ionic header height */
   --background: var(--ion-color-secondary) !important;
   /* Use secondary color as background */
 }
@@ -14,9 +17,4 @@
   padding-top: var(--padding-top) !important;
   --background: var(--ion-color-secondary) !important;
   /* Use secondary color as background */
-}
-
-/* Alternative: Apply to all IonPage components globally */
-ion-page {
-  --background: var(--ion-color-secondary);
 }

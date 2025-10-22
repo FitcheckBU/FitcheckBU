@@ -1,11 +1,11 @@
 /* Filter Sheet Styles */
 .filter-toolbar {
-  --background: #1b4d4d;
-  --color: #f5e6c8;
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-secondary);
 }
 
 .filter-sheet-content {
-  --background: #f5e6c8;
+  --background: var(--ion-color-secondary);
   --padding-top: 16px;
   --padding-bottom: 100px;
 }
@@ -18,7 +18,7 @@
 .filter-section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #1b4d4d;
+  color: var(--ion-color-primary);
   margin: 0 0 12px 0;
 }
 
@@ -36,10 +36,10 @@
 
 .filter-chip {
   padding: 8px 16px;
-  border: 1px solid #1b4d4d;
+  border: 1px solid var(--ion-color-primary);
   border-radius: 20px;
   background-color: transparent;
-  color: #1b4d4d;
+  color: var(--ion-color-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -51,8 +51,8 @@
 }
 
 .chip-selected {
-  background-color: #1b4d4d;
-  color: #f5e6c8;
+  background-color: var(--ion-color-primary);
+  color: var(--ion-color-secondary);
 }
 
 .filter-colors-grid {
@@ -77,8 +77,10 @@
 }
 
 .color-selected {
-  border: 3px solid #1b4d4d;
-  box-shadow: 0 0 0 2px #f5e6c8, 0 0 0 5px #1b4d4d;
+  border: 3px solid var(--ion-color-primary);
+  box-shadow:
+    0 0 0 2px var(--ion-color-secondary),
+    0 0 0 5px var(--ion-color-primary);
 }
 
 .filter-actions-footer {
@@ -87,7 +89,7 @@
   left: 0;
   right: 0;
   padding: 16px;
-  background-color: #f5e6c8;
+  background-color: var(--ion-color-secondary);
   border-top: 1px solid #d4c5a8;
   display: flex;
   gap: 12px;
@@ -95,12 +97,12 @@
 }
 
 .filter-reset-button {
-  --color: #1b4d4d;
-  --border-color: #1b4d4d;
+  --color: var(--ion-color-primary);
+  --border-color: var(--ion-color-primary);
 }
 
 .filter-apply-button {
-  --background: #1b4d4d;
+  --background: var(--ion-color-primary);
   --background-activated: #153d3d;
-  --color: #f5e6c8;
+  --color: var(--ion-color-secondary);
 }

@@ -17,14 +17,14 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuClick }) => {
     <div className="top-navbar">
       <IonToolbar color="primary">
         <img
-          src="/Logo.png"
+          src="/logo.svg"
           alt="Logo"
           className="navbar-logo"
           onClick={goHome}
         />
         <IonButtons slot="end">
-          <IonButton onClick={onMenuClick}>
-            <img src="/Hamburger.png" alt="Menu" className="navbar-hamburger" />
+          <IonButton onClick={onMenuClick} color="primary">
+            <img src="/hamburger.svg" alt="Menu" className="navbar-hamburger" />
           </IonButton>
         </IonButtons>
       </IonToolbar>
