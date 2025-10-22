@@ -78,7 +78,7 @@ const ImageGrid: React.FC<{
       <div key={image.id} className="image-grid-item">
         <img src={image.url} alt={image.name} className="image-grid-item-img" />
         <img
-          src="/Close.png"
+          src="/close.svg"
           alt="Remove"
           className="remove-image-icon"
           onClick={() => onRemove(image.id)}
@@ -231,6 +231,9 @@ const UploadFlowPage: React.FC = () => {
           </div>
         )}
       </div>
+      {latestItem && latestSessionId && (
+        <VisionAnalysis item={latestItem} sessionId={latestSessionId} />
+      )}
 
       {selectedImages.length === 0 ? (
         <div className="upload-flow-content">
@@ -241,9 +244,6 @@ const UploadFlowPage: React.FC = () => {
         </div>
       ) : (
         <>
-          {latestItem && latestSessionId && (
-            <VisionAnalysis item={latestItem} sessionId={latestSessionId} />
-          )}
           <ImageGrid images={selectedImages} onRemove={removeImage} />
           <StorageUploadButton
             files={selectedImages.map(({ id, name, file }) => ({
