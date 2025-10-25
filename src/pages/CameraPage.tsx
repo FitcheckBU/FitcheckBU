@@ -113,65 +113,40 @@ const CameraPage: React.FC = () => {
             playsInline
             className="camera-video-preview"
           />
-
-          {/* Top half for spacing */}
-          <div className="camera-top-spacer" />
-
-          {/* Scan Overlay */}
-          <div className="camera-overlay-container">
-            <img
-              src="/Scan.png"
-              alt="Scan Overlay"
-              className="camera-overlay-image"
-            />
-          </div>
-
-          {/* Bottom half for button positioning */}
-          <div className="camera-bottom-section">
-            {/* Vertically Centered Take Photo Button */}
-            <IonFab>
-              <IonFabButton
-                onClick={handleTakePhoto}
-                disabled={isCapturing} // Disable button when capturing
-                className="take-photo-button"
-              ></IonFabButton>
-            </IonFab>
-
-            {/* Aligned Done Button (if photos taken) */}
-            {photos.length > 0 && (
-              <IonFab className="done-button-fab">
-                <IonFabButton onClick={handleDone} color="success">
-                  <IonIcon icon={checkmarkDoneCircle} />
-                  <IonText>{photos.length}</IonText>
-                </IonFabButton>
-              </IonFab>
-            )}
-          </div>
         </div>
 
         {/* Top-Left Close Button */}
-        <IonFab
-          vertical="top"
-          horizontal="start"
-          slot="fixed"
-          className="camera-top-button"
-        >
+        <IonFab vertical="top" horizontal="start" slot="fixed">
           <IonFabButton onClick={handleBack} color="light" size="small">
-            <img src="/Close.png" alt="Close" className="close-button-icon" />
+            <img src="/close.svg" alt="Close" className="close-button-icon" />
           </IonFabButton>
         </IonFab>
 
         {/* Top-Right Flip Camera Button */}
-        <IonFab
-          vertical="top"
-          horizontal="end"
-          slot="fixed"
-          className="camera-top-button"
-        >
+        <IonFab vertical="top" horizontal="end" slot="fixed">
           <IonFabButton onClick={handleFlipCamera} color="light" size="small">
             <IonIcon icon={cameraReverse} />
           </IonFabButton>
         </IonFab>
+
+        {/* Bottom-Center Take Photo Button */}
+        <IonFab vertical="bottom" horizontal="center" slot="fixed">
+          <IonFabButton
+            onClick={handleTakePhoto}
+            disabled={isCapturing}
+            className="take-photo-button"
+          ></IonFabButton>
+        </IonFab>
+
+        {/* Bottom-Right Done Button */}
+        {photos.length > 0 && (
+          <IonFab vertical="bottom" horizontal="end" slot="fixed">
+            <IonFabButton onClick={handleDone} color="success">
+              <IonIcon icon={checkmarkDoneCircle} />
+              <IonText>{photos.length}</IonText>
+            </IonFabButton>
+          </IonFab>
+        )}
       </IonContent>
     </IonPage>
   );

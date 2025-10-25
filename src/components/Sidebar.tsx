@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { IonButton } from "@ionic/react";
 import "./Sidebar.css";
 
 interface SidebarProps {
@@ -10,9 +11,9 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
-      <button onClick={onClose} className="close-button">
-        <img src="/Close.png" alt="Close" />
-      </button>
+      <IonButton onClick={onClose} className="close-button" color="primary">
+        <img src="/close.svg" alt="Close" />
+      </IonButton>
       <nav>
         <ul>
           <li>

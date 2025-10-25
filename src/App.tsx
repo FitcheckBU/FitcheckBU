@@ -1,21 +1,12 @@
 import { Redirect, Route } from "react-router-dom";
-import {
-  IonApp,
-  IonRouterOutlet,
-  setupIonicReact,
-  IonPage,
-  IonContent,
-} from "@ionic/react";
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import Home from "./pages/Home";
-// import Upload from "./pages/Upload";
-import TopNavBar from "./components/TopNavBar";
 import CameraPage from "./pages/CameraPage";
 import { PhotoProvider } from "./context/PhotoContext";
-import Sidebar from "./components/Sidebar";
-import { useState } from "react";
 import Upload from "./pages/Upload";
+import Dashboard from "./pages/Dashboard";
 import UploadFlow from "./pages/UploadFlowPage";
+import MainLayout from "./components/MainLayout";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -50,38 +41,45 @@ import "./theme/variables.css";
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-
   return (
     <IonApp>
       <PhotoProvider>
         <IonReactRouter>
-          <IonPage>
-            <TopNavBar onMenuClick={() => setSidebarOpen(true)} />
-            <Sidebar
-              isOpen={isSidebarOpen}
-              onClose={() => setSidebarOpen(false)}
+          <IonRouterOutlet id="main">
+            <Route
+              exact
+              path="/home"
+              render={() => (
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              )}
             />
-            <IonContent>
-              <IonRouterOutlet id="main">
-                <Route exact path="/home">
-                  <Home />
-                </Route>
-                <Route exact path="/upload">
+            <Route
+              exact
+              path="/upload"
+              render={() => (
+                <MainLayout>
                   <Upload />
-                </Route>
-                <Route exact path="/upload-flow">
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/upload-flow"
+              render={() => (
+                <MainLayout>
                   <UploadFlow />
-                </Route>
-                <Route exact path="/camera">
-                  <CameraPage />
-                </Route>
-                <Route exact path="/">
-                  <Redirect to="/home" />
-                </Route>
-              </IonRouterOutlet>
-            </IonContent>
-          </IonPage>
+                </MainLayout>
+              )}
+            />
+            <Route exact path="/camera">
+              <CameraPage />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+          </IonRouterOutlet>
         </IonReactRouter>
       </PhotoProvider>
     </IonApp>
