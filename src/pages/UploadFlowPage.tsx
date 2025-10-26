@@ -1,18 +1,7 @@
-import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonText,
-  IonBackButton,
-} from "@ionic/react";
+import { IonButton, IonText, IonBackButton } from "@ionic/react";
 import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { usePhotoContext } from "../context/PhotoContext";
-import { db } from "../lib/firebaseClient";
-import { InventoryItem } from "../lib/inventoryService";
-import { doc, onSnapshot, Unsubscribe } from "firebase/firestore";
 import StorageUploadButton from "../components/StorageUploadButton";
 import "./UploadFlowPage.css";
 
@@ -41,33 +30,6 @@ const TapToScan: React.FC<{ onClick: () => void; isLibraryMode: boolean }> = ({
   </div>
 );
 
-// VisionAnalysis component
-const VisionAnalysis: React.FC<{
-  item: InventoryItem;
-  sessionId: string;
-}> = ({ item, sessionId }) => (
-  <IonCard className="ion-margin-top">
-    <IonCardHeader>
-      <IonCardTitle>Vision Analysis (Session {sessionId})</IonCardTitle>
-    </IonCardHeader>
-    <IonCardContent>
-      <IonText color="medium">
-        <p>Description: {item.description || "Pending..."}</p>
-        <p>
-          Labels:
-          {item.labels && item.labels.length > 0 ? (
-            <code className="vision-analysis-labels">
-              {JSON.stringify(item.labels, null, 2)}
-            </code>
-          ) : (
-            " Pending Vision results..."
-          )}
-        </p>
-      </IonText>
-    </IonCardContent>
-  </IonCard>
-);
-
 // ImageGrid component
 const ImageGrid: React.FC<{
   images: SelectedImage[];
@@ -92,9 +54,6 @@ const UploadFlowPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [latestItem, setLatestItem] = useState<InventoryItem | null>(null);
-  const [latestSessionId, setLatestSessionId] = useState<string>();
-  const itemListenerRef = useRef<Unsubscribe | null>(null);
   const history = useHistory();
   const location = useLocation();
   const { photos, clearPhotos } = usePhotoContext();
@@ -188,20 +147,9 @@ const UploadFlowPage: React.FC = () => {
     });
   };
 
-  const handleItemCreated = (itemId: string, sessionId: string) => {
-    setLatestSessionId(sessionId);
-    itemListenerRef.current?.();
-    itemListenerRef.current = null;
-
-    const itemRef = doc(db, "items", itemId);
-    itemListenerRef.current = onSnapshot(itemRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setLatestItem({
-          id: snapshot.id,
-          ...snapshot.data(),
-        } as InventoryItem);
-      }
-    });
+  const handleItemCreated = (itemId: string) => {
+    // Navigate to confirmation page instead of showing inline analysis
+    history.push(`/item-confirmation/${itemId}`);
   };
 
   return (
@@ -231,9 +179,6 @@ const UploadFlowPage: React.FC = () => {
           </div>
         )}
       </div>
-      {latestItem && latestSessionId && (
-        <VisionAnalysis item={latestItem} sessionId={latestSessionId} />
-      )}
 
       {selectedImages.length === 0 ? (
         <div className="upload-flow-content">

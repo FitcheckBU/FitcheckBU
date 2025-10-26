@@ -17,7 +17,7 @@ interface StorageUploadButtonProps {
   disabled?: boolean;
   onUploadComplete?: () => void;
   onUploadingChange?: (uploading: boolean) => void;
-  onItemCreated?: (itemId: string, sessionId: string) => void;
+  onItemCreated?: (itemId: string) => void;
 }
 
 type StatusState = {
@@ -90,7 +90,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
       // Cloud Function will automatically move images from temp to items/{itemId}
       // This happens in the background after item creation
 
-      onItemCreated?.(itemId, sessionId);
+      onItemCreated?.(itemId);
       onUploadComplete?.();
       setStatus({
         message: `${files.length} image${files.length > 1 ? "s" : ""} uploaded. Complete item details to publish.`,
