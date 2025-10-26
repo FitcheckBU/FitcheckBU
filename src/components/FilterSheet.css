@@ -1,0 +1,108 @@
+/* Filter Sheet Styles */
+.filter-toolbar {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-secondary);
+}
+
+.filter-sheet-content {
+  --background: var(--ion-color-secondary);
+  --padding-top: 16px;
+  --padding-bottom: 100px;
+}
+
+.filter-section {
+  margin-bottom: 24px;
+  padding: 0 16px;
+}
+
+.filter-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+  margin: 0 0 12px 0;
+}
+
+.filter-chips-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chips-wrap {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 8px 16px;
+  border: 1px solid var(--ion-color-primary);
+  border-radius: 20px;
+  background-color: transparent;
+  color: var(--ion-color-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:active {
+  transform: scale(0.95);
+}
+
+.chip-selected {
+  background-color: var(--ion-color-primary);
+  color: var(--ion-color-secondary);
+}
+
+.filter-colors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 12px;
+  max-width: 400px;
+}
+
+.color-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-circle:active {
+  transform: scale(0.9);
+}
+
+.color-selected {
+  border: 3px solid var(--ion-color-primary);
+  box-shadow:
+    0 0 0 2px var(--ion-color-secondary),
+    0 0 0 5px var(--ion-color-primary);
+}
+
+.filter-actions-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background-color: var(--ion-color-secondary);
+  border-top: 1px solid #d4c5a8;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.filter-reset-button {
+  --color: var(--ion-color-primary);
+  --border-color: var(--ion-color-primary);
+}
+
+.filter-apply-button {
+  --background: var(--ion-color-primary);
+  --background-activated: #153d3d;
+  --color: var(--ion-color-secondary);
+}

@@ -1,0 +1,56 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -250px;
+  /* Hidden by default */
+  width: 250px;
+  height: 100%;
+  background-color: var(--ion-color-primary);
+  /* Using primary color */
+  color: white;
+  transition: right 0.3s ease-in-out;
+  z-index: 1000;
+  padding: 20px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar.open {
+  right: 0;
+  /* Slide in */
+}
+
+.sidebar .close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.sidebar .close-button img {
+  height: 25px;
+  /* Adjust close icon size */
+  filter: invert(100%);
+  /* Make close icon white */
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 50px;
+}
+
+.sidebar ul li {
+  margin-bottom: 20px;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2em;
+}
+
+.sidebar ul li a:hover {
+  text-decoration: underline;
+}

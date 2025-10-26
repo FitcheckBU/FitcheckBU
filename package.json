@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
@@ -21,6 +21,7 @@
     "@capacitor/haptics": "7.0.2",
     "@capacitor/keyboard": "7.0.3",
     "@capacitor/status-bar": "7.0.3",
+    "@eslint/js": "^9.38.0",
     "@ionic/react": "^8.5.0",
     "@ionic/react-router": "^8.5.0",
     "@types/react-router": "^5.1.20",
@@ -31,6 +32,7 @@
     "react-dom": "19.0.0",
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4",
+    "serve": "^14.2.5",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
@@ -42,6 +44,7 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vitejs/plugin-legacy": "^5.0.0",
     "@vitejs/plugin-react": "^4.0.1",
     "@vitest/coverage-v8": "^3.2.4",
@@ -70,7 +73,7 @@
   "description": "An Ionic project",
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix --no-warn-ignored --max-warnings=0 --ignore-pattern 'eslint.config.*' --ignore-pattern 'vite.config.*' --ignore-pattern 'cypress.config.*' --ignore-pattern 'functions/**'",
+      "eslint --fix --ignore-pattern 'eslint.config.*' --ignore-pattern 'vite.config.*' --ignore-pattern 'cypress.config.*' --ignore-pattern 'functions/**'",
       "prettier --write"
     ],
     "*.{json,md,css,html}": [

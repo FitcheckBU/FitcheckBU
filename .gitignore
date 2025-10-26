@@ -30,3 +30,16 @@ firebase-debug.log*
 
 .vercel
 automatic-map-473619-b7-firebase-adminsdk-fbsvc-b9ac9f3c28.json
+
+# Localhost certificates
+localhost+1-key.pem
+localhost+1.pem
+
+# Replit files
+automatic-map-473619-b7-firebase-adminsdk-fbsvc-b9ac9f3c28.json.replit
+replit.md
+FitcheckBU/
+attached_assets/
+replit.md.backup
+.replit
+design_guidelines.md

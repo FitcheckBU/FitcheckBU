@@ -1,0 +1,109 @@
+/* Item Card Styles - Matching Figma */
+
+ion-item.figma-item-card {
+  --background: #ffffff;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #3b82f6;
+  overflow: hidden;
+}
+
+ion-item.figma-item-card.sold {
+  border-left-color: #ef4444;
+}
+
+ion-item.figma-item-card.pending {
+  border-left-color: #f59e0b;
+}
+
+.figma-card-content {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.figma-image-container {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.figma-item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.figma-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5e7eb;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.figma-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.figma-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.figma-item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.figma-detail-row {
+  display: flex;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.figma-detail-label {
+  color: #6b7280;
+  min-width: 70px;
+}
+
+.figma-detail-value {
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* Swipeable action styles handled by Ionic */
+ion-item-sliding {
+  margin-bottom: 12px;
+}
+
+ion-item-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+}
+
+ion-item-option ion-icon {
+  font-size: 24px;
+}

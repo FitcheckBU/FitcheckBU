@@ -77,6 +77,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
         category: "uncategorized",
         brand: "",
         color: "",
+        size: "",
         condition: "unknown",
         price: 0,
         decade: "",
@@ -122,7 +123,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
         ) : (
           <IonIcon slot="start" icon={cloudUploadSharp} />
         )}
-        {uploading ? "Uploading..." : "Upload selected"}
+        {uploading ? "Uploading..." : "Upload"}
       </IonButton>
       {status.message && (
         <IonText color={status.tone === "" ? undefined : status.tone}>

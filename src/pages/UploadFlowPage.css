@@ -1,0 +1,98 @@
+/* src/pages/Upload.css */
+
+.upload-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.back-button {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.upload-page-content {
+  height: 100%;
+}
+
+.upload-flow-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.upload-flow-content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.tap-to-scan-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.tap-to-scan-text {
+  text-align: center;
+}
+
+.tap-to-scan-text p {
+  margin: 0;
+}
+
+.qr-icon {
+  width: 100px;
+  height: 100px;
+}
+
+.clear-all-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.vision-analysis-labels {
+  display: block;
+  white-space: pre-wrap;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.image-grid-item {
+  border-radius: 12px;
+  padding: 8px;
+  position: relative;
+}
+
+.image-grid-item-img {
+  width: 100%;
+  border-radius: 4px;
+  object-fit: cover;
+  height: 100%;
+}
+
+.remove-image-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  padding: 4px;
+}
