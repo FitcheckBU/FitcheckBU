@@ -73,34 +73,15 @@ ion-textarea {
   margin-top: 4px;
 }
 
-/* Labels Section */
-.labels-spinner {
-  width: 20px;
-  height: 20px;
+ion-input input {
+  padding-left: 12px !important;
+}
+
+.description-spinner {
+  width: 16px;
+  height: 16px;
   margin-left: 8px;
   vertical-align: middle;
-}
-
-.labels-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
-  min-height: 40px;
-}
-
-.labels-container ion-chip {
-  margin: 0;
-}
-
-.add-label-container {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.add-label-container ion-input {
-  flex: 1;
 }
 
 /* Action Buttons */

@@ -7,16 +7,13 @@ import {
   IonSpinner,
   IonLabel,
   IonItem,
-  IonChip,
-  IonIcon,
   IonText,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
 } from "@ionic/react";
-import { closeCircle } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
@@ -42,7 +39,6 @@ interface FormData {
   decade: string;
   style: string;
   description: string;
-  labels: string[];
 }
 
 const ItemConfirmationPage: React.FC = () => {
@@ -52,7 +48,6 @@ const ItemConfirmationPage: React.FC = () => {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [labelsLoaded, setLabelsLoaded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [newLabelInput, setNewLabelInput] = useState("");
   const [formData, setFormData] = useState<FormData>({
     name: "New Item",
     category: "uncategorized",
@@ -64,10 +59,10 @@ const ItemConfirmationPage: React.FC = () => {
     decade: "",
     style: "",
     description: "",
-    labels: [],
   });
+  const initialDataLoaded = useRef(false);
 
-  // Real-time listener for item updates
+  // Listen for item changes from Firestore
   useEffect(() => {
     if (!itemId) return;
 
@@ -77,28 +72,12 @@ const ItemConfirmationPage: React.FC = () => {
         const itemData = { id: snapshot.id, ...data };
         setItem(itemData);
 
-        // Update form data with item data
-        setFormData((prev) => ({
-          name: data.name || prev.name,
-          category: data.category || prev.category,
-          brand: data.brand || prev.brand,
-          color: data.color || prev.color,
-          size: data.size || prev.size,
-          condition: data.condition || prev.condition,
-          price: data.price || prev.price,
-          decade: data.decade || prev.decade,
-          style: data.style || prev.style,
-          description: data.description || prev.description,
-          labels: data.labels || prev.labels,
-        }));
-
-        // Mark labels as loaded when they arrive
-        if (data.labels && data.labels.length > 0 && !labelsLoaded) {
-          setLabelsLoaded(true);
-        }
-
         // Load images
-        if (data.imageStoragePaths && data.imageStoragePaths.length > 0) {
+        if (
+          data.imageStoragePaths &&
+          data.imageStoragePaths.length > 0 &&
+          imageUrls.length === 0
+        ) {
           getItemImageUrls(itemData).then((urls) => {
             setImageUrls(urls);
           });
@@ -107,7 +86,40 @@ const ItemConfirmationPage: React.FC = () => {
     });
 
     return () => unsubscribe();
-  }, [itemId, labelsLoaded]);
+  }, [itemId, imageUrls]);
+
+  // Populate form with initial data
+  useEffect(() => {
+    if (item && !initialDataLoaded.current) {
+      setFormData({
+        name: item.name || "New Item",
+        category: item.category || "uncategorized",
+        brand: item.brand || "",
+        color: item.color || "",
+        size: item.size || "",
+        condition: item.condition || "unknown",
+        price: item.price || 0,
+        decade: item.decade || "",
+        style: item.style || "",
+        description: item.description || "",
+      });
+      initialDataLoaded.current = true;
+    }
+  }, [item]);
+
+  // Append AI labels to description when they arrive
+  useEffect(() => {
+    if (item && !labelsLoaded) {
+      const labels = item.labels || [];
+      if (labels.length > 0) {
+        setLabelsLoaded(true);
+        setFormData((prev) => ({
+          ...prev,
+          description: ((prev.description || "") + labels.join(", ")).trim(),
+        }));
+      }
+    }
+  }, [item, labelsLoaded]);
 
   const handleInputChange = (
     field: keyof FormData,
@@ -116,23 +128,6 @@ const ItemConfirmationPage: React.FC = () => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-    }));
-  };
-
-  const handleAddLabel = () => {
-    if (newLabelInput.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        labels: [...prev.labels, newLabelInput.trim()],
-      }));
-      setNewLabelInput("");
-    }
-  };
-
-  const handleRemoveLabel = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      labels: prev.labels.filter((_, i) => i !== index),
     }));
   };
 
@@ -318,7 +313,12 @@ const ItemConfirmationPage: React.FC = () => {
           </IonItem>
 
           <IonItem>
-            <IonLabel position="stacked">Description</IonLabel>
+            <IonLabel position="stacked">
+              Description
+              {!labelsLoaded && (
+                <IonSpinner name="crescent" className="description-spinner" />
+              )}
+            </IonLabel>
             <IonTextarea
               value={formData.description}
               onIonInput={(e) =>
@@ -328,54 +328,6 @@ const ItemConfirmationPage: React.FC = () => {
               rows={4}
             />
           </IonItem>
-        </IonCardContent>
-      </IonCard>
-
-      {/* Labels Section */}
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>
-            AI-Generated Labels
-            {!labelsLoaded && (
-              <IonSpinner name="crescent" className="labels-spinner" />
-            )}
-          </IonCardTitle>
-        </IonCardHeader>
-        <IonCardContent>
-          {!labelsLoaded ? (
-            <IonText color="medium">
-              <p>Processing images with Vision AI... This may take a moment.</p>
-            </IonText>
-          ) : (
-            <>
-              <div className="labels-container">
-                {formData.labels.map((label, index) => (
-                  <IonChip key={index}>
-                    <IonLabel>{label}</IonLabel>
-                    <IonIcon
-                      icon={closeCircle}
-                      onClick={() => handleRemoveLabel(index)}
-                    />
-                  </IonChip>
-                ))}
-              </div>
-              <div className="add-label-container">
-                <IonInput
-                  value={newLabelInput}
-                  onIonInput={(e) => setNewLabelInput(e.detail.value!)}
-                  placeholder="Add custom label"
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleAddLabel();
-                    }
-                  }}
-                />
-                <IonButton size="small" onClick={handleAddLabel}>
-                  Add
-                </IonButton>
-              </div>
-            </>
-          )}
         </IonCardContent>
       </IonCard>
 
