@@ -57,32 +57,43 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
     try {
       // Generate one sessionId shared by all uploaded photos
       const sessionId = uuidv4();
-      const storagePaths: string[] = [];
+
+      // Upload to temp location first
+      const tempPaths: string[] = [];
       const uploads = files.map(async ({ file, name }) => {
         const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const storagePath = `uploads/${sessionId}/${safeName}`;
-        const storageRef = ref(storage, storagePath);
-        storagePaths.push(storagePath);
+        // Upload to temp folder instead of uploads
+        const tempPath = `temp/${sessionId}/${safeName}`;
+        const storageRef = ref(storage, tempPath);
+        tempPaths.push(tempPath);
         await uploadBytes(storageRef, file);
       });
 
       await Promise.all(uploads);
+
+      // Create draft item in Firestore
       const itemId = await addItem({
-        name: "New item",
+        name: "New Item",
         category: "uncategorized",
         brand: "",
         color: "",
+        size: "",
         condition: "unknown",
         price: 0,
         decade: "",
         style: "",
+        status: "draft", // Mark as draft until user fills details
         sessionId,
-        imageStoragePaths: storagePaths,
+        imageStoragePaths: tempPaths, // Store temp paths
       });
+
+      // Cloud Function will automatically move images from temp to items/{itemId}
+      // This happens in the background after item creation
+
       onItemCreated?.(itemId, sessionId);
       onUploadComplete?.();
       setStatus({
-        message: `${files.length} image${files.length > 1 ? "s" : ""} uploaded successfully.`,
+        message: `${files.length} image${files.length > 1 ? "s" : ""} uploaded. Complete item details to publish.`,
         tone: "success",
       });
     } catch (error) {
@@ -112,7 +123,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
         ) : (
           <IonIcon slot="start" icon={cloudUploadSharp} />
         )}
-        {uploading ? "Uploading..." : "Upload selected"}
+        {uploading ? "Uploading..." : "Upload"}
       </IonButton>
       {status.message && (
         <IonText color={status.tone === "" ? undefined : status.tone}>

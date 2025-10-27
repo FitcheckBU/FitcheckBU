@@ -1,0 +1,29 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // OLD uploads folder
+    match /uploads/{sessionId}/{fileName} {
+      allow read: if true;
+      allow write: if true  // Allow anyone to upload for now
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+    
+    // NEW temp folder
+    match /temp/{sessionId}/{fileName} {
+      allow read: if true;
+      allow write: if true  // Allow anyone to upload for now
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Permanent items folder
+    match /items/{itemId}/{fileName} {
+      allow read: if true;
+      allow write: if true  // Allow anyone for now
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
