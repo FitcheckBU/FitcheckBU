@@ -16,11 +16,13 @@ import "./ItemCard.css";
 interface ItemCardProps {
   item: InventoryItem;
   onClick?: () => void;
+  onEdit?: () => void;
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({
   item,
   onClick,
+  onEdit,
 }) => {
   const [imageUrl, setImageUrl] = useState<string>("");
 
@@ -46,7 +48,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log("Edit item:", item.id);
+    onEdit?.();
   };
 
   const handleView = (e: React.MouseEvent) => {

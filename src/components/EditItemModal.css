@@ -1,0 +1,119 @@
+/* Edit Item Modal Styles */
+
+.edit-toolbar {
+  --background: #1b4d4d;
+  --color: #f5e6c8;
+}
+
+.edit-modal-content {
+  --background: #f5e6c8;
+}
+
+.edit-form-container {
+  padding: 20px 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.edit-form-item {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.edit-form-item-textarea {
+  --padding-bottom: 16px;
+}
+
+.edit-form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1b4d4d;
+  margin-bottom: 8px;
+}
+
+.required-asterisk {
+  color: #ff5252;
+  margin-left: 2px;
+}
+
+.edit-form-input,
+.edit-form-select,
+.edit-form-textarea {
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: 15px;
+  color: #1b4d4d;
+}
+
+.edit-form-input::part(native),
+.edit-form-textarea::part(native) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.edit-form-input::placeholder,
+.edit-form-textarea::placeholder {
+  color: rgba(27, 77, 77, 0.5);
+  opacity: 1;
+}
+
+.edit-form-select {
+  width: 100%;
+}
+
+.edit-form-textarea {
+  margin-top: 8px;
+}
+
+.edit-form-actions {
+  margin-top: 24px;
+  margin-bottom: 32px;
+}
+
+.edit-save-button {
+  --background: #1b4d4d;
+  --background-activated: #143939;
+  --background-hover: #163f3f;
+  --color: #f5e6c8;
+  --border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  height: 48px;
+  margin: 0;
+}
+
+.edit-save-button::part(native) {
+  border-radius: 12px;
+}
+
+.edit-save-button ion-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.edit-save-button:disabled {
+  --background: rgba(27, 77, 77, 0.5);
+  --color: rgba(245, 230, 200, 0.7);
+}
+
+.ios .edit-form-item {
+  --min-height: auto;
+}
+
+.md .edit-form-item {
+  --min-height: auto;
+}
+
+@media (min-width: 768px) {
+  .edit-form-container {
+    padding: 24px 20px;
+  }
+}
