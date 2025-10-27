@@ -21,6 +21,7 @@ interface ItemDetailModalProps {
   item: InventoryItem | null;
   onClose: () => void;
   onUpdate: () => void;
+  onEdit?: () => void;
 }
 
 const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
@@ -28,6 +29,7 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
   item,
   onClose,
   onUpdate,
+  onEdit,
 }) => {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
@@ -175,10 +177,11 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             expand="block"
             fill="outline"
             className="detail-action-button"
-            data-testid="button-edit-photo"
+            onClick={onEdit}
+            data-testid="button-edit-item"
           >
             <IonIcon slot="start" icon={createOutline} />
-            Edit Photo
+            Edit Item
           </IonButton>
 
           <IonButton

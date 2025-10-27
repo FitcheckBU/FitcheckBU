@@ -11,6 +11,7 @@ import { getAllItems, InventoryItem } from "../lib/inventoryService";
 import ItemCard from "../components/ItemCard";
 import ItemDetailModal from "../components/ItemDetailModal";
 import FilterSheet from "../components/FilterSheet";
+import EditItemModal from "../components/EditItemModal";
 import "./Dashboard.css";
 
 const Dashboard: React.FC = () => {
@@ -20,6 +21,7 @@ const Dashboard: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
 
   // Filter states
   const [activeFilters, setActiveFilters] = useState({
@@ -148,6 +150,7 @@ const Dashboard: React.FC = () => {
               key={item.id}
               item={item}
               onClick={() => setSelectedItem(item)}
+              onEdit={() => setEditingItem(item)}
             />
           ))
         )}
@@ -157,6 +160,17 @@ const Dashboard: React.FC = () => {
         isOpen={!!selectedItem}
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
+        onUpdate={loadItems}
+        onEdit={() => {
+          setEditingItem(selectedItem);
+          setSelectedItem(null);
+        }}
+      />
+
+      <EditItemModal
+        isOpen={!!editingItem}
+        item={editingItem}
+        onClose={() => setEditingItem(null)}
         onUpdate={loadItems}
       />
 
