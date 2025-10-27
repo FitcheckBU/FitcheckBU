@@ -1,12 +1,12 @@
 /* Edit Item Modal Styles */
 
 .edit-toolbar {
-  --background: #1b4d4d;
-  --color: #f5e6c8;
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-secondary);
 }
 
 .edit-modal-content {
-  --background: #f5e6c8;
+  --background: var(--ion-color-secondary);
 }
 
 .edit-form-container {
@@ -16,7 +16,7 @@
 }
 
 .edit-form-item {
-  --background: #ffffff;
+  --background: var(--ion-color-light);
   --border-radius: 12px;
   --padding-start: 16px;
   --padding-end: 16px;
@@ -34,12 +34,12 @@
 .edit-form-label {
   font-size: 14px;
   font-weight: 600;
-  color: #1b4d4d;
+  color: var(--ion-color-primary);
   margin-bottom: 8px;
 }
 
 .required-asterisk {
-  color: #ff5252;
+  color: var(--ion-color-danger);
   margin-left: 2px;
 }
 
@@ -49,7 +49,7 @@
   --padding-start: 0;
   --padding-end: 0;
   font-size: 15px;
-  color: #1b4d4d;
+  color: var(--ion-color-primary);
 }
 
 .edit-form-input::part(native),
@@ -60,7 +60,7 @@
 
 .edit-form-input::placeholder,
 .edit-form-textarea::placeholder {
-  color: rgba(27, 77, 77, 0.5);
+  color: var(--ion-color-medium);
   opacity: 1;
 }
 
@@ -78,10 +78,10 @@
 }
 
 .edit-save-button {
-  --background: #1b4d4d;
-  --background-activated: #143939;
-  --background-hover: #163f3f;
-  --color: #f5e6c8;
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-tint);
+  --color: var(--ion-color-secondary);
   --border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
@@ -100,8 +100,8 @@
 }
 
 .edit-save-button:disabled {
-  --background: rgba(27, 77, 77, 0.5);
-  --color: rgba(245, 230, 200, 0.7);
+  --background: var(--ion-color-medium);
+  --color: var(--ion-color-light);
 }
 
 .ios .edit-form-item {
