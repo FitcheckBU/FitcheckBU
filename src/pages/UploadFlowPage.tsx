@@ -333,10 +333,11 @@ const UploadFlowPage: React.FC = () => {
       <StorageUploadButton
         files={PHOTO_STAGES.map(({ role }) => roleSelections[role])
           .filter((selection): selection is SelectedImage => Boolean(selection))
-          .map(({ id, name, file }) => ({
+          .map(({ id, name, file, role }) => ({
             id,
             name,
             file,
+            role,
           }))}
         disabled={uploading || !allRolesFilled}
         onUploadingChange={setUploading}
