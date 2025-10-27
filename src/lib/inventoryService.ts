@@ -10,8 +10,13 @@ import {
   Timestamp,
   updateDoc,
   where,
+  orderBy,
+  limit,
+  startAfter,
+  QueryDocumentSnapshot,
 } from "firebase/firestore";
-import { db } from "./firebaseClient";
+import { db, storage } from "./firebaseClient";
+import { getDownloadURL, ref as storageRef } from "firebase/storage";
 
 //-------------TYPES------------------
 export interface InventoryItem {
@@ -31,6 +36,7 @@ export interface InventoryItem {
   labels?: string[]; // Vision-generated tags
   sessionId?: string; // upload session identifier
   imageStoragePaths?: string[]; // Storage paths for uploaded images
+  status?: "draft" | "active" | "archived";
 
   //additional fields can be added later
 
@@ -183,4 +189,74 @@ export const markAsSold = async (itemId: string): Promise<void> => {
 //mark as unsold(available)
 export const markAsUnsold = async (itemId: string): Promise<void> => {
   await updateItem(itemId, { isSold: false });
+};
+
+//---------------COMPLEX OPERATIIONS------------------//
+
+//Paginated fetch
+export const getItemsPaginated = async (
+  pageSize: number = 20,
+  lastDoc?: QueryDocumentSnapshot,
+): Promise<{
+  items: InventoryItem[];
+  lastDoc: QueryDocumentSnapshot | null;
+}> => {
+  const itemsRef = collection(db, "items");
+
+  let q = query(itemsRef, orderBy("dateAdded", "desc"), limit(pageSize));
+
+  if (lastDoc) {
+    q = query(q, startAfter(lastDoc));
+  }
+
+  const snapshot = await getDocs(q);
+
+  return {
+    items: snapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        }) as InventoryItem,
+    ),
+    lastDoc: snapshot.docs[snapshot.docs.length - 1] || null,
+  };
+};
+
+//search by label
+export const searchItemsByLabels = async (
+  labels: string[],
+): Promise<InventoryItem[]> => {
+  const itemsRef = collection(db, "items");
+  const q = query(
+    itemsRef,
+    where("labels", "array-contains-any", labels.slice(0, 10)), // Max 10 labels
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      }) as InventoryItem,
+  );
+};
+
+//get image
+export const getItemImageUrls = async (
+  item: InventoryItem,
+): Promise<string[]> => {
+  if (!item.imageStoragePaths || item.imageStoragePaths.length === 0) {
+    return [];
+  }
+
+  try {
+    const urlPromises = item.imageStoragePaths.map((path) =>
+      getDownloadURL(storageRef(storage, path)),
+    );
+    return await Promise.all(urlPromises);
+  } catch (error) {
+    console.error("Error getting image URLs:", error);
+    return [];
+  }
 };

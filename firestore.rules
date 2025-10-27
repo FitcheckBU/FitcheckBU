@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Items collection - public read and write for now
+    match /items/{itemId} {
+      allow read: if true;
+      allow create, update, delete: if true;  // Allow anyone for now
+    }
+    
+    // Upload sessions
+    match /uploadSessions/{sessionId} {
+      allow read, write: if true;  // Allow anyone for now
+    }
+  }
+}
