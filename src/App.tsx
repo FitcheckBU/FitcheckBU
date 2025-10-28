@@ -5,6 +5,7 @@ import CameraPage from "./pages/CameraPage";
 import { PhotoProvider } from "./context/PhotoContext";
 import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
+import Scan from "./pages/Scan";
 import UploadFlow from "./pages/UploadFlowPage";
 import MainLayout from "./components/MainLayout";
 
@@ -70,6 +71,15 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <UploadFlow />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/scan"
+              render={() => (
+                <MainLayout>
+                  <Scan />
                 </MainLayout>
               )}
             />

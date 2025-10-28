@@ -21,6 +21,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               Upload Page
             </Link>
           </li>
+          <li>
+            <Link to="/scan" onClick={onClose}>
+              Scan Page
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>
