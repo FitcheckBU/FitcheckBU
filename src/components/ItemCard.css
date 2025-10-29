@@ -7,7 +7,7 @@ ion-item.figma-item-card {
   --inner-padding-end: 0;
   margin: 0;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px var(--item-card-drop-shadow-color);
   border-left: 4px solid #3b82f6;
   overflow: hidden;
 }
