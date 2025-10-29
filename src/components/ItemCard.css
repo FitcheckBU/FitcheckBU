@@ -8,16 +8,7 @@ ion-item.figma-item-card {
   margin: 0;
   border-radius: 12px;
   box-shadow: 0 6px 12px 0 var(--item-card-drop-shadow-color);
-  border-left: 4px solid #3b82f6;
   overflow: hidden;
-}
-
-ion-item.figma-item-card.sold {
-  border-left-color: #ef4444;
-}
-
-ion-item.figma-item-card.pending {
-  border-left-color: #f59e0b;
 }
 
 .figma-card-content {
