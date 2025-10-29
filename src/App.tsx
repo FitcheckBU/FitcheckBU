@@ -7,6 +7,7 @@ import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
 import UploadFlow from "./pages/UploadFlowPage";
 import MainLayout from "./components/MainLayout";
+import SortFilterPage from "./pages/SortFilterPage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -52,6 +53,15 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <Dashboard />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/sort-filter"
+              render={() => (
+                <MainLayout>
+                  <SortFilterPage />
                 </MainLayout>
               )}
             />
