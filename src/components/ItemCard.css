@@ -7,7 +7,7 @@ ion-item.figma-item-card {
   --inner-padding-end: 0;
   margin: 0;
   border-radius: 12px;
-  box-shadow: 0 4px 12px var(--item-card-drop-shadow-color);
+  box-shadow: 0 6px 12px 0 var(--item-card-drop-shadow-color);
   border-left: 4px solid #3b82f6;
   overflow: hidden;
 }
@@ -95,6 +95,7 @@ ion-item.figma-item-card.pending {
 /* Swipeable action styles handled by Ionic */
 ion-item-sliding {
   margin-bottom: 12px;
+  overflow: visible;
 }
 
 ion-item-option {
