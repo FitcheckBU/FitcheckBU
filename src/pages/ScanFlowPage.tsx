@@ -13,7 +13,7 @@ const ScanFlowPage: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonBackButton defaultHref="/scan" slot="start" />
+          <IonBackButton defaultHref="/scan" />
           <IonTitle>Scan Flow</IonTitle>
         </IonToolbar>
       </IonHeader>
