@@ -5,14 +5,14 @@
 }
 
 .filter-sheet-content {
-  --background: var(--ion-color-secondary);
-  --padding-top: 16px;
-  --padding-bottom: 100px;
+  --background: transparent;
+  --padding-top: 0;
+  --padding-bottom: 0;
 }
 
 .filter-section {
   margin-bottom: 24px;
-  padding: 0 16px;
+  padding: 0;
 }
 
 .filter-section-title {
@@ -52,7 +52,7 @@
 
 .chip-selected {
   background-color: var(--ion-color-primary);
-  color: var(--ion-color-secondary);
+  color: white;
 }
 
 .filter-colors-grid {
@@ -84,25 +84,42 @@
 }
 
 .filter-actions-footer {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 16px;
-  background-color: var(--ion-color-secondary);
-  border-top: 1px solid #d4c5a8;
+  padding: 16px 24px 24px 24px;
+  background-color: white;
+  border-radius: 0 0 12px 12px;
   display: flex;
   gap: 12px;
   z-index: 10;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .filter-reset-button {
   --color: var(--ion-color-primary);
   --border-color: var(--ion-color-primary);
+  --border-radius: 20px;
+  --border-width: 1px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  height: auto;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
 }
 
 .filter-apply-button {
   --background: var(--ion-color-primary);
   --background-activated: #153d3d;
-  --color: var(--ion-color-secondary);
+  --color: white;
+  --border-radius: 20px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  height: auto;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
 }

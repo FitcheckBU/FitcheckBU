@@ -4,110 +4,127 @@ import {
   IonRefresher,
   IonRefresherContent,
   RefresherEventDetail,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from "@ionic/react";
 import filterSvg from "../../public/filter.svg"; // Import the SVG directly
-import { useState, useEffect } from "react";
-import { getAllItems, InventoryItem } from "../lib/inventoryService";
+import { useState, useEffect, useRef } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import {
+  getItemsPaginatedWithFilters,
+  InventoryItem,
+} from "../lib/inventoryService";
+import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
 import ItemDetailModal from "../components/ItemDetailModal";
-import FilterSheet from "../components/FilterSheet";
 import EditItemModal from "../components/EditItemModal";
 import "./Dashboard.css";
 
+const PAGE_SIZE = 30;
+
+type FilterState = {
+  sizes: string[];
+  sexes: string[];
+  colors: string[];
+  materials: string[];
+};
+
+type DashboardRouteState =
+  | {
+      appliedFilters: FilterState;
+    }
+  | {
+      resetFilters: true;
+    }
+  | undefined;
+
 const Dashboard: React.FC = () => {
+  const history = useHistory();
+  const location = useLocation<DashboardRouteState>();
   const [items, setItems] = useState<InventoryItem[]>([]);
-  const [filteredItems, setFilteredItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-  const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Pagination states
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null);
+  const [hasMoreItems, setHasMoreItems] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const initialLoad = useRef(true);
 
   // Filter states
-  const [activeFilters, setActiveFilters] = useState({
-    sizes: [] as string[],
-    sexes: [] as string[],
-    colors: [] as string[],
-    materials: [] as string[],
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    sizes: [],
+    sexes: [],
+    colors: [],
+    materials: [],
   });
 
   useEffect(() => {
-    loadItems();
-  }, []);
+    const state = location.state;
+    if (state && "appliedFilters" in state) {
+      setActiveFilters(state.appliedFilters);
+      history.replace({ ...location, state: undefined });
+    } else if (state && "resetFilters" in state) {
+      setActiveFilters({ sizes: [], sexes: [], colors: [], materials: [] });
+      history.replace({ ...location, state: undefined });
+    }
+  }, [history, location]);
 
   useEffect(() => {
-    applyFilters();
-  }, [items, searchText, activeFilters]);
+    if (initialLoad.current) {
+      loadItems(true);
+      initialLoad.current = false;
+    } else {
+      loadItems(true);
+    }
+  }, [searchText, activeFilters]);
 
-  const loadItems = async () => {
+  const loadItems = async (reset: boolean = false) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const fetchedItems = await getAllItems();
-      setItems(fetchedItems);
+      const currentLastDoc = reset ? undefined : (lastDoc ?? undefined);
+      const {
+        items: newItems,
+        lastDoc: newLastDoc,
+        hasMore,
+      } = await getItemsPaginatedWithFilters(
+        PAGE_SIZE,
+        currentLastDoc,
+        searchText,
+        activeFilters,
+      );
+
+      setItems((prevItems) => (reset ? newItems : [...prevItems, ...newItems]));
+      setLastDoc(newLastDoc);
+      setHasMoreItems(hasMore);
     } catch (error) {
       console.error("Failed to load items:", error);
+      setError(
+        "Failed to load items: " +
+          (error instanceof Error ? error.message : "Unknown error"),
+      );
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
-  const applyFilters = () => {
-    let filtered = [...items];
-
-    // Apply search filter
-    if (searchText) {
-      const search = searchText.toLowerCase();
-      filtered = filtered.filter(
-        (item) =>
-          item.name?.toLowerCase().includes(search) ||
-          item.brand?.toLowerCase().includes(search) ||
-          item.category?.toLowerCase().includes(search) ||
-          item.color?.toLowerCase().includes(search),
-      );
-    }
-
-    // Apply size filter
-    if (activeFilters.sizes.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.sizes.some((size) =>
-          item.category?.toLowerCase().includes(size.toLowerCase()),
-        ),
-      );
-    }
-
-    // Apply color filter
-    if (activeFilters.colors.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.colors.some((color) =>
-          item.color?.toLowerCase().includes(color.toLowerCase()),
-        ),
-      );
-    }
-
-    // Apply material filter
-    if (activeFilters.materials.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.materials.some(
-          (material) =>
-            item.description?.toLowerCase().includes(material.toLowerCase()) ||
-            item.labels?.some((label) =>
-              label.toLowerCase().includes(material.toLowerCase()),
-            ),
-        ),
-      );
-    }
-
-    setFilteredItems(filtered);
+  const fetchMoreItems = async () => {
+    if (!hasMoreItems || loadingMore) return;
+    setLoadingMore(true);
+    await loadItems();
   };
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
-    await loadItems();
+    await loadItems(true);
     event.detail.complete();
   };
 
-  const handleFilterApply = (filters: typeof activeFilters) => {
-    setActiveFilters(filters);
-    setShowFilterSheet(false);
+  const navigateToFilters = () => {
+    history.push("/sort-filter", { activeFilters });
   };
 
   const hasActiveFilters =
@@ -130,7 +147,7 @@ const Dashboard: React.FC = () => {
           className="dashboard-searchbar"
           data-testid="input-search"
         ></IonSearchbar>
-        <IonButton onClick={() => setShowFilterSheet(true)} color="secondary">
+        <IonButton onClick={navigateToFilters} color="secondary">
           <img
             src={filterSvg}
             alt="Filter"
@@ -140,12 +157,18 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="dashboard-items">
-        {filteredItems.length === 0 && !loading ? (
+        {error ? (
+          <div className="error-state">
+            <p>{error}</p>
+          </div>
+        ) : loading && items.length === 0 ? (
+          <div className="loading-state">Loading items...</div>
+        ) : items.length === 0 && !loading ? (
           <div className="empty-state">
             <p>No items found</p>
           </div>
         ) : (
-          filteredItems.map((item) => (
+          items.map((item) => (
             <ItemCard
               key={item.id}
               item={item}
@@ -154,13 +177,23 @@ const Dashboard: React.FC = () => {
             />
           ))
         )}
+        <IonInfiniteScroll
+          onIonInfinite={fetchMoreItems}
+          threshold="100px"
+          disabled={!hasMoreItems || loadingMore}
+        >
+          <IonInfiniteScrollContent
+            loadingSpinner="bubbles"
+            loadingText="Loading more data..."
+          ></IonInfiniteScrollContent>
+        </IonInfiniteScroll>
       </div>
 
       <ItemDetailModal
         isOpen={!!selectedItem}
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
-        onUpdate={loadItems}
+        onUpdate={() => loadItems(true)}
         onEdit={() => {
           setEditingItem(selectedItem);
           setSelectedItem(null);
@@ -171,15 +204,7 @@ const Dashboard: React.FC = () => {
         isOpen={!!editingItem}
         item={editingItem}
         onClose={() => setEditingItem(null)}
-        onUpdate={loadItems}
-      />
-
-      <FilterSheet
-        isOpen={showFilterSheet}
-        onClose={() => setShowFilterSheet(false)}
-        onApply={handleFilterApply}
-        activeFilters={activeFilters}
-        items={items}
+        onUpdate={() => loadItems(true)}
       />
     </>
   );
