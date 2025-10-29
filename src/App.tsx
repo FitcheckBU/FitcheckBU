@@ -7,6 +7,7 @@ import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
 import Scan from "./pages/Scan";
 import UploadFlow from "./pages/UploadFlowPage";
+import ScanFlowPage from "./pages/ScanFlowPage";
 import MainLayout from "./components/MainLayout";
 
 /* Core CSS required for Ionic components to work properly */
@@ -80,6 +81,15 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <Scan />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/scan-flow"
+              render={() => (
+                <MainLayout>
+                  <ScanFlowPage />
                 </MainLayout>
               )}
             />

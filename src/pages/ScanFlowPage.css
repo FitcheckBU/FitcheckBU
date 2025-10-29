@@ -1,0 +1,16 @@
+.scan-flow-content {
+  --background: #f5f5f5;
+}
+
+.scan-flow-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+}
+
+.scan-flow-placeholder p {
+  color: #666;
+  font-size: 1.2rem;
+}
