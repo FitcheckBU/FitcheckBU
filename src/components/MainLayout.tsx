@@ -13,7 +13,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <IonPage>
-      <TopNavBar onMenuClick={() => setSidebarOpen(true)} />
+      <TopNavBar
+        onMenuClick={() => setSidebarOpen(!isSidebarOpen)}
+        isSidebarOpen={isSidebarOpen}
+      />
+      <div
+        className={`page-overlay ${isSidebarOpen ? "active" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
       <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
       <IonContent className="page-content">{children}</IonContent>
     </IonPage>
