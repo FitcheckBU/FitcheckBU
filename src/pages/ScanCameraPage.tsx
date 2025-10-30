@@ -11,7 +11,6 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { cameraReverse, checkmarkDoneCircle } from "ionicons/icons";
-import { createWorker } from "tesseract.js";
 import "./ScanCameraPage.css";
 
 const ScanCameraPage: React.FC = () => {
@@ -91,23 +90,33 @@ const ScanCameraPage: React.FC = () => {
         frameHeight, // Destination rectangle
       );
 
-      // Convert cropped canvas to image data
+      // Convert cropped canvas to base64 without the data URL prefix
       const croppedImageData = cropCanvas.toDataURL("image/png");
+      const base64Image = croppedImageData.split(",")[1];
 
-      // Run OCR on the cropped image
-      const worker = await createWorker("eng");
+      // Call your Cloud Function that uses Google Cloud Vision
+      // Update this URL to match your Cloud Function endpoint
+      const response = await fetch(
+        "https://us-central1-automatic-map-473619-b7.cloudfunctions.net/extractTextHttp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            image: base64Image,
+          }),
+        },
+      );
 
-      // Configure Tesseract for better text recognition
-      await worker.setParameters({
-        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ",
-      });
+      if (!response.ok) {
+        throw new Error("Vision API request failed");
+      }
 
-      const {
-        data: { text },
-      } = await worker.recognize(croppedImageData);
-      await worker.terminate();
+      const data = await response.json();
+      const text = data.text || "";
 
-      console.log("OCR Raw text:", text);
+      console.log("Google Vision Raw text:", text);
 
       // Clean up the text - remove spaces and special characters
       const cleanText = text
@@ -115,7 +124,7 @@ const ScanCameraPage: React.FC = () => {
         .replace(/[^A-Z0-9]/gi, "") // Keep only alphanumeric
         .toUpperCase();
 
-      console.log("OCR Cleaned text:", cleanText);
+      console.log("Cleaned text:", cleanText);
 
       // Look for patterns that match our barcode format (8-15 characters)
       if (cleanText.length >= 8) {
@@ -125,7 +134,7 @@ const ScanCameraPage: React.FC = () => {
 
       return null;
     } catch (error) {
-      console.error("OCR Error:", error);
+      console.error("Vision API Error:", error);
       return null;
     }
   };
