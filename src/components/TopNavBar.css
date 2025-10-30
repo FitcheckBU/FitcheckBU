@@ -15,7 +15,7 @@
 }
 
 .navbar-logo {
-  height: 40px;
+  height: 30px;
   cursor: pointer;
   margin-left: 16px;
 }
@@ -23,4 +23,11 @@
 .navbar-hamburger {
   height: 20px;
   margin-right: 16px;
+  filter: invert(1);
+  /* Ensure icons are white on primary background */
+  transition: transform 0.2s ease;
+}
+
+.navbar-hamburger:hover {
+  transform: scale(1.1);
 }

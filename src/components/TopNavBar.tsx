@@ -4,9 +4,13 @@ import "./TopNavBar.css";
 
 interface TopNavBarProps {
   onMenuClick: () => void;
+  isSidebarOpen: boolean;
 }
 
-export const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuClick }) => {
+export const TopNavBar: React.FC<TopNavBarProps> = ({
+  onMenuClick,
+  isSidebarOpen,
+}) => {
   const history = useHistory();
 
   const goHome = () => {
@@ -24,7 +28,11 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuClick }) => {
         />
         <IonButtons slot="end">
           <IonButton onClick={onMenuClick} color="primary">
-            <img src="/hamburger.svg" alt="Menu" className="navbar-hamburger" />
+            <img
+              src={isSidebarOpen ? "/close.svg" : "/hamburger.svg"}
+              alt={isSidebarOpen ? "Close" : "Menu"}
+              className="navbar-hamburger"
+            />
           </IonButton>
         </IonButtons>
       </IonToolbar>
