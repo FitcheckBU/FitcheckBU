@@ -6,16 +6,34 @@ import {
   IonBackButton,
   IonInput,
 } from "@ionic/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import { markAsSoldByBarcode } from "../lib/inventoryService";
 import "./ScanFlowPage.css";
+
+// TapToScan component
+const TapToScanBarcode: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+  <div className="tap-to-scan-container" onClick={onClick}>
+    <IonText color="primary" className="tap-to-scan-text">
+      <p>Tap to Scan Barcode</p>
+    </IonText>
+    <img src="/qr_icon.svg" alt="Scan Barcode" className="qr-icon" />
+  </div>
+);
 
 // ManualEntry component
 const ManualEntry: React.FC<{
   onSubmit: (itemId: string) => void;
   loading: boolean;
-}> = ({ onSubmit, loading }) => {
-  const [itemId, setItemId] = useState("");
+  initialValue?: string;
+}> = ({ onSubmit, loading, initialValue = "" }) => {
+  const [itemId, setItemId] = useState(initialValue);
+
+  useEffect(() => {
+    if (initialValue) {
+      setItemId(initialValue);
+    }
+  }, [initialValue]);
 
   const handleSubmit = () => {
     if (itemId.trim()) {
@@ -62,6 +80,22 @@ const ScanFlowPage: React.FC = () => {
     color: "success" | "danger";
   } | null>(null);
   const [processedItemId, setProcessedItemId] = useState<string | null>(null);
+  const history = useHistory();
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+  const isCameraMode = queryParams.get("mode") === "camera";
+
+  // Get scanned barcode from location state (if coming from camera)
+  const locationState = location.state as
+    | { scannedBarcode?: string }
+    | undefined;
+  const scannedBarcode = locationState?.scannedBarcode;
+
+  const triggerCamera = () => {
+    if (loading) return;
+    history.push("/scan-camera");
+  };
 
   const handleMarkAsSold = async (itemId: string) => {
     setLoading(true);
@@ -88,6 +122,8 @@ const ScanFlowPage: React.FC = () => {
   const handleReset = () => {
     setMessage(null);
     setProcessedItemId(null);
+    // Clear location state
+    history.replace(location.pathname + location.search, {});
   };
 
   return (
@@ -120,7 +156,15 @@ const ScanFlowPage: React.FC = () => {
 
       {!processedItemId ? (
         <div className="scan-flow-content">
-          <ManualEntry onSubmit={handleMarkAsSold} loading={loading} />
+          {isCameraMode ? (
+            <TapToScanBarcode onClick={triggerCamera} />
+          ) : (
+            <ManualEntry
+              onSubmit={handleMarkAsSold}
+              loading={loading}
+              initialValue={scannedBarcode}
+            />
+          )}
         </div>
       ) : (
         <div className="scan-flow-content">

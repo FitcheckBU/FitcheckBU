@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useRef, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
@@ -9,19 +8,11 @@ import {
   IonFabButton,
   IonText,
   IonToast,
+  IonSpinner,
 } from "@ionic/react";
 import { cameraReverse, checkmarkDoneCircle } from "ionicons/icons";
+import { createWorker } from "tesseract.js";
 import "./ScanCameraPage.css";
-
-// Simple barcode detection using canvas image analysis
-const detectBarcodeFromImage = (imageData: ImageData): string | null => {
-  // This is a simplified barcode detection
-  // In production, you'd use a library like @zxing/library or quagga2
-  // For now, return null and rely on manual entry
-  // TODO: Implement proper barcode scanning library
-  // instead of placeholder - we will use OCR as a placeholder while we wait on barcode hardware/software setup
-  return null;
-};
 
 const ScanCameraPage: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -29,11 +20,11 @@ const ScanCameraPage: React.FC = () => {
   const [facingMode, setFacingMode] = useState<"user" | "environment">(
     "environment",
   );
-  const [scannedBarcodes, setScannedBarcodes] = useState<string[]>([]);
+  const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [isScanning, setIsScanning] = useState(false);
   const history = useHistory();
-  const scanningIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -56,50 +47,81 @@ const ScanCameraPage: React.FC = () => {
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
-      if (scanningIntervalRef.current) {
-        clearInterval(scanningIntervalRef.current);
-      }
     };
   }, [facingMode]);
 
-  const handleCaptureScan = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
+  const extractBarcodeText = async (
+    imageData: string,
+  ): Promise<string | null> => {
+    try {
+      const worker = await createWorker("eng");
+      const {
+        data: { text },
+      } = await worker.recognize(imageData);
+      await worker.terminate();
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Clean up the text - remove spaces and special characters
+      const cleanText = text
+        .replace(/\s+/g, "") // Remove all whitespace
+        .replace(/[^A-Z0-9]/gi, "") // Keep only alphanumeric
+        .toUpperCase();
 
-      const context = canvas.getContext("2d");
-      if (context) {
-        context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-        const imageData = context.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height,
-        );
+      // Look for patterns that match our barcode format (8-15 characters)
+      const barcodePattern = /[A-Z0-9]{8,15}/i;
+      const match = cleanText.match(barcodePattern);
 
-        const barcode = detectBarcodeFromImage(imageData);
-
-        if (barcode) {
-          setScannedBarcodes((prev) => [...prev, barcode]);
-          setToastMessage(`Scanned: ${barcode}`);
-          setShowToast(true);
-        } else {
-          setToastMessage("No barcode detected. Try manual entry.");
-          setShowToast(true);
-        }
+      if (match) {
+        // Take first 12 characters to match the barcode format
+        return match[0].substring(0, 12);
       }
+
+      return null;
+    } catch (error) {
+      console.error("OCR Error:", error);
+      return null;
     }
   };
 
+  const handleCaptureScan = async () => {
+    if (isScanning || !videoRef.current || !canvasRef.current) return;
+
+    setIsScanning(true);
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const context = canvas.getContext("2d");
+    if (context) {
+      context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      const imageData = canvas.toDataURL("image/png");
+
+      setToastMessage("Scanning barcode...");
+      setShowToast(true);
+
+      const barcode = await extractBarcodeText(imageData);
+
+      if (barcode && barcode.length >= 8) {
+        setScannedBarcode(barcode);
+        setToastMessage(`Scanned: ${barcode}`);
+        setShowToast(true);
+      } else {
+        setToastMessage("No barcode detected. Try again or use manual entry.");
+        setShowToast(true);
+      }
+    }
+
+    setIsScanning(false);
+  };
+
   const handleDone = () => {
-    if (scannedBarcodes.length > 0) {
-      // Navigate back with scanned barcodes
+    if (scannedBarcode) {
+      // Navigate to scan-flow with the scanned barcode
       history.push({
         pathname: "/scan-flow",
-        state: { scannedBarcodes },
+        search: "?mode=manual",
+        state: { scannedBarcode },
       });
     } else {
       history.goBack();
@@ -131,7 +153,10 @@ const ScanCameraPage: React.FC = () => {
           <div className="barcode-scanning-overlay">
             <div className="scanning-frame"></div>
             <IonText color="light" className="scanning-instruction">
-              <p>Align barcode within frame</p>
+              <p>Align barcode text within frame</p>
+              <p style={{ fontSize: "12px", marginTop: "4px" }}>
+                Focus on the numbers below the barcode
+              </p>
             </IonText>
           </div>
         </div>
@@ -156,17 +181,17 @@ const ScanCameraPage: React.FC = () => {
             onClick={handleCaptureScan}
             className="scan-button"
             color="primary"
+            disabled={isScanning}
           >
-            Scan
+            {isScanning ? <IonSpinner name="crescent" /> : "Scan"}
           </IonFabButton>
         </IonFab>
 
         {/* Bottom-Right Done Button */}
-        {scannedBarcodes.length > 0 && (
+        {scannedBarcode && (
           <IonFab vertical="bottom" horizontal="end" slot="fixed">
             <IonFabButton onClick={handleDone} color="success">
               <IonIcon icon={checkmarkDoneCircle} />
-              <IonText>{scannedBarcodes.length}</IonText>
             </IonFabButton>
           </IonFab>
         )}

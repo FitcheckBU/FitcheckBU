@@ -9,10 +9,18 @@ const Scan: React.FC = () => {
     <div className="scan-selection-container">
       <IonButton
         expand="block"
-        onClick={() => history.push("/scan-flow")}
+        onClick={() => history.push("/scan-flow?mode=camera")}
         className="scan-selection-button"
       >
-        Scan to Remove
+        Scan Barcode with Camera
+      </IonButton>
+      <IonButton
+        expand="block"
+        onClick={() => history.push("/scan-flow?mode=manual")}
+        className="scan-selection-button"
+        color="secondary"
+      >
+        Enter ID Manually
       </IonButton>
     </div>
   );
