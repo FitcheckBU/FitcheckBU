@@ -54,11 +54,60 @@ const ScanCameraPage: React.FC = () => {
     imageData: string,
   ): Promise<string | null> => {
     try {
+      // Create an image element to work with
+      const img = new Image();
+      img.src = imageData;
+
+      await new Promise((resolve) => {
+        img.onload = resolve;
+      });
+
+      // Create a canvas to crop the image to just the scanning frame area
+      const cropCanvas = document.createElement("canvas");
+      const cropCtx = cropCanvas.getContext("2d");
+
+      if (!cropCtx) return null;
+
+      // Calculate the scanning frame dimensions (80% width, 150px height, centered)
+      const frameWidth = img.width * 0.8;
+      const frameHeight = 150;
+      const frameX = (img.width - frameWidth) / 2;
+      const frameY = (img.height - frameHeight) / 2;
+
+      // Set canvas to the cropped size
+      cropCanvas.width = frameWidth;
+      cropCanvas.height = frameHeight;
+
+      // Draw only the scanning frame area
+      cropCtx.drawImage(
+        img,
+        frameX,
+        frameY,
+        frameWidth,
+        frameHeight, // Source rectangle
+        0,
+        0,
+        frameWidth,
+        frameHeight, // Destination rectangle
+      );
+
+      // Convert cropped canvas to image data
+      const croppedImageData = cropCanvas.toDataURL("image/png");
+
+      // Run OCR on the cropped image
       const worker = await createWorker("eng");
+
+      // Configure Tesseract for better text recognition
+      await worker.setParameters({
+        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ",
+      });
+
       const {
         data: { text },
-      } = await worker.recognize(imageData);
+      } = await worker.recognize(croppedImageData);
       await worker.terminate();
+
+      console.log("OCR Raw text:", text);
 
       // Clean up the text - remove spaces and special characters
       const cleanText = text
@@ -66,13 +115,12 @@ const ScanCameraPage: React.FC = () => {
         .replace(/[^A-Z0-9]/gi, "") // Keep only alphanumeric
         .toUpperCase();
 
-      // Look for patterns that match our barcode format (8-15 characters)
-      const barcodePattern = /[A-Z0-9]{8,15}/i;
-      const match = cleanText.match(barcodePattern);
+      console.log("OCR Cleaned text:", cleanText);
 
-      if (match) {
+      // Look for patterns that match our barcode format (8-15 characters)
+      if (cleanText.length >= 8) {
         // Take first 12 characters to match the barcode format
-        return match[0].substring(0, 12);
+        return cleanText.substring(0, 12);
       }
 
       return null;
