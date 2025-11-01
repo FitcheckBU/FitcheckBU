@@ -121,11 +121,13 @@ export const getFilteredItems = async (
 
     // Price range filter
     if (filters.priceMin !== undefined && filters.priceMin !== null) {
-      if (item.price < filters.priceMin) return false;
+      const itemPrice = item.price ?? 0; // Treat undefined/null as 0
+      if (itemPrice < filters.priceMin) return false;
     }
 
     if (filters.priceMax !== undefined && filters.priceMax !== null) {
-      if (item.price > filters.priceMax) return false;
+      const itemPrice = item.price ?? 0; // Treat undefined/null as 0
+      if (itemPrice > filters.priceMax) return false;
     }
 
     return true;
@@ -133,7 +135,15 @@ export const getFilteredItems = async (
 
   // Return only the requested page size after filtering
   const paginatedItems = items.slice(0, pageSize);
-  const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+
+  // IMPORTANT: Set lastDoc based on the last RETURNED item, not the last fetched item
+  // This ensures we don't skip items when client-side filtering is active
+  let newLastDoc = null;
+  if (paginatedItems.length > 0) {
+    const lastReturnedItemId = paginatedItems[paginatedItems.length - 1].id;
+    newLastDoc =
+      snapshot.docs.find((doc) => doc.id === lastReturnedItemId) || null;
+  }
 
   // Determine if there are more items:
   // - If we fetched the full fetchSize from Firestore, there might be more in the database
@@ -195,7 +205,7 @@ export const getPriceRange = async (): Promise<{
   let max = -Infinity;
 
   snapshot.docs.forEach((doc) => {
-    const price = doc.data().price;
+    const price = doc.data().price ?? 0; // Treat undefined/null as 0
     if (typeof price === "number") {
       if (price < min) min = price;
       if (price > max) max = price;
