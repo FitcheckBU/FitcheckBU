@@ -41,7 +41,7 @@ const SortFilterPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    history.push("/home");
+    history.goBack();
   };
 
   return (
