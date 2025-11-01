@@ -9,6 +9,7 @@ import {
 } from "@ionic/react";
 import filterSvg from "../../public/filter.svg"; // Import the SVG directly
 import { useState, useEffect, useRef } from "react";
+import type { InfiniteScrollCustomEvent } from "@ionic/react";
 import { useHistory, useLocation } from "react-router-dom";
 import { InventoryItem, FilterState } from "../lib/inventoryService";
 import {
@@ -86,15 +87,6 @@ const Dashboard: React.FC = () => {
     }
   }, [history, location]);
 
-  useEffect(() => {
-    if (initialLoad.current) {
-      loadItems(true);
-      initialLoad.current = false;
-    } else {
-      loadItems(true);
-    }
-  }, [searchText, activeFilters]);
-
   const loadItems = async (reset: boolean = false) => {
     setLoading(true);
     try {
@@ -122,10 +114,32 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const fetchMoreItems = async () => {
-    if (!hasMoreItems || loadingMore) return;
+  useEffect(() => {
+    if (initialLoad.current) {
+      loadItems(true);
+      initialLoad.current = false;
+    } else {
+      loadItems(true);
+    }
+  }, [searchText, activeFilters]);
+
+  const fetchMoreItems = async (event: InfiniteScrollCustomEvent) => {
+    // Handle the case where there are no more items
+    if (!hasMoreItems) {
+      event.target.complete();
+      event.target.disabled = true;
+      return;
+    }
+
+    // Handle the case where we're already loading
+    if (loadingMore) {
+      event.target.complete();
+      return;
+    }
+
     setLoadingMore(true);
-    await loadItems();
+    await loadItems(false);
+    event.target.complete();
   };
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
@@ -186,25 +200,27 @@ const Dashboard: React.FC = () => {
             <p>No items found</p>
           </div>
         ) : (
-          items.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              onClick={() => setSelectedItem(item)}
-              onEdit={() => setEditingItem(item)}
-            />
-          ))
+          <>
+            {items.map((item) => (
+              <ItemCard
+                key={item.id}
+                item={item}
+                onClick={() => setSelectedItem(item)}
+                onEdit={() => setEditingItem(item)}
+              />
+            ))}
+            <IonInfiniteScroll
+              onIonInfinite={fetchMoreItems}
+              threshold="500px"
+              disabled={false}
+            >
+              <IonInfiniteScrollContent
+                loadingSpinner="bubbles"
+                loadingText="Loading more data..."
+              ></IonInfiniteScrollContent>
+            </IonInfiniteScroll>
+          </>
         )}
-        <IonInfiniteScroll
-          onIonInfinite={fetchMoreItems}
-          threshold="100px"
-          disabled={!hasMoreItems || loadingMore}
-        >
-          <IonInfiniteScrollContent
-            loadingSpinner="bubbles"
-            loadingText="Loading more data..."
-          ></IonInfiniteScrollContent>
-        </IonInfiniteScroll>
       </div>
 
       <ItemDetailModal
