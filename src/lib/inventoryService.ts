@@ -57,6 +57,42 @@ export interface InventoryItem {
   //material?: string;
 }
 
+export interface SortOption {
+  field: "dateAdded" | "price";
+  direction: "asc" | "desc";
+}
+
+export interface FilterState {
+  categories: string[];
+  brands: string[];
+  colors: string[];
+  sizes: string[];
+  conditions: string[];
+  priceMin?: number;
+  priceMax?: number;
+  decades: string[];
+  styles: string[];
+  soldStatus: "all" | "available" | "sold"; // isSold filter
+  sortBy: SortOption;
+}
+
+export interface BackendFilterParams {
+  // Backend filters (applied in Firestore)
+  categories?: string[];
+  isSold?: boolean | null; // null means "all"
+  sortBy: SortOption;
+
+  // Frontend filters (applied client-side)
+  brands?: string[];
+  colors?: string[];
+  sizes?: string[];
+  conditions?: string[];
+  priceMin?: number;
+  priceMax?: number;
+  decades?: string[];
+  styles?: string[];
+}
+
 //-------------CRUD OPERATIONS------------------
 
 //add
@@ -328,6 +364,8 @@ export const getItemImageUrls = async (
   }
 };
 
+// DEPRECATED: Use getFilteredItems from filterService.ts instead
+// This function is kept for backward compatibility but should not be used for new code
 export const getItemsPaginatedWithFilters = async (
   pageSize: number = 30,
   lastDoc?: QueryDocumentSnapshot,
@@ -343,6 +381,10 @@ export const getItemsPaginatedWithFilters = async (
   lastDoc: QueryDocumentSnapshot | null;
   hasMore: boolean;
 }> => {
+  console.warn(
+    "getItemsPaginatedWithFilters is deprecated. Use getFilteredItems from filterService.ts instead.",
+  );
+
   const itemsRef = collection(db, "items");
 
   // Start with basic query ordered by dateAdded (this doesn't require additional indexes)
