@@ -56,7 +56,18 @@ export const getFilteredItems = async (
   constraints.push(orderBy(sortField, sortDirection));
 
   // Fetch more items than needed to account for client-side filtering
-  const fetchSize = pageSize * 3;
+  // Only multiply if there are client-side filters active
+  const hasClientSideFilters =
+    (filters.brands && filters.brands.length > 0) ||
+    (filters.colors && filters.colors.length > 0) ||
+    (filters.sizes && filters.sizes.length > 0) ||
+    (filters.conditions && filters.conditions.length > 0) ||
+    (filters.decades && filters.decades.length > 0) ||
+    (filters.styles && filters.styles.length > 0) ||
+    filters.priceMin !== undefined ||
+    filters.priceMax !== undefined;
+
+  const fetchSize = hasClientSideFilters ? pageSize * 3 : pageSize;
   constraints.push(limit(fetchSize));
 
   // Add pagination cursor if provided
@@ -123,7 +134,11 @@ export const getFilteredItems = async (
   // Return only the requested page size after filtering
   const paginatedItems = items.slice(0, pageSize);
   const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
-  const hasMore = snapshot.docs.length === fetchSize;
+
+  // Determine if there are more items:
+  // - If we fetched the full fetchSize from Firestore, there might be more in the database
+  // - OR if after filtering we still have more items than pageSize, there are definitely more
+  const hasMore = snapshot.docs.length === fetchSize || items.length > pageSize;
 
   return {
     items: paginatedItems,
