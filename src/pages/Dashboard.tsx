@@ -8,7 +8,7 @@ import {
   IonInfiniteScrollContent,
 } from "@ionic/react";
 import filterSvg from "../../public/filter.svg"; // Import the SVG directly
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import type { InfiniteScrollCustomEvent } from "@ionic/react";
 import { useHistory, useLocation } from "react-router-dom";
 import { InventoryItem, FilterState } from "../lib/inventoryService";
@@ -63,6 +63,20 @@ const Dashboard: React.FC = () => {
     soldStatus: "all",
     sortBy: { field: "dateAdded", direction: "desc" },
   });
+
+  // Frontend search filtering - filters items by name and description
+  const filteredItems = useMemo(() => {
+    if (!searchText || searchText.trim() === "") {
+      return items;
+    }
+
+    const searchLower = searchText.toLowerCase().trim();
+    return items.filter((item) => {
+      const nameMatch = item.name?.toLowerCase().includes(searchLower);
+      const descMatch = item.description?.toLowerCase().includes(searchLower);
+      return nameMatch || descMatch;
+    });
+  }, [items, searchText]);
 
   useEffect(() => {
     const state = location.state;
@@ -121,7 +135,7 @@ const Dashboard: React.FC = () => {
     } else {
       loadItems(true);
     }
-  }, [searchText, activeFilters]);
+  }, [activeFilters]);
 
   const fetchMoreItems = async (event: InfiniteScrollCustomEvent) => {
     // Handle the case where there are no more items
@@ -175,7 +189,7 @@ const Dashboard: React.FC = () => {
         <IonSearchbar
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
-          placeholder="Search Name, Size, Color, Etc..."
+          placeholder="Search Name or Description"
           className="dashboard-searchbar"
           data-testid="input-search"
         ></IonSearchbar>
@@ -195,13 +209,13 @@ const Dashboard: React.FC = () => {
           </div>
         ) : loading && items.length === 0 ? (
           <div className="loading-state">Loading items...</div>
-        ) : items.length === 0 && !loading ? (
+        ) : filteredItems.length === 0 && !loading ? (
           <div className="empty-state">
             <p>No items found</p>
           </div>
         ) : (
           <>
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <ItemCard
                 key={item.id}
                 item={item}
