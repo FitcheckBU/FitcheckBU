@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { IonButton, IonIcon } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
-import FilterForm, { FilterState } from "../components/FilterForm";
+import FilterForm from "../components/FilterForm";
+import { FilterState } from "../lib/inventoryService";
 import "./SortFilterPage.css";
 
 type SortFilterRouteState = {
@@ -10,10 +11,17 @@ type SortFilterRouteState = {
 };
 
 const emptyFilters: FilterState = {
-  sizes: [],
-  sexes: [],
+  categories: [],
+  brands: [],
   colors: [],
-  materials: [],
+  sizes: [],
+  conditions: [],
+  priceMin: undefined,
+  priceMax: undefined,
+  decades: [],
+  styles: [],
+  soldStatus: "all",
+  sortBy: { field: "dateAdded", direction: "desc" },
 };
 
 const SortFilterPage: React.FC = () => {

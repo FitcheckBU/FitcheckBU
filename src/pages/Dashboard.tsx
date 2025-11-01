@@ -10,10 +10,11 @@ import {
 import filterSvg from "../../public/filter.svg"; // Import the SVG directly
 import { useState, useEffect, useRef } from "react";
 import { useHistory, useLocation } from "react-router-dom";
+import { InventoryItem, FilterState } from "../lib/inventoryService";
 import {
-  getItemsPaginatedWithFilters,
-  InventoryItem,
-} from "../lib/inventoryService";
+  getFilteredItems,
+  convertFilterStateToParams,
+} from "../lib/filterService";
 import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
 import ItemDetailModal from "../components/ItemDetailModal";
@@ -21,13 +22,6 @@ import EditItemModal from "../components/EditItemModal";
 import "./Dashboard.css";
 
 const PAGE_SIZE = 30;
-
-type FilterState = {
-  sizes: string[];
-  sexes: string[];
-  colors: string[];
-  materials: string[];
-};
 
 type DashboardRouteState =
   | {
@@ -56,10 +50,17 @@ const Dashboard: React.FC = () => {
 
   // Filter states
   const [activeFilters, setActiveFilters] = useState<FilterState>({
-    sizes: [],
-    sexes: [],
+    categories: [],
+    brands: [],
     colors: [],
-    materials: [],
+    sizes: [],
+    conditions: [],
+    priceMin: undefined,
+    priceMax: undefined,
+    decades: [],
+    styles: [],
+    soldStatus: "all",
+    sortBy: { field: "dateAdded", direction: "desc" },
   });
 
   useEffect(() => {
@@ -68,7 +69,19 @@ const Dashboard: React.FC = () => {
       setActiveFilters(state.appliedFilters);
       history.replace({ ...location, state: undefined });
     } else if (state && "resetFilters" in state) {
-      setActiveFilters({ sizes: [], sexes: [], colors: [], materials: [] });
+      setActiveFilters({
+        categories: [],
+        brands: [],
+        colors: [],
+        sizes: [],
+        conditions: [],
+        priceMin: undefined,
+        priceMax: undefined,
+        decades: [],
+        styles: [],
+        soldStatus: "all",
+        sortBy: { field: "dateAdded", direction: "desc" },
+      });
       history.replace({ ...location, state: undefined });
     }
   }, [history, location]);
@@ -86,16 +99,13 @@ const Dashboard: React.FC = () => {
     setLoading(true);
     try {
       const currentLastDoc = reset ? undefined : (lastDoc ?? undefined);
+      const filterParams = convertFilterStateToParams(activeFilters);
+
       const {
         items: newItems,
         lastDoc: newLastDoc,
         hasMore,
-      } = await getItemsPaginatedWithFilters(
-        PAGE_SIZE,
-        currentLastDoc,
-        searchText,
-        activeFilters,
-      );
+      } = await getFilteredItems(filterParams, PAGE_SIZE, currentLastDoc);
 
       setItems((prevItems) => (reset ? newItems : [...prevItems, ...newItems]));
       setLastDoc(newLastDoc);
@@ -128,10 +138,18 @@ const Dashboard: React.FC = () => {
   };
 
   const hasActiveFilters =
-    activeFilters.sizes.length > 0 ||
-    activeFilters.sexes.length > 0 ||
+    activeFilters.categories.length > 0 ||
+    activeFilters.brands.length > 0 ||
     activeFilters.colors.length > 0 ||
-    activeFilters.materials.length > 0;
+    activeFilters.sizes.length > 0 ||
+    activeFilters.conditions.length > 0 ||
+    activeFilters.priceMin !== undefined ||
+    activeFilters.priceMax !== undefined ||
+    activeFilters.decades.length > 0 ||
+    activeFilters.styles.length > 0 ||
+    activeFilters.soldStatus !== "all" ||
+    activeFilters.sortBy.field !== "dateAdded" ||
+    activeFilters.sortBy.direction !== "desc";
 
   return (
     <>
