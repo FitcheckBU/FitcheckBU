@@ -161,3 +161,45 @@ ion-input input {
   padding: 40px;
   color: var(--ion-color-medium);
 }
+
+/* Color and Size Selection Styles */
+.form-section {
+  margin-bottom: 24px;
+  padding: 0 16px;
+}
+
+.form-section-label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--ion-color-dark);
+}
+
+.color-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 12px;
+  max-width: 400px;
+}
+
+.color-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-circle:active {
+  transform: scale(0.9);
+}
+
+.color-circle.color-selected {
+  border: 3px solid var(--ion-color-primary);
+  box-shadow:
+    0 0 0 2px var(--ion-color-secondary),
+    0 0 0 5px var(--ion-color-primary);
+}
