@@ -392,3 +392,6 @@ export const cleanupItemImages = onDocumentDeleted(
     }
   },
 );
+
+//getText function
+export { extractText, extractTextHttp } from "./extractText";

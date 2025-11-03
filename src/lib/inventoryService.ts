@@ -204,6 +204,44 @@ export const markAsUnsold = async (itemId: string): Promise<void> => {
   await updateItem(itemId, { isSold: false });
 };
 
+//find item by barcode (partial ID match)
+export const findItemByBarcode = async (
+  barcode: string,
+): Promise<InventoryItem | null> => {
+  const itemsRef = collection(db, "items");
+  const snapshot = await getDocs(itemsRef);
+
+  // Normalize the barcode (remove spaces, uppercase)
+  const normalizedBarcode = barcode.replace(/\s/g, "").toUpperCase();
+
+  // Find item where document ID starts with the barcode
+  const matchingDoc = snapshot.docs.find((doc) =>
+    doc.id.toUpperCase().startsWith(normalizedBarcode),
+  );
+
+  if (matchingDoc) {
+    return {
+      id: matchingDoc.id,
+      ...matchingDoc.data(),
+    } as InventoryItem;
+  }
+
+  return null;
+};
+
+//mark as sold by barcode
+export const markAsSoldByBarcode = async (barcode: string): Promise<void> => {
+  const item = await findItemByBarcode(barcode);
+
+  if (!item || !item.id) {
+    throw new Error(
+      "No document to update: Item not found with barcode " + barcode,
+    );
+  }
+
+  await markAsSold(item.id);
+};
+
 //---------------COMPLEX OPERATIIONS------------------//
 
 //Paginated fetch
