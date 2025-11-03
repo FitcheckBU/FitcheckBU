@@ -8,7 +8,7 @@ import {
   IonButtons,
   IonIcon,
 } from "@ionic/react";
-import { closeOutline } from "ionicons/icons";
+import { arrowBackOutline } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import { InventoryItem } from "../lib/inventoryService";
 import "./FilterSheet.css";
@@ -82,27 +82,28 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
   const colorOptions = [
     { name: "Red", hex: "#EF4444" },
     { name: "Orange", hex: "#F97316" },
-    { name: "Yellow", hex: "#EAB308" },
-    { name: "Green", hex: "#22C55E" },
-    { name: "Blue", hex: "#3B82F6" },
-    { name: "Purple", hex: "#A855F7" },
-    { name: "Pink", hex: "#EC4899" },
-    { name: "Gray", hex: "#6B7280" },
+    { name: "Yellow", hex: "#FDE047" },
+    { name: "Green", hex: "#4ADE80" },
+    { name: "Blue", hex: "#60A5FA" },
+    { name: "DarkBlue", hex: "#3730A3" },
+    { name: "White", hex: "#FFFFFF" },
+    { name: "Gray", hex: "#9CA3AF" },
     { name: "Black", hex: "#1F2937" },
     { name: "Tan", hex: "#D4A574" },
-    { name: "Brown", hex: "#92400E" },
+    { name: "Brown", hex: "#78350F" },
+    { name: "Purple", hex: "#C084FC" },
   ];
 
   return (
     <IonModal isOpen={isOpen} onDidDismiss={onClose} initialBreakpoint={0.9} breakpoints={[0, 0.9, 1]}>
       <IonHeader>
         <IonToolbar className="filter-toolbar">
-          <IonTitle>Sort & Filter</IonTitle>
-          <IonButtons slot="end">
+          <IonButtons slot="start">
             <IonButton onClick={onClose} data-testid="button-close-filter">
-              <IonIcon icon={closeOutline} />
+              <IonIcon icon={arrowBackOutline} />
             </IonButton>
           </IonButtons>
+          <IonTitle className="filter-title">Sort & Filter</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -163,8 +164,8 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
         {/* Material Section */}
         <div className="filter-section">
           <h3 className="filter-section-title">Material:</h3>
-          <div className="filter-chips-wrap">
-            {["Cotton", "Wool", "Polyester", "Silk", "Leather", "Linen", "Suede", "Denim", "Cashmere"].map(
+          <div className="filter-material-grid">
+            {["Cotton", "Wool", "Polyester", "Linen", "Silk", "Denim", "Leather", "Suede", "Other"].map(
               (material) => (
                 <button
                   key={material}
@@ -181,23 +182,20 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
 
         {/* Action Buttons */}
         <div className="filter-actions-footer">
-          <IonButton
-            expand="block"
-            fill="outline"
-            onClick={handleReset}
+          <button
             className="filter-reset-button"
+            onClick={handleReset}
             data-testid="button-reset"
           >
             Reset
-          </IonButton>
-          <IonButton
-            expand="block"
-            onClick={handleApply}
+          </button>
+          <button
             className="filter-apply-button"
+            onClick={handleApply}
             data-testid="button-apply"
           >
             Apply
-          </IonButton>
+          </button>
         </div>
       </IonContent>
     </IonModal>
