@@ -43,10 +43,12 @@ export interface InventoryItem {
   description?: string; // human-written or AI-generated
   labels?: string[]; // Vision-generated tags
   labelText?: string; // OCR result from garment label/tag
+  material?: string;
   sessionId?: string; // upload session identifier
   imageStoragePaths?: string[]; // Storage paths for uploaded images
   images?: ItemImage[]; // Structured image metadata
   status?: "draft" | "active" | "archived";
+  metadataStatus?: "pending" | "complete" | "skipped" | "error";
 
   //additional fields can be added later
 
@@ -111,6 +113,7 @@ export const addItem = async (
     size: itemData.size ?? "",
     dateAdded: serverTimestamp(),
     isSold: false,
+    metadataStatus: "pending",
   });
   return docRef.id;
 };
@@ -245,6 +248,44 @@ export const markAsSold = async (itemId: string): Promise<void> => {
 //mark as unsold(available)
 export const markAsUnsold = async (itemId: string): Promise<void> => {
   await updateItem(itemId, { isSold: false });
+};
+
+//find item by barcode (partial ID match)
+export const findItemByBarcode = async (
+  barcode: string,
+): Promise<InventoryItem | null> => {
+  const itemsRef = collection(db, "items");
+  const snapshot = await getDocs(itemsRef);
+
+  // Normalize the barcode (remove spaces, uppercase)
+  const normalizedBarcode = barcode.replace(/\s/g, "").toUpperCase();
+
+  // Find item where document ID starts with the barcode
+  const matchingDoc = snapshot.docs.find((doc) =>
+    doc.id.toUpperCase().startsWith(normalizedBarcode),
+  );
+
+  if (matchingDoc) {
+    return {
+      id: matchingDoc.id,
+      ...matchingDoc.data(),
+    } as InventoryItem;
+  }
+
+  return null;
+};
+
+//mark as sold by barcode
+export const markAsSoldByBarcode = async (barcode: string): Promise<void> => {
+  const item = await findItemByBarcode(barcode);
+
+  if (!item || !item.id) {
+    throw new Error(
+      "No document to update: Item not found with barcode " + barcode,
+    );
+  }
+
+  await markAsSold(item.id);
 };
 
 //---------------COMPLEX OPERATIIONS------------------//

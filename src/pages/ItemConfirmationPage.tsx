@@ -41,12 +41,31 @@ interface FormData {
   description: string;
 }
 
+// Color options matching FilterSheet
+const colorOptions = [
+  { name: "Red", hex: "#EF4444" },
+  { name: "Orange", hex: "#F97316" },
+  { name: "Yellow", hex: "#EAB308" },
+  { name: "Green", hex: "#22C55E" },
+  { name: "Blue", hex: "#3B82F6" },
+  { name: "Purple", hex: "#A855F7" },
+  { name: "Pink", hex: "#EC4899" },
+  { name: "Gray", hex: "#6B7280" },
+  { name: "Black", hex: "#1F2937" },
+  { name: "Tan", hex: "#D4A574" },
+  { name: "Brown", hex: "#92400E" },
+];
+
+// Size options matching FilterSheet
+const sizeOptions = ["XS", "S", "M", "L", "XL"];
+
 const ItemConfirmationPage: React.FC = () => {
   const { itemId } = useParams<RouteParams>();
   const history = useHistory();
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [labelsLoaded, setLabelsLoaded] = useState(false);
+  const [labelsApplied, setLabelsApplied] = useState(false);
+  const [aiFieldsApplied, setAiFieldsApplied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: "New Item",
@@ -61,6 +80,12 @@ const ItemConfirmationPage: React.FC = () => {
     description: "",
   });
   const initialDataLoaded = useRef(false);
+
+  useEffect(() => {
+    setLabelsApplied(false);
+    setAiFieldsApplied(false);
+    initialDataLoaded.current = false;
+  }, [itemId]);
 
   // Listen for item changes from Firestore
   useEffect(() => {
@@ -107,19 +132,78 @@ const ItemConfirmationPage: React.FC = () => {
     }
   }, [item]);
 
+  const metadataStatusValue = item?.metadataStatus ?? "pending";
+  const metadataReady = metadataStatusValue !== "pending";
+  const metadataErrored = metadataStatusValue === "error";
+  const labelsReady = Boolean(item?.labels && item.labels.length > 0);
+
   // Append AI labels to description when they arrive
   useEffect(() => {
-    if (item && !labelsLoaded) {
-      const labels = item.labels || [];
-      if (labels.length > 0) {
-        setLabelsLoaded(true);
-        setFormData((prev) => ({
-          ...prev,
-          description: ((prev.description || "") + labels.join(", ")).trim(),
-        }));
-      }
+    if (!item || labelsApplied) return;
+    if (!labelsReady) return;
+
+    const labels = item.labels ?? [];
+    if (labels.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        description: ((prev.description || "") + labels.join(", ")).trim(),
+      }));
+      setLabelsApplied(true);
     }
-  }, [item, labelsLoaded]);
+  }, [item, labelsReady, labelsApplied]);
+
+  useEffect(() => {
+    if (!item || aiFieldsApplied) return;
+    if (!metadataReady) return;
+    if (metadataStatusValue !== "complete") {
+      setAiFieldsApplied(true);
+      return;
+    }
+
+    const mergeText = (
+      currentValue: string,
+      candidateValue?: string,
+      defaultValue: string = "",
+    ) => {
+      if (candidateValue && candidateValue.length > 0) {
+        const trimmedCandidate = candidateValue.trim();
+        if (currentValue === defaultValue || currentValue.trim().length === 0) {
+          return trimmedCandidate;
+        }
+      }
+      return currentValue;
+    };
+
+    const mergeNumber = (currentValue: number, candidateValue?: number) => {
+      if (
+        typeof candidateValue === "number" &&
+        Number.isFinite(candidateValue)
+      ) {
+        if (currentValue === 0 || Number.isNaN(currentValue)) {
+          return candidateValue;
+        }
+      }
+      return currentValue;
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      name: mergeText(prev.name, item.name, "New Item"),
+      brand: mergeText(prev.brand, item.brand),
+      category: mergeText(prev.category, item.category, "uncategorized"),
+      color: mergeText(prev.color, item.color),
+      condition: mergeText(prev.condition, item.condition, "unknown"),
+      style: mergeText(prev.style, item.style),
+      size: mergeText(prev.size, item.size),
+      decade: mergeText(prev.decade, item.decade),
+      price: mergeNumber(prev.price, item.price),
+      description:
+        prev.description?.trim().length === 0 && item.description
+          ? item.description
+          : prev.description,
+    }));
+    setAiFieldsApplied(true);
+  }, [item, metadataReady, aiFieldsApplied, metadataStatusValue]);
 
   const handleInputChange = (
     field: keyof FormData,
@@ -164,7 +248,8 @@ const ItemConfirmationPage: React.FC = () => {
     );
   }
 
-  const isSubmitDisabled = !labelsLoaded || submitting;
+  const isSubmitDisabled =
+    submitting || !labelsReady || metadataStatusValue === "pending";
 
   return (
     <div className="item-confirmation-page">
@@ -174,6 +259,29 @@ const ItemConfirmationPage: React.FC = () => {
           <p>Review and edit the details before adding to your inventory</p>
         </IonText>
       </div>
+      {(!labelsReady || metadataStatusValue === "pending") && (
+        <div className="confirmation-loading inline">
+          <IonSpinner name="crescent" className="description-spinner" />
+          <IonText color="medium">
+            <p>
+              Analyzing images
+              {metadataStatusValue === "pending"
+                ? " and generating item details..."
+                : "..."}
+            </p>
+          </IonText>
+        </div>
+      )}
+      {metadataErrored && (
+        <div className="warning-banner">
+          <IonText color="warning">
+            <p>
+              We couldn&apos;t auto-fill every field. Please review and enter
+              any missing details manually.
+            </p>
+          </IonText>
+        </div>
+      )}
 
       {/* Image Grid */}
       {imageUrls.length > 0 && (
@@ -238,22 +346,37 @@ const ItemConfirmationPage: React.FC = () => {
             />
           </IonItem>
 
-          <IonItem>
-            <IonLabel position="stacked">Color</IonLabel>
-            <IonInput
-              value={formData.color}
-              onIonInput={(e) => handleInputChange("color", e.detail.value!)}
-              placeholder="Enter color"
-            />
-          </IonItem>
+          <div className="form-section">
+            <IonLabel className="form-section-label">Color</IonLabel>
+            <div className="color-selection-grid">
+              {colorOptions.map((color) => (
+                <button
+                  key={color.name}
+                  type="button"
+                  className={`color-circle ${formData.color === color.name ? "color-selected" : ""}`}
+                  style={{
+                    backgroundColor: color.hex,
+                  }}
+                  onClick={() => handleInputChange("color", color.name)}
+                  aria-label={color.name}
+                />
+              ))}
+            </div>
+          </div>
 
           <IonItem>
             <IonLabel position="stacked">Size</IonLabel>
-            <IonInput
+            <IonSelect
               value={formData.size}
-              onIonInput={(e) => handleInputChange("size", e.detail.value!)}
-              placeholder="Enter size"
-            />
+              onIonChange={(e) => handleInputChange("size", e.detail.value)}
+              placeholder="Select size"
+            >
+              {sizeOptions.map((size) => (
+                <IonSelectOption key={size} value={size}>
+                  {size}
+                </IonSelectOption>
+              ))}
+            </IonSelect>
           </IonItem>
 
           <IonItem>
@@ -315,7 +438,7 @@ const ItemConfirmationPage: React.FC = () => {
           <IonItem>
             <IonLabel position="stacked">
               Description
-              {!labelsLoaded && (
+              {!labelsReady && (
                 <IonSpinner name="crescent" className="description-spinner" />
               )}
             </IonLabel>
