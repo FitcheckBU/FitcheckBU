@@ -104,14 +104,16 @@ ion-item-sliding {
 }
 
 .swipe-actions {
-  background-color: #e8a76a;
+  background-color: #e8a76a !important;
   border-radius: 0 16px 16px 0;
   overflow: hidden;
 }
 
 ion-item-option.swipe-edit,
 ion-item-option.swipe-delete {
-  --background: #e8a76a;
+  --background: #e8a76a !important;
+  background: #e8a76a !important;
+  background-color: #e8a76a !important;
   display: flex;
   align-items: center;
   justify-content: center;
