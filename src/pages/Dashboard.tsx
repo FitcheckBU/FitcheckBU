@@ -3,11 +3,16 @@ import {
   IonButton,
   IonRefresher,
   IonRefresherContent,
+  IonAlert,
   RefresherEventDetail,
 } from "@ionic/react";
 import filterSvg from "../../public/filter.svg"; // Import the SVG directly
 import { useState, useEffect } from "react";
-import { getAllItems, InventoryItem } from "../lib/inventoryService";
+import {
+  getAllItems,
+  deleteItem,
+  InventoryItem,
+} from "../lib/inventoryService";
 import ItemCard from "../components/ItemCard";
 import ItemDetailModal from "../components/ItemDetailModal";
 import FilterSheet from "../components/FilterSheet";
@@ -22,6 +27,7 @@ const Dashboard: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null);
 
   // Filter states
   const [activeFilters, setActiveFilters] = useState({
@@ -110,6 +116,18 @@ const Dashboard: React.FC = () => {
     setShowFilterSheet(false);
   };
 
+  const handleDeleteConfirm = async () => {
+    if (!itemToDelete?.id) return;
+
+    try {
+      await deleteItem(itemToDelete.id);
+      await loadItems();
+      setItemToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete item:", error);
+    }
+  };
+
   const hasActiveFilters =
     activeFilters.sizes.length > 0 ||
     activeFilters.sexes.length > 0 ||
@@ -149,6 +167,7 @@ const Dashboard: React.FC = () => {
               item={item}
               onClick={() => setSelectedItem(item)}
               onEdit={() => setEditingItem(item)}
+              onDelete={() => setItemToDelete(item)}
             />
           ))
         )}
@@ -188,6 +207,24 @@ const Dashboard: React.FC = () => {
         onApply={handleFilterApply}
         activeFilters={activeFilters}
         items={items}
+      />
+
+      <IonAlert
+        isOpen={!!itemToDelete}
+        onDidDismiss={() => setItemToDelete(null)}
+        header="Delete Item"
+        message={`Are you sure you want to delete "${itemToDelete?.name || "this item"}"?`}
+        buttons={[
+          {
+            text: "Cancel",
+            role: "cancel",
+          },
+          {
+            text: "Delete",
+            role: "destructive",
+            handler: handleDeleteConfirm,
+          },
+        ]}
       />
     </>
   );

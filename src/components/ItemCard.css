@@ -95,18 +95,26 @@ ion-item.figma-item-card.pending {
   line-height: 1.4;
 }
 
-/* Swipeable action styles handled by Ionic */
+/* Swipeable action styles */
 ion-item-sliding {
   margin-bottom: 12px;
 }
 
-ion-item-option {
+.swipe-actions {
+  background-color: var(--ion-color-secondary);
+}
+
+ion-item-option.swipe-edit,
+ion-item-option.swipe-delete {
+  --background: var(--ion-color-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 70px;
 }
 
-ion-item-option ion-icon {
-  font-size: 24px;
+ion-item-option.swipe-edit ion-icon,
+ion-item-option.swipe-delete ion-icon {
+  font-size: 28px;
+  color: var(--ion-color-primary);
 }
