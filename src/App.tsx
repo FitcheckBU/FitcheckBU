@@ -92,6 +92,11 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <ScanFlowPage />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
               path="/item-confirmation/:itemId"
               render={() => (
                 <MainLayout>
