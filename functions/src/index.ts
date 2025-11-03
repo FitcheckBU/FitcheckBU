@@ -27,6 +27,31 @@ const isPhotoRole = (value: unknown): value is PhotoRole =>
   typeof value === "string" &&
   (REQUIRED_ROLES as unknown as string[]).includes(value);
 
+const assignFallbackRoles = (images: ItemImage[]): ItemImage[] => {
+  if (images.length === 0) return images;
+
+  const usedRoles = new Set<PhotoRole>(
+    images
+      .map((img) => img.role)
+      .filter((role): role is PhotoRole => isPhotoRole(role)),
+  );
+
+  const remainingRoles = REQUIRED_ROLES.filter((role) => !usedRoles.has(role));
+
+  if (remainingRoles.length === 0) return images;
+
+  return images.map((image) => {
+    if (isPhotoRole(image.role)) {
+      return image;
+    }
+    const nextRole = remainingRoles.shift();
+    if (!nextRole) {
+      return image;
+    }
+    return { ...image, role: nextRole };
+  });
+};
+
 const normalizeImages = (data?: DocumentData): ItemImage[] => {
   const rawImages = Array.isArray(data?.images)
     ? (data?.images as Array<Record<string, unknown>>)
@@ -45,16 +70,18 @@ const normalizeImages = (data?: DocumentData): ItemImage[] => {
     }));
 
   if (structuredImages.length > 0) {
-    return structuredImages;
+    return assignFallbackRoles(structuredImages);
   }
 
   const legacyPaths = Array.isArray(data?.imageStoragePaths)
     ? (data?.imageStoragePaths as string[])
     : [];
 
-  return legacyPaths
+  const legacyImages = legacyPaths
     .filter((path): path is string => typeof path === "string")
     .map((path) => ({ storagePath: path }));
+
+  return assignFallbackRoles(legacyImages);
 };
 
 const getStoragePathsFromImages = (images: ItemImage[]): string[] =>
@@ -98,6 +125,14 @@ async function analyzeItemImages(itemId: string, images: ItemImage[]) {
     (image): image is ItemImage & { storagePath: string } =>
       typeof image.storagePath === "string" &&
       image.storagePath.startsWith("items/"),
+  );
+
+  console.log(
+    "Stored image metadata:",
+    storedImages.map((image) => ({
+      path: image.storagePath,
+      role: image.role ?? "undefined",
+    })),
   );
 
   if (storedImages.length === 0) {
@@ -168,31 +203,41 @@ async function analyzeItemImages(itemId: string, images: ItemImage[]) {
     .map(([description]) => description)
     .slice(0, 10);
 
-  // Attempt OCR on the label/tag photo
-  let labelText: string | undefined;
-  const labelImage = storedImages.find((image) => image.role === "label");
-  if (labelImage) {
-    try {
-      const [textResult] = await visionClient.textDetection(
-        `gs://${bucketName}/${labelImage.storagePath}`,
-      );
-      const annotations = textResult.textAnnotations ?? [];
-      const fullText = annotations[0]?.description?.trim();
-      if (fullText) {
-        labelText = fullText;
-        console.log(`Extracted label text for item ${itemId}:`, labelText);
-      } else {
-        console.log(`No text detected for label image on item ${itemId}`);
+  // Attempt OCR on every stored image
+  const textSnippets: string[] = [];
+  await Promise.all(
+    storedImages.map(async (image) => {
+      try {
+        const [textResult] = await visionClient.textDetection(
+          `gs://${bucketName}/${image.storagePath}`,
+        );
+        const annotations = textResult.textAnnotations ?? [];
+        const fullText = annotations[0]?.description?.trim();
+        if (fullText) {
+          textSnippets.push(fullText);
+          console.log(
+            `Extracted text for image ${image.storagePath}:`,
+            fullText,
+          );
+        } else {
+          console.log(
+            `No text detected for image ${image.storagePath} (role: ${image.role ?? "unset"})`,
+          );
+        }
+      } catch (ocrError) {
+        console.error(
+          `Failed to extract text for image ${image.storagePath}:`,
+          ocrError,
+        );
       }
-    } catch (ocrError) {
-      console.error(
-        `Failed to extract label text for item ${itemId}:`,
-        ocrError,
-      );
-    }
-  } else {
-    console.warn(`No label image found for item ${itemId}; skipping text OCR`);
-  }
+    }),
+  );
+  const labelText =
+    textSnippets
+      .map((snippet) => snippet.trim())
+      .filter((snippet) => snippet.length > 0)
+      .join(" ")
+      .trim() || undefined;
 
   // Update Firestore with labels and optional labelText
   try {
@@ -202,6 +247,7 @@ async function analyzeItemImages(itemId: string, images: ItemImage[]) {
     };
     if (labelText) {
       updatePayload.labelText = labelText;
+      console.log(`Including labelText in update for item ${itemId}`);
     }
 
     const doc = await itemRef.get();
