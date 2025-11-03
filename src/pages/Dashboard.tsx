@@ -122,19 +122,17 @@ const Dashboard: React.FC = () => {
         <IonRefresherContent></IonRefresherContent>
       </IonRefresher>
 
-      <div className="dashboard-search-section">
-        <IonSearchbar
-          value={searchText}
-          onIonInput={(e) => setSearchText(e.detail.value!)}
-          placeholder="Search Name, Size, Color, Etc..."
-          className="dashboard-searchbar"
-          data-testid="input-search"
-        ></IonSearchbar>
-        <IonButton onClick={() => setShowFilterSheet(true)} color="secondary">
+      <div className="dashboard-header">
+        <h1 className="dashboard-title">User Dashboard</h1>
+        <IonButton
+          onClick={() => setShowFilterSheet(true)}
+          fill="clear"
+          className="filter-button"
+        >
           <img
             src={filterSvg}
             alt="Filter"
-            className={`header-icon ${hasActiveFilters ? "filter-active" : ""}`}
+            className={`filter-icon ${hasActiveFilters ? "filter-active" : ""}`}
           />
         </IonButton>
       </div>
@@ -154,6 +152,16 @@ const Dashboard: React.FC = () => {
             />
           ))
         )}
+      </div>
+
+      <div className="dashboard-search-section">
+        <IonSearchbar
+          value={searchText}
+          onIonInput={(e) => setSearchText(e.detail.value!)}
+          placeholder="Search Name, Size, Color, Etc."
+          className="dashboard-searchbar"
+          data-testid="input-search"
+        ></IonSearchbar>
       </div>
 
       <ItemDetailModal

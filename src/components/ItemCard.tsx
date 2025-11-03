@@ -89,24 +89,28 @@ const ItemCard: React.FC<ItemCardProps> = ({
             <div className="figma-item-name">
               {item.name || item.brand || "Unknown Item"}
             </div>
-            <div className="figma-item-details">
-              <div className="figma-detail-row">
-                <span className="figma-detail-label">Size:</span>
-                <span className="figma-detail-value">
-                  {extractSize(item.labels)}
-                </span>
+            <div className="figma-item-details-grid">
+              <div className="figma-details-left">
+                <div className="figma-detail-text">
+                  {item.id ? item.id.substring(0, 9).toUpperCase() : "NO-ID"}
+                </div>
+                <div className="figma-detail-text">
+                  {extractSize(item.labels) || item.size || "Medium"}
+                </div>
+                <div className="figma-detail-text">
+                  {item.category || "Unknown"}
+                </div>
+                <div className="figma-detail-text">
+                  {item.description?.split(" ")[0] || "Material"}
+                </div>
               </div>
-              <div className="figma-detail-row">
-                <span className="figma-detail-label">Condition:</span>
-                <span className="figma-detail-value">
-                  {item.condition || "Unknown"}
-                </span>
-              </div>
-              <div className="figma-detail-row">
-                <span className="figma-detail-label">Color:</span>
-                <span className="figma-detail-value">
-                  {item.color || extractColor(item.labels)}
-                </span>
+              <div className="figma-details-right">
+                <div className="figma-detail-text">
+                  {item.color || extractColor(item.labels) || "Unknown"}
+                </div>
+                <div className="figma-detail-text">
+                  {item.style || "Unisex"}
+                </div>
               </div>
             </div>
           </div>

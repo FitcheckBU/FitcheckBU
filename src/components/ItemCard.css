@@ -70,26 +70,29 @@ ion-item.figma-item-card.pending {
   white-space: nowrap;
 }
 
-.figma-item-details {
+.figma-item-details-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+
+.figma-details-left {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.figma-detail-row {
+.figma-details-right {
   display: flex;
-  gap: 6px;
-  font-size: 13px;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
 }
 
-.figma-detail-label {
-  color: #6b7280;
-  min-width: 70px;
-}
-
-.figma-detail-value {
+.figma-detail-text {
+  font-size: 12px;
   color: #1f2937;
-  font-weight: 500;
+  line-height: 1.4;
 }
 
 /* Swipeable action styles handled by Ionic */
