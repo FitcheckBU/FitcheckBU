@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Scan from "./pages/Scan";
 import UploadFlow from "./pages/UploadFlowPage";
 import ScanFlowPage from "./pages/ScanFlowPage";
+import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import MainLayout from "./components/MainLayout";
 
 /* Core CSS required for Ionic components to work properly */
@@ -91,6 +92,10 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <ScanFlowPage />
+              path="/item-confirmation/:itemId"
+              render={() => (
+                <MainLayout>
+                  <ItemConfirmationPage />
                 </MainLayout>
               )}
             />

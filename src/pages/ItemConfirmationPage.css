@@ -1,0 +1,151 @@
+.item-confirmation-page {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 100px;
+}
+
+.confirmation-header {
+  margin-bottom: 24px;
+}
+
+.confirmation-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.confirmation-header p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Loading State */
+.confirmation-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+/* Image Grid */
+.confirmation-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.confirmation-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: var(--ion-color-light);
+}
+
+/* Form Fields */
+ion-card {
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 16px;
+}
+
+ion-label[position="stacked"] {
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+ion-input,
+ion-select,
+ion-textarea {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  border: 1px solid var(--ion-color-light-shade);
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+ion-input input {
+  padding-left: 12px !important;
+}
+
+.description-spinner {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* Action Buttons */
+.confirmation-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px;
+  margin-top: 24px;
+  position: sticky;
+  bottom: 20px;
+  background: var(--ion-background-color);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-actions ion-button {
+  margin: 0;
+}
+
+.submit-warning {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.submit-warning p {
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .item-confirmation-page {
+    padding: 16px;
+  }
+
+  .confirmation-header h2 {
+    font-size: 24px;
+  }
+
+  .confirmation-image-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .confirmation-image {
+    height: 120px;
+  }
+
+  .confirmation-actions {
+    grid-template-columns: 1fr;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 12px 12px 0 0;
+    margin: 0;
+  }
+}
+
+/* Empty State */
+.confirmation-image-grid:empty::after {
+  content: "No images available";
+  display: block;
+  text-align: center;
+  padding: 40px;
+  color: var(--ion-color-medium);
+}

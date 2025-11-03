@@ -1,56 +1,55 @@
 .sidebar {
   position: fixed;
-  top: 0;
-  right: -250px;
-  /* Hidden by default */
-  width: 250px;
-  height: 100%;
-  background-color: var(--ion-color-primary);
-  /* Using primary color */
-  color: white;
-  transition: right 0.3s ease-in-out;
+  top: calc(var(--top-navbar-height) + 10px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  /* Hidden by default with scale and opacity */
+  width: 320px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-in-out;
   z-index: 1000;
-  padding: 20px;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  padding: 40px 20px;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .sidebar.open {
-  right: 0;
-  /* Slide in */
+  transform: translateX(-50%) scale(1);
+  /* Pop up to full size */
+  opacity: 1;
+  visibility: visible;
 }
 
-.sidebar .close-button {
-  background: none;
-  border: none;
+.sidebar-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 30px;
+  border: 1px solid var(--ion-color-primary);
+  background-color: white;
+  color: var(--ion-color-primary);
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
   cursor: pointer;
-  position: absolute;
-  top: 15px;
-  right: 15px;
 }
 
-.sidebar .close-button img {
-  height: 25px;
-  /* Adjust close icon size */
-  filter: invert(100%);
-  /* Make close icon white */
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 50px;
-}
-
-.sidebar ul li {
-  margin-bottom: 20px;
-}
-
-.sidebar ul li a {
+.sidebar-button:hover {
+  background-color: var(--ion-color-primary);
   color: white;
   text-decoration: none;
-  font-size: 1.2em;
 }
 
-.sidebar ul li a:hover {
-  text-decoration: underline;
+.sidebar-button:active {
+  transform: translateY(1px);
 }

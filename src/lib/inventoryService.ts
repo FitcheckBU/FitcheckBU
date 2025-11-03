@@ -15,10 +15,17 @@ import {
   startAfter,
   QueryDocumentSnapshot,
 } from "firebase/firestore";
+import { PhotoRole } from "../constants/photoStages";
 import { db, storage } from "./firebaseClient";
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
 
 //-------------TYPES------------------
+export interface ItemImage {
+  role: PhotoRole;
+  storagePath: string;
+  originalName?: string;
+}
+
 export interface InventoryItem {
   id?: string; // Firestore document ID
   name: string;
@@ -34,8 +41,10 @@ export interface InventoryItem {
   dateAdded: Timestamp;
   description?: string; // human-written or AI-generated
   labels?: string[]; // Vision-generated tags
+  labelText?: string; // OCR result from garment label/tag
   sessionId?: string; // upload session identifier
   imageStoragePaths?: string[]; // Storage paths for uploaded images
+  images?: ItemImage[]; // Structured image metadata
   status?: "draft" | "active" | "archived";
 
   //additional fields can be added later
@@ -53,11 +62,15 @@ export const addItem = async (
   itemData: Omit<InventoryItem, "id" | "dateAdded" | "isSold">,
 ): Promise<string> => {
   const itemsRef = collection(db, "items");
+  const fallbackPaths =
+    itemData.images?.map((image) => image.storagePath) ?? [];
+  const imageStoragePaths = itemData.imageStoragePaths ?? fallbackPaths;
   const docRef = await addDoc(itemsRef, {
     ...itemData,
     description: itemData.description ?? "",
     labels: [],
-    imageStoragePaths: itemData.imageStoragePaths ?? [],
+    images: itemData.images ?? [],
+    imageStoragePaths,
     size: itemData.size ?? "",
     dateAdded: serverTimestamp(),
     isSold: false,
@@ -281,15 +294,28 @@ export const searchItemsByLabels = async (
 };
 
 //get image
+export const getImageStoragePaths = (item: InventoryItem): string[] => {
+  if (item.imageStoragePaths && item.imageStoragePaths.length > 0) {
+    return item.imageStoragePaths;
+  }
+  if (item.images && item.images.length > 0) {
+    return item.images
+      .map((image) => image.storagePath)
+      .filter((path): path is string => Boolean(path));
+  }
+  return [];
+};
+
 export const getItemImageUrls = async (
   item: InventoryItem,
 ): Promise<string[]> => {
-  if (!item.imageStoragePaths || item.imageStoragePaths.length === 0) {
+  const storagePaths = getImageStoragePaths(item);
+  if (storagePaths.length === 0) {
     return [];
   }
 
   try {
-    const urlPromises = item.imageStoragePaths.map((path) =>
+    const urlPromises = storagePaths.map((path) =>
       getDownloadURL(storageRef(storage, path)),
     );
     return await Promise.all(urlPromises);

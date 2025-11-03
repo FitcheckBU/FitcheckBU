@@ -1,6 +1,6 @@
 import vision, { protos } from "@google-cloud/vision";
 import * as admin from "firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, type DocumentData } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import {
   onDocumentCreated,
@@ -13,23 +13,110 @@ const app = admin.initializeApp();
 const firestore = getFirestore(app, "fitcheck-db");
 const storage = getStorage(app);
 
+type PhotoRole = "front" | "back" | "label";
+
+type ItemImage = {
+  role?: PhotoRole;
+  storagePath?: string;
+  originalName?: string;
+};
+
+const REQUIRED_ROLES: PhotoRole[] = ["front", "back", "label"];
+
+const isPhotoRole = (value: unknown): value is PhotoRole =>
+  typeof value === "string" &&
+  (REQUIRED_ROLES as unknown as string[]).includes(value);
+
+const normalizeImages = (data?: DocumentData): ItemImage[] => {
+  const rawImages = Array.isArray(data?.images)
+    ? (data?.images as Array<Record<string, unknown>>)
+    : [];
+
+  const structuredImages = rawImages
+    .filter(
+      (img): img is Record<string, unknown> & { storagePath: string } =>
+        Boolean(img?.storagePath) && typeof img.storagePath === "string",
+    )
+    .map((img) => ({
+      role: isPhotoRole(img.role) ? (img.role as PhotoRole) : undefined,
+      storagePath: img.storagePath as string,
+      originalName:
+        typeof img.originalName === "string" ? img.originalName : undefined,
+    }));
+
+  if (structuredImages.length > 0) {
+    return structuredImages;
+  }
+
+  const legacyPaths = Array.isArray(data?.imageStoragePaths)
+    ? (data?.imageStoragePaths as string[])
+    : [];
+
+  return legacyPaths
+    .filter((path): path is string => typeof path === "string")
+    .map((path) => ({ storagePath: path }));
+};
+
+const getStoragePathsFromImages = (images: ItemImage[]): string[] =>
+  images
+    .map((image) => image.storagePath)
+    .filter((path): path is string => typeof path === "string");
+
+const getAllStoragePaths = (data?: DocumentData): string[] => {
+  const fromImages = getStoragePathsFromImages(normalizeImages(data));
+  const legacy = Array.isArray(data?.imageStoragePaths)
+    ? (data?.imageStoragePaths as string[])
+    : [];
+  const legacyPaths = legacy.filter(
+    (path): path is string => typeof path === "string",
+  );
+  return Array.from(new Set([...fromImages, ...legacyPaths]));
+};
+
+const sortPaths = (paths: string[]): string[] => [...paths].sort();
+
+const storagePathsChanged = (before: string[], after: string[]): boolean => {
+  if (before.length !== after.length) return true;
+  const beforeSorted = sortPaths(before);
+  const afterSorted = sortPaths(after);
+  return beforeSorted.some((path, index) => path !== afterSorted[index]);
+};
+
+const hasAllRequiredImages = (images: ItemImage[]): boolean =>
+  REQUIRED_ROLES.every((role) =>
+    images.some(
+      (image) =>
+        image.role === role &&
+        typeof image.storagePath === "string" &&
+        image.storagePath.startsWith("items/"),
+    ),
+  );
+
 // Run Vision AI analysis on a Firestore item
-async function analyzeItemImages(itemId: string, imageStoragePaths: string[]) {
-  if (!imageStoragePaths || imageStoragePaths.length === 0) {
-    console.log(`No images to analyze for item ${itemId}`);
+async function analyzeItemImages(itemId: string, images: ItemImage[]) {
+  const storedImages = images.filter(
+    (image): image is ItemImage & { storagePath: string } =>
+      typeof image.storagePath === "string" &&
+      image.storagePath.startsWith("items/"),
+  );
+
+  if (storedImages.length === 0) {
+    console.log(`No permanent images to analyze for item ${itemId}`);
     return;
   }
 
   console.log(
-    `Running Vision analysis for item ${itemId} with ${imageStoragePaths.length} images`,
+    `Running Vision analysis for item ${itemId} with ${storedImages.length} images`,
   );
 
   const bucketName = storage.bucket().name;
 
   // Prepare Vision API batch requests
   const requests: protos.google.cloud.vision.v1.IAnnotateImageRequest[] =
-    imageStoragePaths.map((path) => ({
-      image: { source: { imageUri: `gs://${bucketName}/${path}` } },
+    storedImages.map((image) => ({
+      image: {
+        source: { imageUri: `gs://${bucketName}/${image.storagePath}` },
+      },
       features: [{ type: "LABEL_DETECTION" as const }],
     }));
 
@@ -46,7 +133,7 @@ async function analyzeItemImages(itemId: string, imageStoragePaths: string[]) {
   // Log results
   const responses = batchResponse.responses ?? [];
   responses.forEach((res, i) => {
-    const image = imageStoragePaths[i];
+    const image = storedImages[i];
     const labels =
       res.labelAnnotations?.map((l) => ({
         description: l.description,
@@ -54,9 +141,12 @@ async function analyzeItemImages(itemId: string, imageStoragePaths: string[]) {
       })) ?? [];
 
     if (labels.length === 0) {
-      console.warn(`No labels detected for ${image}`);
+      console.warn(`No labels detected for ${image?.storagePath ?? "unknown"}`);
     } else {
-      console.log(`Labels for ${image}:`, JSON.stringify(labels, null, 2));
+      console.log(
+        `Labels for ${image?.storagePath ?? "unknown"}:`,
+        JSON.stringify(labels, null, 2),
+      );
     }
   });
 
@@ -78,12 +168,41 @@ async function analyzeItemImages(itemId: string, imageStoragePaths: string[]) {
     .map(([description]) => description)
     .slice(0, 10);
 
-  // Update Firestore with labels
+  // Attempt OCR on the label/tag photo
+  let labelText: string | undefined;
+  const labelImage = storedImages.find((image) => image.role === "label");
+  if (labelImage) {
+    try {
+      const [textResult] = await visionClient.textDetection(
+        `gs://${bucketName}/${labelImage.storagePath}`,
+      );
+      const annotations = textResult.textAnnotations ?? [];
+      const fullText = annotations[0]?.description?.trim();
+      if (fullText) {
+        labelText = fullText;
+        console.log(`Extracted label text for item ${itemId}:`, labelText);
+      } else {
+        console.log(`No text detected for label image on item ${itemId}`);
+      }
+    } catch (ocrError) {
+      console.error(
+        `Failed to extract label text for item ${itemId}:`,
+        ocrError,
+      );
+    }
+  } else {
+    console.warn(`No label image found for item ${itemId}; skipping text OCR`);
+  }
+
+  // Update Firestore with labels and optional labelText
   try {
     const itemRef = firestore.collection("items").doc(itemId);
     const updatePayload: Record<string, unknown> = {
       labels: labelList,
     };
+    if (labelText) {
+      updatePayload.labelText = labelText;
+    }
 
     const doc = await itemRef.get();
     const currentDescription = doc.get("description");
@@ -110,22 +229,22 @@ export const analyzeAfterImageMove = onDocumentUpdated(
     const beforeData = event.data?.before.data();
     const afterData = event.data?.after.data();
 
-    // Only run if imageStoragePaths changed from temp/ to items/
-    const beforePaths = beforeData?.imageStoragePaths || [];
-    const afterPaths = afterData?.imageStoragePaths || [];
+    const beforeImages = normalizeImages(beforeData);
+    const afterImages = normalizeImages(afterData);
+    const beforePaths = getStoragePathsFromImages(beforeImages);
+    const afterPaths = getStoragePathsFromImages(afterImages);
 
     // Check if paths changed and now point to items/
-    const pathsChanged =
-      JSON.stringify(beforePaths) !== JSON.stringify(afterPaths);
-    const nowInItems =
-      afterPaths.length > 0 && afterPaths[0].startsWith("items/");
+    const pathsChanged = storagePathsChanged(beforePaths, afterPaths);
+    const readyForVision = hasAllRequiredImages(afterImages);
     const labelsEmpty = !afterData?.labels || afterData.labels.length === 0;
+    const needsLabelText = !afterData?.labelText;
 
-    if (pathsChanged && nowInItems && labelsEmpty) {
+    if (pathsChanged && readyForVision && (labelsEmpty || needsLabelText)) {
       console.log(
         `Images moved to permanent location for item ${itemId}, running Vision AI`,
       );
-      await analyzeItemImages(itemId, afterPaths);
+      await analyzeItemImages(itemId, afterImages);
     }
   },
 );
@@ -141,51 +260,67 @@ export const processNewItem = onDocumentCreated(
     const itemId = event.params.itemId;
     const data = event.data?.data();
 
-    if (!data?.imageStoragePaths || data.imageStoragePaths.length === 0) {
+    const normalizedImages = normalizeImages(data);
+    if (normalizedImages.length === 0) {
       console.log(`No images to process for item ${itemId}`);
       return;
     }
 
-    // Only process if images are still in temp folder
-    const firstPath = data.imageStoragePaths[0];
-    if (!firstPath.startsWith("temp/")) {
+    const hasTempImages = normalizedImages.some((image) =>
+      image.storagePath?.startsWith("temp/"),
+    );
+    if (!hasTempImages) {
       console.log(`Images already processed for item ${itemId}`);
       return;
     }
 
     console.log(
-      `Processing ${data.imageStoragePaths.length} images for item ${itemId}`,
+      `Processing ${normalizedImages.length} images for item ${itemId}`,
     );
 
     const bucket = storage.bucket();
+    const updatedImages: ItemImage[] = [];
     const newPaths: string[] = [];
 
     try {
       // Move each image from temp to items/{itemId}
-      for (let i = 0; i < data.imageStoragePaths.length; i++) {
-        const tempPath = data.imageStoragePaths[i];
-        const fileExtension = tempPath.split(".").pop() || "jpg";
-        const fileName =
-          i === 0
-            ? `thumbnail.${fileExtension}`
-            : `image_${String(i).padStart(3, "0")}.${fileExtension}`;
-        const newPath = `items/${itemId}/${fileName}`;
+      for (let i = 0; i < normalizedImages.length; i++) {
+        const image = normalizedImages[i];
+        const sourcePath = image.storagePath;
+        if (!sourcePath) continue;
 
-        try {
-          await bucket.file(tempPath).move(bucket.file(newPath));
-          newPaths.push(newPath);
-          console.log(`Moved ${tempPath} → ${newPath}`);
-        } catch (moveError) {
-          console.error(`Failed to move ${tempPath}:`, moveError);
-          // Keep the temp path if move fails
-          newPaths.push(tempPath);
+        const fileExtension = sourcePath.split(".").pop() || "jpg";
+        const roleSegment =
+          image.role ?? `image_${String(i + 1).padStart(2, "0")}`;
+        const sanitizedRole = roleSegment.replace(/[^a-z0-9_-]/gi, "_");
+        const fileName = `${String(i + 1).padStart(2, "0")}_${sanitizedRole}.${fileExtension}`;
+        let destinationPath = `items/${itemId}/${fileName}`;
+
+        if (sourcePath.startsWith("temp/")) {
+          try {
+            await bucket.file(sourcePath).move(bucket.file(destinationPath));
+            console.log(`Moved ${sourcePath} → ${destinationPath}`);
+          } catch (moveError) {
+            console.error(`Failed to move ${sourcePath}:`, moveError);
+            destinationPath = sourcePath;
+          }
+        } else {
+          destinationPath = sourcePath;
         }
+
+        newPaths.push(destinationPath);
+        updatedImages.push({
+          role: image.role,
+          storagePath: destinationPath,
+          originalName: image.originalName,
+        });
       }
 
       // Update item with new permanent paths
       // This will trigger analyzeAfterImageMove
       await event.data?.ref.update({
         imageStoragePaths: newPaths,
+        images: updatedImages,
       });
 
       console.log(
@@ -193,7 +328,10 @@ export const processNewItem = onDocumentCreated(
       );
 
       // Clean up empty temp folder
-      const sessionId = data.sessionId;
+      const sessionId =
+        typeof data?.sessionId === "string"
+          ? (data.sessionId as string)
+          : undefined;
       if (sessionId) {
         try {
           const [files] = await bucket.getFiles({
@@ -223,20 +361,21 @@ export const cleanupItemImages = onDocumentDeleted(
     const itemId = event.params.itemId;
     const data = event.data?.data();
 
-    if (!data?.imageStoragePaths || data.imageStoragePaths.length === 0) {
+    const pathsToDelete = getAllStoragePaths(data);
+    if (pathsToDelete.length === 0) {
       console.log(`No images to cleanup for item ${itemId}`);
       return;
     }
 
     console.log(
-      `Cleaning up ${data.imageStoragePaths.length} images for deleted item ${itemId}`,
+      `Cleaning up ${pathsToDelete.length} images for deleted item ${itemId}`,
     );
 
     const bucket = storage.bucket();
 
     try {
       // Delete all images for this item
-      const deletePromises = data.imageStoragePaths.map((path: string) =>
+      const deletePromises = pathsToDelete.map((path) =>
         bucket
           .file(path)
           .delete()
