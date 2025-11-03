@@ -80,10 +80,11 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 3px solid transparent;
+  border: 0px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  box-shadow: none;
 }
 
 .color-circle:active {
@@ -93,12 +94,26 @@
 /* White color circle needs a border to be visible */
 .color-circle[style*="#FFFFFF"],
 .color-circle[style*="#ffffff"] {
-  border: 3px solid #d1d5db;
+  border: 2px solid #d1d5db;
 }
 
+/* Selected state - ring outline */
 .color-selected {
-  border: 3px solid #023e38 !important;
-  box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #023e38;
+  box-shadow: 
+    inset 0 0 0 2px #ffffff,
+    inset 0 0 0 6px currentColor,
+    0 0 0 2px currentColor !important;
+  border: 0px solid transparent !important;
+}
+
+/* Special handling for white when selected */
+.color-selected[style*="#FFFFFF"],
+.color-selected[style*="#ffffff"] {
+  box-shadow: 
+    inset 0 0 0 2px #ffffff,
+    inset 0 0 0 6px #d1d5db,
+    0 0 0 2px #d1d5db !important;
+  border: 0px solid transparent !important;
 }
 
 .filter-actions-footer {
