@@ -1,0 +1,133 @@
+.settings-page-content {
+  --background: var(--ion-color-secondary);
+}
+
+.settings-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+.settings-title {
+  font-family: "Georgia", serif;
+  font-size: 24px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--ion-color-primary);
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+.settings-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.profile-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.profile-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.profile-detail {
+  font-size: 14px;
+  font-weight: 400;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.settings-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.settings-button {
+  width: 100%;
+  padding: 14px 24px;
+  border: 2px solid var(--ion-color-primary);
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: var(--ion-color-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-button:active {
+  transform: scale(0.98);
+  background-color: #f9fafb;
+}
+
+.settings-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-apply-button {
+  width: 100%;
+  padding: 14px 24px;
+  border: 2px solid var(--ion-color-primary);
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: var(--ion-color-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-apply-button:active {
+  transform: scale(0.98);
+  background-color: #f9fafb;
+}
+
+.settings-footer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.settings-secondary-button {
+  padding: 14px 24px;
+  border: 2px solid var(--ion-color-primary);
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: var(--ion-color-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-secondary-button:active {
+  transform: scale(0.98);
+  background-color: #f9fafb;
+}

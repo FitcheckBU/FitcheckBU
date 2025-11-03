@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import UploadFlow from "./pages/UploadFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
+import SettingsPage from "./pages/SettingsPage";
 import MainLayout from "./components/MainLayout";
 
 /* Core CSS required for Ionic components to work properly */
@@ -90,6 +91,15 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <ItemDetailPage />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/settings"
+              render={() => (
+                <MainLayout>
+                  <SettingsPage />
                 </MainLayout>
               )}
             />
