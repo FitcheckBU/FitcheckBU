@@ -7,17 +7,8 @@ ion-item.figma-item-card {
   --inner-padding-end: 0;
   margin: 0;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #3b82f6;
+  box-shadow: 0 6px 12px 0 var(--item-card-drop-shadow-color);
   overflow: hidden;
-}
-
-ion-item.figma-item-card.sold {
-  border-left-color: #ef4444;
-}
-
-ion-item.figma-item-card.pending {
-  border-left-color: #f59e0b;
 }
 
 .figma-card-content {
@@ -95,6 +86,7 @@ ion-item.figma-item-card.pending {
 /* Swipeable action styles handled by Ionic */
 ion-item-sliding {
   margin-bottom: 12px;
+  overflow: visible;
 }
 
 ion-item-option {
