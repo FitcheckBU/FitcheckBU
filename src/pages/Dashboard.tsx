@@ -6,6 +6,7 @@ import {
   IonAlert,
   RefresherEventDetail,
 } from "@ionic/react";
+import { useHistory } from "react-router-dom";
 import filterSvg from "../../public/filter.svg"; // Import the SVG directly
 import { useState, useEffect } from "react";
 import {
@@ -14,19 +15,16 @@ import {
   InventoryItem,
 } from "../lib/inventoryService";
 import ItemCard from "../components/ItemCard";
-import ItemDetailModal from "../components/ItemDetailModal";
 import FilterSheet from "../components/FilterSheet";
-import EditItemModal from "../components/EditItemModal";
 import "./Dashboard.css";
 
 const Dashboard: React.FC = () => {
+  const history = useHistory();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
-  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null);
 
   // Filter states
@@ -165,8 +163,8 @@ const Dashboard: React.FC = () => {
             <ItemCard
               key={item.id}
               item={item}
-              onClick={() => setSelectedItem(item)}
-              onEdit={() => setEditingItem(item)}
+              onClick={() => history.push(`/item/${item.id}`)}
+              onEdit={() => history.push(`/item/${item.id}`)}
               onDelete={() => setItemToDelete(item)}
             />
           ))
@@ -182,24 +180,6 @@ const Dashboard: React.FC = () => {
           data-testid="input-search"
         ></IonSearchbar>
       </div>
-
-      <ItemDetailModal
-        isOpen={!!selectedItem}
-        item={selectedItem}
-        onClose={() => setSelectedItem(null)}
-        onUpdate={loadItems}
-        onEdit={() => {
-          setEditingItem(selectedItem);
-          setSelectedItem(null);
-        }}
-      />
-
-      <EditItemModal
-        isOpen={!!editingItem}
-        item={editingItem}
-        onClose={() => setEditingItem(null)}
-        onUpdate={loadItems}
-      />
 
       <FilterSheet
         isOpen={showFilterSheet}

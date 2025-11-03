@@ -7,6 +7,7 @@ import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
 import UploadFlow from "./pages/UploadFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
+import ItemDetailPage from "./pages/ItemDetailPage";
 import MainLayout from "./components/MainLayout";
 
 /* Core CSS required for Ionic components to work properly */
@@ -80,6 +81,15 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <ItemConfirmationPage />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/item/:itemId"
+              render={() => (
+                <MainLayout>
+                  <ItemDetailPage />
                 </MainLayout>
               )}
             />
