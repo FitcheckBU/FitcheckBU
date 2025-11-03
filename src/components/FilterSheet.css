@@ -65,8 +65,9 @@
 }
 
 .chip-selected {
-  background-color: var(--ion-color-primary);
+  background-color: #023e38;
   color: #ffffff;
+  border-color: #023e38;
 }
 
 .filter-colors-grid {
@@ -79,10 +80,9 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 3px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   position: relative;
 }
 
@@ -93,14 +93,12 @@
 /* White color circle needs a border to be visible */
 .color-circle[style*="#FFFFFF"],
 .color-circle[style*="#ffffff"] {
-  border: 2px solid #d1d5db;
+  border: 3px solid #d1d5db;
 }
 
 .color-selected {
-  border: 3px solid var(--ion-color-primary) !important;
-  box-shadow:
-    0 0 0 2px #ffffff,
-    0 0 0 5px var(--ion-color-primary);
+  border: 3px solid #023e38 !important;
+  box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #023e38;
 }
 
 .filter-actions-footer {
