@@ -56,6 +56,42 @@ export interface InventoryItem {
   //material?: string;
 }
 
+export interface SortOption {
+  field: "dateAdded" | "price";
+  direction: "asc" | "desc";
+}
+
+export interface FilterState {
+  categories: string[];
+  brands: string[];
+  colors: string[];
+  sizes: string[];
+  conditions: string[];
+  priceMin?: number;
+  priceMax?: number;
+  decades: string[];
+  styles: string[];
+  soldStatus: "all" | "available" | "sold"; // isSold filter
+  sortBy: SortOption;
+}
+
+export interface BackendFilterParams {
+  // Backend filters (applied in Firestore)
+  categories?: string[];
+  isSold?: boolean | null; // null means "all"
+  sortBy: SortOption;
+
+  // Frontend filters (applied client-side)
+  brands?: string[];
+  colors?: string[];
+  sizes?: string[];
+  conditions?: string[];
+  priceMin?: number;
+  priceMax?: number;
+  decades?: string[];
+  styles?: string[];
+}
+
 //-------------CRUD OPERATIONS------------------
 
 //add
@@ -292,4 +328,113 @@ export const getItemImageUrls = async (
     console.error("Error getting image URLs:", error);
     return [];
   }
+};
+
+// DEPRECATED: Use getFilteredItems from filterService.ts instead
+// This function is kept for backward compatibility but should not be used for new code
+export const getItemsPaginatedWithFilters = async (
+  pageSize: number = 30,
+  lastDoc?: QueryDocumentSnapshot,
+  searchText: string = "",
+  activeFilters?: {
+    sizes: string[];
+    sexes: string[];
+    colors: string[];
+    materials: string[];
+  },
+): Promise<{
+  items: InventoryItem[];
+  lastDoc: QueryDocumentSnapshot | null;
+  hasMore: boolean;
+}> => {
+  console.warn(
+    "getItemsPaginatedWithFilters is deprecated. Use getFilteredItems from filterService.ts instead.",
+  );
+
+  const itemsRef = collection(db, "items");
+
+  // Start with basic query ordered by dateAdded (this doesn't require additional indexes)
+  let q = query(itemsRef, orderBy("dateAdded", "desc"), limit(pageSize));
+
+  if (lastDoc) {
+    q = query(q, startAfter(lastDoc));
+  }
+
+  const snapshot = await getDocs(q);
+  let items = snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      }) as InventoryItem,
+  );
+
+  // Apply frontend filtering for search and filters to avoid complex Firestore indexes
+  if (
+    searchText ||
+    (activeFilters &&
+      (activeFilters.sizes.length > 0 ||
+        activeFilters.colors.length > 0 ||
+        activeFilters.sexes.length > 0 ||
+        activeFilters.materials.length > 0))
+  ) {
+    items = items.filter((item) => {
+      // Apply search filter
+      if (searchText) {
+        const search = searchText.toLowerCase();
+        const matchesSearch =
+          item.name?.toLowerCase().includes(search) ||
+          item.brand?.toLowerCase().includes(search) ||
+          item.category?.toLowerCase().includes(search) ||
+          item.color?.toLowerCase().includes(search);
+        if (!matchesSearch) return false;
+      }
+
+      // Apply active filters
+      if (activeFilters) {
+        // Size filter (checking category for size info)
+        if (activeFilters.sizes.length > 0) {
+          const matchesSize = activeFilters.sizes.some(
+            (size) =>
+              item.category?.toLowerCase().includes(size.toLowerCase()) ||
+              item.size?.toLowerCase().includes(size.toLowerCase()),
+          );
+          if (!matchesSize) return false;
+        }
+
+        // Color filter
+        if (activeFilters.colors.length > 0) {
+          const matchesColor = activeFilters.colors.some((color) =>
+            item.color?.toLowerCase().includes(color.toLowerCase()),
+          );
+          if (!matchesColor) return false;
+        }
+
+        // Material filter (checking description and labels)
+        if (activeFilters.materials.length > 0) {
+          const matchesMaterial = activeFilters.materials.some(
+            (material) =>
+              item.description
+                ?.toLowerCase()
+                .includes(material.toLowerCase()) ||
+              item.labels?.some((label) =>
+                label.toLowerCase().includes(material.toLowerCase()),
+              ),
+          );
+          if (!matchesMaterial) return false;
+        }
+      }
+
+      return true;
+    });
+  }
+
+  const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+  const hasMore = snapshot.docs.length === pageSize;
+
+  return {
+    items: items,
+    lastDoc: newLastDoc,
+    hasMore: hasMore,
+  };
 };
