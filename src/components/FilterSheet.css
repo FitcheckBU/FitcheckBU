@@ -73,12 +73,13 @@
 .filter-colors-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 14px;
+  gap: 16px;
+  padding: 4px 0;
 }
 
 .color-circle {
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
@@ -86,6 +87,7 @@
   position: relative;
   box-shadow: none;
   box-sizing: border-box;
+  justify-self: center;
 }
 
 .color-circle:active {
@@ -94,7 +96,7 @@
 
 /* Selected state - creates hollow ring effect */
 .color-selected {
-  border-width: 5px;
+  border-width: 4px;
 }
 
 .filter-actions-footer {
