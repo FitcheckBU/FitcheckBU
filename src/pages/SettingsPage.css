@@ -1,11 +1,12 @@
-.settings-page-content {
-  --background: var(--ion-color-secondary);
+.settings-page-wrapper {
+  background: var(--ion-color-secondary);
+  min-height: 100%;
+  padding: 20px 16px;
 }
 
 .settings-container {
   max-width: 400px;
   margin: 0 auto;
-  padding: 20px 16px;
 }
 
 .settings-title {

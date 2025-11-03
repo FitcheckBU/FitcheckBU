@@ -1,4 +1,3 @@
-import { IonPage, IonContent } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./SettingsPage.css";
 
@@ -34,8 +33,7 @@ const SettingsPage: React.FC = () => {
   };
 
   return (
-    <IonPage>
-      <IonContent className="settings-page-content">
+    <div className="settings-page-wrapper">
         <div className="settings-container">
           <h1 className="settings-title">Settings</h1>
 
@@ -113,8 +111,7 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </IonContent>
-    </IonPage>
+      </div>
   );
 };
 
