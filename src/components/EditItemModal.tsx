@@ -16,7 +16,7 @@ import {
   IonSelectOption,
   useIonToast,
 } from "@ionic/react";
-import { closeOutline, saveOutline } from "ionicons/icons";
+import { arrowBackOutline, saveOutline } from "ionicons/icons";
 import { InventoryItem, updateItem } from "../lib/inventoryService";
 import "./EditItemModal.css";
 
@@ -44,6 +44,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     decade: "",
     style: "",
     description: "",
+    size: "",
   });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -59,6 +60,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         decade: item.decade || "",
         style: item.style || "",
         description: item.description || "",
+        size: item.size || "",
       });
     }
   }, [isOpen, item]);
@@ -96,6 +98,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         decade: formData.decade.trim(),
         style: formData.style.trim(),
         description: formData.description.trim(),
+        size: formData.size.trim(),
       };
 
       await updateItem(item.id, updates);
@@ -128,170 +131,206 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     <IonModal isOpen={isOpen} onDidDismiss={onClose}>
       <IonHeader>
         <IonToolbar className="edit-toolbar">
-          <IonTitle>Edit Item</IonTitle>
-          <IonButtons slot="end">
+          <IonButtons slot="start">
             <IonButton onClick={onClose} data-testid="button-close-edit">
-              <IonIcon icon={closeOutline} />
+              <IonIcon icon={arrowBackOutline} />
             </IonButton>
           </IonButtons>
+          <IonTitle className="edit-title">Edit Item</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="edit-modal-content">
         <div className="edit-form-container">
-          <IonItem className="edit-form-item">
-            <IonLabel position="stacked" className="edit-form-label">
-              Name <span className="required-asterisk">*</span>
-            </IonLabel>
-            <IonInput
-              value={formData.name}
-              onIonInput={(e) => handleInputChange("name", e.detail.value || "")}
-              placeholder="Enter item name"
-              className="edit-form-input"
-              data-testid="input-edit-name"
-            />
-          </IonItem>
+          <div className="edit-form-card">
+            {/* Basic Information Section */}
+            <div className="form-section">
+              <h3 className="section-title">Basic Information</h3>
+              
+              <div className="form-field">
+                <label className="field-label">
+                  Name <span className="required-mark">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  placeholder="Enter item name"
+                  className="field-input"
+                  data-testid="input-edit-name"
+                />
+              </div>
 
-          <IonItem className="edit-form-item">
-            <IonLabel position="stacked" className="edit-form-label">
-              Brand
-            </IonLabel>
-            <IonInput
-              value={formData.brand}
-              onIonInput={(e) => handleInputChange("brand", e.detail.value || "")}
-              placeholder="Enter brand"
-              className="edit-form-input"
-              data-testid="input-edit-brand"
-            />
-          </IonItem>
+              <div className="form-row">
+                <div className="form-field">
+                  <label className="field-label">Brand</label>
+                  <input
+                    type="text"
+                    value={formData.brand}
+                    onChange={(e) => handleInputChange("brand", e.target.value)}
+                    placeholder="Enter brand"
+                    className="field-input"
+                    data-testid="input-edit-brand"
+                  />
+                </div>
 
-          <IonItem className="edit-form-item">
-            <IonLabel position="stacked" className="edit-form-label">
-              Category
-            </IonLabel>
-            <IonSelect
-              value={formData.category}
-              onIonChange={(e) => handleInputChange("category", e.detail.value)}
-              placeholder="Select category"
-              className="edit-form-select"
-              data-testid="select-edit-category"
-            >
-              <IonSelectOption value="Tops">Tops</IonSelectOption>
-              <IonSelectOption value="Bottoms">Bottoms</IonSelectOption>
-              <IonSelectOption value="Outerwear">Outerwear</IonSelectOption>
-              <IonSelectOption value="Dresses">Dresses</IonSelectOption>
-              <IonSelectOption value="Shoes">Shoes</IonSelectOption>
-              <IonSelectOption value="Accessories">Accessories</IonSelectOption>
-              <IonSelectOption value="Other">Other</IonSelectOption>
-            </IonSelect>
-          </IonItem>
+                <div className="form-field">
+                  <label className="field-label">Category</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => handleInputChange("category", e.target.value)}
+                    className="field-select"
+                    data-testid="select-edit-category"
+                  >
+                    <option value="">Select category</option>
+                    <option value="Tops">Tops</option>
+                    <option value="Bottoms">Bottoms</option>
+                    <option value="Outerwear">Outerwear</option>
+                    <option value="Dresses">Dresses</option>
+                    <option value="Shoes">Shoes</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
 
-          <IonItem className="edit-form-item">
-            <IonLabel position="stacked" className="edit-form-label">
-              Color
-            </IonLabel>
-            <IonInput
-              value={formData.color}
-              onIonInput={(e) => handleInputChange("color", e.detail.value || "")}
-              placeholder="Enter color"
-              className="edit-form-input"
-              data-testid="input-edit-color"
-            />
-          </IonItem>
+            {/* Details Section */}
+            <div className="form-section">
+              <h3 className="section-title">Details</h3>
+              
+              <div className="form-row">
+                <div className="form-field">
+                  <label className="field-label">Color</label>
+                  <input
+                    type="text"
+                    value={formData.color}
+                    onChange={(e) => handleInputChange("color", e.target.value)}
+                    placeholder="Enter color"
+                    className="field-input"
+                    data-testid="input-edit-color"
+                  />
+                </div>
 
-          <IonItem className="edit-form-item">
-            <IonLabel position="stacked" className="edit-form-label">
-              Condition
-            </IonLabel>
-            <IonSelect
-              value={formData.condition}
-              onIonChange={(e) => handleInputChange("condition", e.detail.value)}
-              placeholder="Select condition"
-              className="edit-form-select"
-              data-testid="select-edit-condition"
-            >
-              <IonSelectOption value="New">New</IonSelectOption>
-              <IonSelectOption value="Like New">Like New</IonSelectOption>
-              <IonSelectOption value="Good">Good</IonSelectOption>
-              <IonSelectOption value="Fair">Fair</IonSelectOption>
-              <IonSelectOption value="Poor">Poor</IonSelectOption>
-            </IonSelect>
-          </IonItem>
+                <div className="form-field">
+                  <label className="field-label">Size</label>
+                  <input
+                    type="text"
+                    value={formData.size}
+                    onChange={(e) => handleInputChange("size", e.target.value)}
+                    placeholder="Enter size"
+                    className="field-input"
+                    data-testid="input-edit-size"
+                  />
+                </div>
+              </div>
 
-          <IonItem className="edit-form-item">
-            <IonLabel position="stacked" className="edit-form-label">
-              Price ($)
-            </IonLabel>
-            <IonInput
-              type="number"
-              value={formData.price}
-              onIonInput={(e) => handleInputChange("price", e.detail.value || "")}
-              placeholder="0.00"
-              className="edit-form-input"
-              data-testid="input-edit-price"
-            />
-          </IonItem>
+              <div className="form-row">
+                <div className="form-field">
+                  <label className="field-label">Condition</label>
+                  <select
+                    value={formData.condition}
+                    onChange={(e) => handleInputChange("condition", e.target.value)}
+                    className="field-select"
+                    data-testid="select-edit-condition"
+                  >
+                    <option value="">Select condition</option>
+                    <option value="New">New</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                  </select>
+                </div>
 
-          <IonItem className="edit-form-item">
-            <IonLabel position="stacked" className="edit-form-label">
-              Decade
-            </IonLabel>
-            <IonSelect
-              value={formData.decade}
-              onIonChange={(e) => handleInputChange("decade", e.detail.value)}
-              placeholder="Select decade"
-              className="edit-form-select"
-              data-testid="select-edit-decade"
-            >
-              <IonSelectOption value="2020s">2020s</IonSelectOption>
-              <IonSelectOption value="2010s">2010s</IonSelectOption>
-              <IonSelectOption value="2000s">2000s</IonSelectOption>
-              <IonSelectOption value="1990s">1990s</IonSelectOption>
-              <IonSelectOption value="1980s">1980s</IonSelectOption>
-              <IonSelectOption value="1970s">1970s</IonSelectOption>
-              <IonSelectOption value="1960s">1960s</IonSelectOption>
-              <IonSelectOption value="Vintage">Vintage (Pre-1960)</IonSelectOption>
-            </IonSelect>
-          </IonItem>
+                <div className="form-field">
+                  <label className="field-label">Price ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => handleInputChange("price", e.target.value)}
+                    placeholder="0.00"
+                    className="field-input"
+                    data-testid="input-edit-price"
+                  />
+                </div>
+              </div>
+            </div>
 
-          <IonItem className="edit-form-item">
-            <IonLabel position="stacked" className="edit-form-label">
-              Style
-            </IonLabel>
-            <IonInput
-              value={formData.style}
-              onIonInput={(e) => handleInputChange("style", e.detail.value || "")}
-              placeholder="Enter style (e.g., Casual, Formal)"
-              className="edit-form-input"
-              data-testid="input-edit-style"
-            />
-          </IonItem>
+            {/* Style & Era Section */}
+            <div className="form-section">
+              <h3 className="section-title">Style & Era</h3>
+              
+              <div className="form-row">
+                <div className="form-field">
+                  <label className="field-label">Style</label>
+                  <input
+                    type="text"
+                    value={formData.style}
+                    onChange={(e) => handleInputChange("style", e.target.value)}
+                    placeholder="e.g., Casual, Formal"
+                    className="field-input"
+                    data-testid="input-edit-style"
+                  />
+                </div>
 
-          <IonItem className="edit-form-item edit-form-item-textarea">
-            <IonLabel position="stacked" className="edit-form-label">
-              Description
-            </IonLabel>
-            <IonTextarea
-              value={formData.description}
-              onIonInput={(e) => handleInputChange("description", e.detail.value || "")}
-              placeholder="Add additional details about the item..."
-              rows={4}
-              className="edit-form-textarea"
-              data-testid="textarea-edit-description"
-            />
-          </IonItem>
+                <div className="form-field">
+                  <label className="field-label">Decade</label>
+                  <select
+                    value={formData.decade}
+                    onChange={(e) => handleInputChange("decade", e.target.value)}
+                    className="field-select"
+                    data-testid="select-edit-decade"
+                  >
+                    <option value="">Select decade</option>
+                    <option value="2020s">2020s</option>
+                    <option value="2010s">2010s</option>
+                    <option value="2000s">2000s</option>
+                    <option value="1990s">1990s</option>
+                    <option value="1980s">1980s</option>
+                    <option value="1970s">1970s</option>
+                    <option value="1960s">1960s</option>
+                    <option value="Vintage">Vintage (Pre-1960)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
 
+            {/* Description Section */}
+            <div className="form-section">
+              <h3 className="section-title">Description</h3>
+              
+              <div className="form-field">
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  placeholder="Add additional details about the item..."
+                  rows={4}
+                  className="field-textarea"
+                  data-testid="textarea-edit-description"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
           <div className="edit-form-actions">
-            <IonButton
-              expand="block"
+            <button
               onClick={handleSave}
               disabled={isSaving}
-              className="edit-save-button"
+              className="save-button"
               data-testid="button-save-edit"
             >
-              <IonIcon slot="start" icon={saveOutline} />
               {isSaving ? "Saving..." : "Save Changes"}
-            </IonButton>
+            </button>
+            <button
+              onClick={onClose}
+              className="cancel-button"
+              data-testid="button-cancel-edit"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </IonContent>
