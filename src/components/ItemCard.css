@@ -100,7 +100,7 @@ ion-item.figma-item-card.pending {
 ion-item-sliding {
   margin-bottom: 0;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .swipe-actions {
