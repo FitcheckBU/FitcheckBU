@@ -146,18 +146,31 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
         <div className="filter-section">
           <h3 className="filter-section-title">Color:</h3>
           <div className="filter-colors-grid">
-            {colorOptions.map((color) => (
-              <button
-                key={color.name}
-                className={`color-circle ${selectedColors.includes(color.name) ? "color-selected" : ""}`}
-                style={{
-                  backgroundColor: color.hex,
-                }}
-                onClick={() => toggleSelection(color.name, selectedColors, setSelectedColors)}
-                aria-label={color.name}
-                data-testid={`color-${color.name.toLowerCase()}`}
-              />
-            ))}
+            {colorOptions.map((color) => {
+              const isSelected = selectedColors.includes(color.name);
+              const isWhite = color.name === "White";
+              
+              return (
+                <button
+                  key={color.name}
+                  className={`color-circle ${isSelected ? "color-selected" : ""}`}
+                  style={
+                    isSelected
+                      ? {
+                          backgroundColor: "transparent",
+                          borderColor: isWhite ? "#9ca3af" : color.hex,
+                        }
+                      : {
+                          backgroundColor: color.hex,
+                          borderColor: isWhite ? "#9ca3af" : "transparent",
+                        }
+                  }
+                  onClick={() => toggleSelection(color.name, selectedColors, setSelectedColors)}
+                  aria-label={color.name}
+                  data-testid={`color-${color.name.toLowerCase()}`}
+                />
+              );
+            })}
           </div>
         </div>
 
