@@ -9,9 +9,9 @@
 }
 
 .dashboard-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
   align-items: center;
-  justify-content: space-between;
   padding: 20px 16px;
   background-color: var(--ion-color-secondary);
 }
@@ -23,6 +23,8 @@
   font-style: italic;
   color: var(--ion-color-primary);
   margin: 0;
+  text-align: center;
+  grid-column: 2;
 }
 
 .filter-button {
