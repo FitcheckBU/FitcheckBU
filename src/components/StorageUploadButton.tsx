@@ -3,6 +3,7 @@ import { ref, uploadBytes } from "firebase/storage";
 import { cloudUploadSharp } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { PhotoRole } from "../constants/photoStages";
 import { storage } from "../lib/firebaseClient";
 import { addItem } from "../lib/inventoryService";
 
@@ -10,6 +11,7 @@ type UploadableFile = {
   id: string;
   name: string;
   file: File;
+  role: PhotoRole;
 };
 
 interface StorageUploadButtonProps {
@@ -17,7 +19,7 @@ interface StorageUploadButtonProps {
   disabled?: boolean;
   onUploadComplete?: () => void;
   onUploadingChange?: (uploading: boolean) => void;
-  onItemCreated?: (itemId: string, sessionId: string) => void;
+  onItemCreated?: (itemId: string) => void;
 }
 
 type StatusState = {
@@ -58,18 +60,27 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
       // Generate one sessionId shared by all uploaded photos
       const sessionId = uuidv4();
 
-      // Upload to temp location first
-      const tempPaths: string[] = [];
-      const uploads = files.map(async ({ file, name }) => {
+      const stagedUploads = files.map(({ file, name, role }, index) => {
         const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        // Upload to temp folder instead of uploads
-        const tempPath = `temp/${sessionId}/${safeName}`;
-        const storageRef = ref(storage, tempPath);
-        tempPaths.push(tempPath);
-        await uploadBytes(storageRef, file);
+        const prefixedName = `${String(index + 1).padStart(2, "0")}_${role}_${safeName}`;
+        const tempPath = `temp/${sessionId}/${prefixedName}`;
+        return {
+          file,
+          name,
+          role,
+          tempPath,
+          uploadPromise: uploadBytes(ref(storage, tempPath), file),
+        };
       });
 
-      await Promise.all(uploads);
+      const tempPaths = stagedUploads.map((entry) => entry.tempPath);
+      const sessionImages = stagedUploads.map((entry) => ({
+        role: entry.role,
+        storagePath: entry.tempPath,
+        originalName: entry.name,
+      }));
+
+      await Promise.all(stagedUploads.map((entry) => entry.uploadPromise));
 
       // Create draft item in Firestore
       const itemId = await addItem({
@@ -84,13 +95,14 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
         style: "",
         status: "draft", // Mark as draft until user fills details
         sessionId,
-        imageStoragePaths: tempPaths, // Store temp paths
+        imageStoragePaths: tempPaths, // Legacy list for backwards compatibility
+        images: sessionImages,
       });
 
       // Cloud Function will automatically move images from temp to items/{itemId}
       // This happens in the background after item creation
 
-      onItemCreated?.(itemId, sessionId);
+      onItemCreated?.(itemId);
       onUploadComplete?.();
       setStatus({
         message: `${files.length} image${files.length > 1 ? "s" : ""} uploaded. Complete item details to publish.`,
