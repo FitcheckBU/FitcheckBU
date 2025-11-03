@@ -1,0 +1,119 @@
+/* Edit Item Modal Styles */
+
+.edit-toolbar {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-secondary);
+}
+
+.edit-modal-content {
+  --background: var(--ion-color-secondary);
+}
+
+.edit-form-container {
+  padding: 20px 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.edit-form-item {
+  --background: var(--ion-color-light);
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.edit-form-item-textarea {
+  --padding-bottom: 16px;
+}
+
+.edit-form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+  margin-bottom: 8px;
+}
+
+.required-asterisk {
+  color: var(--ion-color-danger);
+  margin-left: 2px;
+}
+
+.edit-form-input,
+.edit-form-select,
+.edit-form-textarea {
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: 15px;
+  color: var(--ion-color-primary);
+}
+
+.edit-form-input::part(native),
+.edit-form-textarea::part(native) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.edit-form-input::placeholder,
+.edit-form-textarea::placeholder {
+  color: var(--ion-color-medium);
+  opacity: 1;
+}
+
+.edit-form-select {
+  width: 100%;
+}
+
+.edit-form-textarea {
+  margin-top: 8px;
+}
+
+.edit-form-actions {
+  margin-top: 24px;
+  margin-bottom: 32px;
+}
+
+.edit-save-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-tint);
+  --color: var(--ion-color-secondary);
+  --border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  height: 48px;
+  margin: 0;
+}
+
+.edit-save-button::part(native) {
+  border-radius: 12px;
+}
+
+.edit-save-button ion-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.edit-save-button:disabled {
+  --background: var(--ion-color-medium);
+  --color: var(--ion-color-light);
+}
+
+.ios .edit-form-item {
+  --min-height: auto;
+}
+
+.md .edit-form-item {
+  --min-height: auto;
+}
+
+@media (min-width: 768px) {
+  .edit-form-container {
+    padding: 24px 20px;
+  }
+}

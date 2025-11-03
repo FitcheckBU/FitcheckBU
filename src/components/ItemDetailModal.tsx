@@ -9,11 +9,19 @@ import {
   IonIcon,
 } from "@ionic/react";
 import { closeOutline, createOutline, trashOutline } from "ionicons/icons";
-import { InventoryItem, markAsSold } from "../lib/inventoryService";
+import {
+  getImageStoragePaths,
+  InventoryItem,
+  markAsSold,
+} from "../lib/inventoryService";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
 import { useEffect, useState } from "react";
-import { extractSize, extractColor, extractMaterial } from "../lib/metadataParser";
+import {
+  extractSize,
+  extractColor,
+  extractMaterial,
+} from "../lib/metadataParser";
 import "./ItemDetailModal.css";
 
 interface ItemDetailModalProps {
@@ -21,6 +29,7 @@ interface ItemDetailModalProps {
   item: InventoryItem | null;
   onClose: () => void;
   onUpdate: () => void;
+  onEdit?: () => void;
 }
 
 const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
@@ -28,30 +37,39 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
   item,
   onClose,
   onUpdate,
+  onEdit,
 }) => {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   useEffect(() => {
     const loadImages = async () => {
-      if (item?.imageStoragePaths && item.imageStoragePaths.length > 0) {
-        try {
-          const urls = await Promise.all(
-            item.imageStoragePaths.map(async (path) => {
-              const storageRef = ref(storage, path);
-              return await getDownloadURL(storageRef);
-            })
-          );
-          setImageUrls(urls);
-        } catch (error) {
-          console.error("Failed to load images:", error);
-        }
-      } else {
+      if (!item) {
+        setImageUrls([]);
+        return;
+      }
+
+      const storagePaths = getImageStoragePaths(item);
+      if (storagePaths.length === 0) {
+        setImageUrls([]);
+        return;
+      }
+
+      try {
+        const urls = await Promise.all(
+          storagePaths.map(async (path) => {
+            const storagePathRef = ref(storage, path);
+            return await getDownloadURL(storagePathRef);
+          }),
+        );
+        setImageUrls(urls);
+      } catch (error) {
+        console.error("Failed to load images:", error);
         setImageUrls([]);
       }
     };
 
-    if (isOpen && item) {
-      loadImages();
+    if (isOpen) {
+      void loadImages();
     }
   }, [isOpen, item]);
 
@@ -104,9 +122,12 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
         {/* Item Header */}
         <div className="detail-header-section">
-          <div className="detail-item-name">{item.name || item.brand || "Unknown Item"}</div>
+          <div className="detail-item-name">
+            {item.name || item.brand || "Unknown Item"}
+          </div>
           <div className="detail-item-subtitle">
-            {item.category || "Unknown Category"} • Size: {extractSize(item.labels)} • {item.condition || "Unknown"}
+            {item.category || "Unknown Category"} • Size:{" "}
+            {extractSize(item.labels)} • {item.condition || "Unknown"}
           </div>
         </div>
 
@@ -115,18 +136,22 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
           <div className="barcode-display">
             <div className="barcode-lines">
               {Array.from({ length: 50 }).map((_, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className="barcode-line"
                   style={{
-                    width: i % 7 === 0 ? '3px' : i % 3 === 0 ? '2px' : '1px',
-                    opacity: 0.9
+                    width: i % 7 === 0 ? "3px" : i % 3 === 0 ? "2px" : "1px",
+                    opacity: 0.9,
                   }}
                 />
               ))}
             </div>
             <div className="barcode-number">
-              {item.id?.slice(0, 12).toUpperCase().replace(/(.{3})/g, '$1 ').trim() || "ITEM-BARCODE"}
+              {item.id
+                ?.slice(0, 12)
+                .toUpperCase()
+                .replace(/(.{3})/g, "$1 ")
+                .trim() || "ITEM-BARCODE"}
             </div>
           </div>
         </div>
@@ -143,15 +168,21 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
         <div className="detail-info-section">
           <div className="detail-info-row">
             <span className="detail-info-label">Size:</span>
-            <span className="detail-info-value">{extractSize(item.labels)}</span>
+            <span className="detail-info-value">
+              {extractSize(item.labels)}
+            </span>
           </div>
           <div className="detail-info-row">
             <span className="detail-info-label">Color:</span>
-            <span className="detail-info-value">{item.color || extractColor(item.labels)}</span>
+            <span className="detail-info-value">
+              {item.color || extractColor(item.labels)}
+            </span>
           </div>
           <div className="detail-info-row">
             <span className="detail-info-label">Condition:</span>
-            <span className="detail-info-value">{item.condition || "Unknown"}</span>
+            <span className="detail-info-value">
+              {item.condition || "Unknown"}
+            </span>
           </div>
           <div className="detail-info-row">
             <span className="detail-info-label">Brand:</span>
@@ -159,12 +190,16 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
           </div>
           <div className="detail-info-row">
             <span className="detail-info-label">Material:</span>
-            <span className="detail-info-value">{extractMaterial(item.labels)}</span>
+            <span className="detail-info-value">
+              {extractMaterial(item.labels)}
+            </span>
           </div>
           {item.price && (
             <div className="detail-info-row">
               <span className="detail-info-label">Price:</span>
-              <span className="detail-info-value">${item.price.toFixed(2)}</span>
+              <span className="detail-info-value">
+                ${item.price.toFixed(2)}
+              </span>
             </div>
           )}
         </div>
@@ -175,10 +210,11 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             expand="block"
             fill="outline"
             className="detail-action-button"
-            data-testid="button-edit-photo"
+            onClick={onEdit}
+            data-testid="button-edit-item"
           >
             <IonIcon slot="start" icon={createOutline} />
-            Edit Photo
+            Edit Item
           </IonButton>
 
           <IonButton
