@@ -197,7 +197,7 @@ const Dashboard: React.FC = () => {
             ))}
             <IonInfiniteScroll
               onIonInfinite={fetchMoreItems}
-              threshold="500px"
+              threshold="100px"
               disabled={false}
             >
               <IonInfiniteScrollContent
