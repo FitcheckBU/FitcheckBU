@@ -112,6 +112,32 @@
   height: 80px;
 }
 
+.more-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.info-row {
+  display: flex;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.info-label {
+  font-weight: 700;
+  color: #1f2937;
+  min-width: 80px;
+}
+
+.info-value {
+  font-weight: 400;
+  color: #4b5563;
+}
+
 .item-actions {
   display: flex;
   flex-direction: column;

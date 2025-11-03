@@ -20,6 +20,7 @@ const ItemDetailPage: React.FC = () => {
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showMoreInfo, setShowMoreInfo] = useState(false);
 
   useEffect(() => {
     if (!itemId) return;
@@ -160,6 +161,41 @@ const ItemDetailPage: React.FC = () => {
                 </svg>
               </div>
 
+              {showMoreInfo && (
+                <div className="more-info-section">
+                  <div className="info-row">
+                    <span className="info-label">Sex:</span>
+                    <span className="info-value">{item.style || "Unisex"}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Size:</span>
+                    <span className="info-value">{item.size || "Medium"}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Type:</span>
+                    <span className="info-value">
+                      {item.category || "Long Sleeve"}
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Material:</span>
+                    <span className="info-value">
+                      {item.description?.split(" ")[0] || "Wool"}
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Color:</span>
+                    <span className="info-value">{item.color || "Tan"}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Pattern:</span>
+                    <span className="info-value">
+                      {item.decade || "None"}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               <div className="item-actions">
                 <IonButton
                   expand="block"
@@ -186,9 +222,10 @@ const ItemDetailPage: React.FC = () => {
                     fill="outline"
                     color="primary"
                     className="secondary-action-button"
+                    onClick={() => setShowMoreInfo(!showMoreInfo)}
                     data-testid="button-more-info"
                   >
-                    More Info
+                    {showMoreInfo ? "Less Info" : "More Info"}
                   </IonButton>
                 </div>
               </div>
