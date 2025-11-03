@@ -30,6 +30,18 @@
   gap: 16px;
 }
 
+.confirmation-loading.inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: auto;
+  margin-bottom: 16px;
+}
+
+.warning-banner {
+  margin-bottom: 16px;
+}
+
 /* Image Grid */
 .confirmation-image-grid {
   display: grid;

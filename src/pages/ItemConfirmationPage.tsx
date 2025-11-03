@@ -46,7 +46,8 @@ const ItemConfirmationPage: React.FC = () => {
   const history = useHistory();
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [labelsLoaded, setLabelsLoaded] = useState(false);
+  const [labelsApplied, setLabelsApplied] = useState(false);
+  const [aiFieldsApplied, setAiFieldsApplied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: "New Item",
@@ -61,6 +62,12 @@ const ItemConfirmationPage: React.FC = () => {
     description: "",
   });
   const initialDataLoaded = useRef(false);
+
+  useEffect(() => {
+    setLabelsApplied(false);
+    setAiFieldsApplied(false);
+    initialDataLoaded.current = false;
+  }, [itemId]);
 
   // Listen for item changes from Firestore
   useEffect(() => {
@@ -107,19 +114,78 @@ const ItemConfirmationPage: React.FC = () => {
     }
   }, [item]);
 
+  const metadataStatusValue = item?.metadataStatus ?? "pending";
+  const metadataReady = metadataStatusValue !== "pending";
+  const metadataErrored = metadataStatusValue === "error";
+  const labelsReady = Boolean(item?.labels && item.labels.length > 0);
+
   // Append AI labels to description when they arrive
   useEffect(() => {
-    if (item && !labelsLoaded) {
-      const labels = item.labels || [];
-      if (labels.length > 0) {
-        setLabelsLoaded(true);
-        setFormData((prev) => ({
-          ...prev,
-          description: ((prev.description || "") + labels.join(", ")).trim(),
-        }));
-      }
+    if (!item || labelsApplied) return;
+    if (!labelsReady) return;
+
+    const labels = item.labels ?? [];
+    if (labels.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        description: ((prev.description || "") + labels.join(", ")).trim(),
+      }));
+      setLabelsApplied(true);
     }
-  }, [item, labelsLoaded]);
+  }, [item, labelsReady, labelsApplied]);
+
+  useEffect(() => {
+    if (!item || aiFieldsApplied) return;
+    if (!metadataReady) return;
+    if (metadataStatusValue !== "complete") {
+      setAiFieldsApplied(true);
+      return;
+    }
+
+    const mergeText = (
+      currentValue: string,
+      candidateValue?: string,
+      defaultValue: string = "",
+    ) => {
+      if (candidateValue && candidateValue.length > 0) {
+        const trimmedCandidate = candidateValue.trim();
+        if (currentValue === defaultValue || currentValue.trim().length === 0) {
+          return trimmedCandidate;
+        }
+      }
+      return currentValue;
+    };
+
+    const mergeNumber = (currentValue: number, candidateValue?: number) => {
+      if (
+        typeof candidateValue === "number" &&
+        Number.isFinite(candidateValue)
+      ) {
+        if (currentValue === 0 || Number.isNaN(currentValue)) {
+          return candidateValue;
+        }
+      }
+      return currentValue;
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      name: mergeText(prev.name, item.name, "New Item"),
+      brand: mergeText(prev.brand, item.brand),
+      category: mergeText(prev.category, item.category, "uncategorized"),
+      color: mergeText(prev.color, item.color),
+      condition: mergeText(prev.condition, item.condition, "unknown"),
+      style: mergeText(prev.style, item.style),
+      size: mergeText(prev.size, item.size),
+      decade: mergeText(prev.decade, item.decade),
+      price: mergeNumber(prev.price, item.price),
+      description:
+        prev.description?.trim().length === 0 && item.description
+          ? item.description
+          : prev.description,
+    }));
+    setAiFieldsApplied(true);
+  }, [item, metadataReady, aiFieldsApplied, metadataStatusValue]);
 
   const handleInputChange = (
     field: keyof FormData,
@@ -164,7 +230,8 @@ const ItemConfirmationPage: React.FC = () => {
     );
   }
 
-  const isSubmitDisabled = !labelsLoaded || submitting;
+  const isSubmitDisabled =
+    submitting || !labelsReady || metadataStatusValue === "pending";
 
   return (
     <div className="item-confirmation-page">
@@ -174,6 +241,29 @@ const ItemConfirmationPage: React.FC = () => {
           <p>Review and edit the details before adding to your inventory</p>
         </IonText>
       </div>
+      {(!labelsReady || metadataStatusValue === "pending") && (
+        <div className="confirmation-loading inline">
+          <IonSpinner name="crescent" className="description-spinner" />
+          <IonText color="medium">
+            <p>
+              Analyzing images
+              {metadataStatusValue === "pending"
+                ? " and generating item details..."
+                : "..."}
+            </p>
+          </IonText>
+        </div>
+      )}
+      {metadataErrored && (
+        <div className="warning-banner">
+          <IonText color="warning">
+            <p>
+              We couldn&apos;t auto-fill every field. Please review and enter
+              any missing details manually.
+            </p>
+          </IonText>
+        </div>
+      )}
 
       {/* Image Grid */}
       {imageUrls.length > 0 && (
@@ -315,7 +405,7 @@ const ItemConfirmationPage: React.FC = () => {
           <IonItem>
             <IonLabel position="stacked">
               Description
-              {!labelsLoaded && (
+              {!labelsReady && (
                 <IonSpinner name="crescent" className="description-spinner" />
               )}
             </IonLabel>

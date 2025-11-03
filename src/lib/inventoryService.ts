@@ -42,10 +42,12 @@ export interface InventoryItem {
   description?: string; // human-written or AI-generated
   labels?: string[]; // Vision-generated tags
   labelText?: string; // OCR result from garment label/tag
+  material?: string;
   sessionId?: string; // upload session identifier
   imageStoragePaths?: string[]; // Storage paths for uploaded images
   images?: ItemImage[]; // Structured image metadata
   status?: "draft" | "active" | "archived";
+  metadataStatus?: "pending" | "complete" | "skipped" | "error";
 
   //additional fields can be added later
 
@@ -74,6 +76,7 @@ export const addItem = async (
     size: itemData.size ?? "",
     dateAdded: serverTimestamp(),
     isSold: false,
+    metadataStatus: "pending",
   });
   return docRef.id;
 };

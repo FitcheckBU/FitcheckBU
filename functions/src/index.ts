@@ -7,11 +7,382 @@ import {
   onDocumentDeleted,
   onDocumentUpdated,
 } from "firebase-functions/v2/firestore";
+import OpenAI from "openai";
 
 const visionClient = new vision.ImageAnnotatorClient();
 const app = admin.initializeApp();
 const firestore = getFirestore(app, "fitcheck-db");
 const storage = getStorage(app);
+const openAiApiKey = process.env.OPENAI_APIKEY;
+const openAiClient = openAiApiKey
+  ? new OpenAI({
+      apiKey: openAiApiKey,
+    })
+  : null;
+
+type PhotoRole = "front" | "back" | "label";
+
+type ItemImage = {
+  role?: PhotoRole;
+  storagePath?: string;
+  originalName?: string;
+};
+
+type MetadataStatus = "pending" | "complete" | "skipped" | "error";
+
+const REQUIRED_ROLES: PhotoRole[] = ["front", "back", "label"];
+
+const isPhotoRole = (value: unknown): value is PhotoRole =>
+  typeof value === "string" &&
+  (REQUIRED_ROLES as unknown as string[]).includes(value);
+
+const assignFallbackRoles = (images: ItemImage[]): ItemImage[] => {
+  if (images.length === 0) return images;
+
+  const usedRoles = new Set(
+    images
+      .map((img) => img.role)
+      .filter((role): role is PhotoRole => isPhotoRole(role)),
+  );
+
+  const remainingRoles = REQUIRED_ROLES.filter((role) => !usedRoles.has(role));
+
+  if (remainingRoles.length === 0) return images;
+
+  return images.map((image) => {
+    if (isPhotoRole(image.role)) {
+      return image;
+    }
+    const nextRole = remainingRoles.shift();
+    if (!nextRole) {
+      return image;
+    }
+    return { ...image, role: nextRole };
+  });
+};
+
+const normalizeImages = (data?: DocumentData): ItemImage[] => {
+  const rawImages = Array.isArray(data?.images)
+    ? (data?.images as Array<Record<string, unknown>>)
+    : [];
+
+  const structuredImages = rawImages
+    .filter(
+      (img): img is Record<string, unknown> & { storagePath: string } =>
+        Boolean(img?.storagePath) && typeof img.storagePath === "string",
+    )
+    .map((img) => ({
+      role: isPhotoRole(img.role) ? (img.role as PhotoRole) : undefined,
+      storagePath: img.storagePath as string,
+      originalName:
+        typeof img.originalName === "string" ? img.originalName : undefined,
+    }));
+
+  if (structuredImages.length > 0) {
+    return assignFallbackRoles(structuredImages);
+  }
+
+  const legacyPaths = Array.isArray(data?.imageStoragePaths)
+    ? (data?.imageStoragePaths as string[])
+    : [];
+
+  const legacyImages = legacyPaths
+    .filter((path): path is string => typeof path === "string")
+    .map((path) => ({ storagePath: path }));
+
+  return assignFallbackRoles(legacyImages);
+};
+
+const getStoragePathsFromImages = (images: ItemImage[]): string[] =>
+  images
+    .map((image) => image.storagePath)
+    .filter((path): path is string => typeof path === "string");
+
+type GeneratedFields = {
+  name?: string;
+  brand?: string;
+  category?: string;
+  color?: string;
+  condition?: string;
+  size?: string;
+  price?: number;
+  decade?: string;
+  style?: string;
+  material?: string;
+};
+
+const cleanGeneratedText = (value?: string | null): string | undefined => {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+};
+
+const parsePrice = (value?: string | number): number | undefined => {
+  if (typeof value === "number" && !Number.isNaN(value)) return value;
+  if (typeof value === "string") {
+    const normalized = value.replace(/[^0-9.]/g, "");
+    if (!normalized) return undefined;
+    const parsed = Number.parseFloat(normalized);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+  return undefined;
+};
+
+const extractJson = (text: string): unknown => {
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("No JSON object found in model response");
+  }
+  return JSON.parse(jsonMatch[0]);
+};
+
+const COLOR_KEYWORDS = [
+  "black",
+  "white",
+  "gray",
+  "grey",
+  "red",
+  "blue",
+  "green",
+  "yellow",
+  "orange",
+  "purple",
+  "pink",
+  "brown",
+  "beige",
+  "tan",
+  "navy",
+  "maroon",
+  "teal",
+  "turquoise",
+  "olive",
+  "cream",
+  "ivory",
+  "gold",
+  "silver",
+  "burgundy",
+  "khaki",
+  "lavender",
+  "mint",
+  "coral",
+  "peach",
+  "indigo",
+  "magenta",
+  "cyan",
+  "crimson",
+  "scarlet",
+  "charcoal",
+];
+
+const inferColorFromLabels = (labels: string[]): string | undefined => {
+  for (const label of labels) {
+    const lower = label.toLowerCase();
+    for (const color of COLOR_KEYWORDS) {
+      if (lower.includes(color)) {
+        return color.charAt(0).toUpperCase() + color.slice(1);
+      }
+    }
+  }
+  return undefined;
+};
+
+type PaletteEntry = {
+  name: string;
+  rgb: [number, number, number];
+};
+
+const COLOR_PALETTE: PaletteEntry[] = [
+  { name: "Black", rgb: [0, 0, 0] },
+  { name: "White", rgb: [255, 255, 255] },
+  { name: "Gray", rgb: [128, 128, 128] },
+  { name: "Red", rgb: [220, 20, 60] },
+  { name: "Orange", rgb: [255, 140, 0] },
+  { name: "Yellow", rgb: [255, 215, 0] },
+  { name: "Green", rgb: [34, 139, 34] },
+  { name: "Blue", rgb: [30, 144, 255] },
+  { name: "Purple", rgb: [138, 43, 226] },
+  { name: "Pink", rgb: [255, 105, 180] },
+  { name: "Brown", rgb: [139, 69, 19] },
+  { name: "Tan", rgb: [210, 180, 140] },
+  { name: "Teal", rgb: [54, 117, 136] },
+  { name: "Navy", rgb: [0, 0, 128] },
+];
+
+const colorDistance = (
+  a: [number, number, number],
+  b: [number, number, number],
+) => {
+  const [ar, ag, ab] = a;
+  const [br, bg, bb] = b;
+  return (ar - br) ** 2 + (ag - bg) ** 2 + (ab - bb) ** 2;
+};
+
+const matchPaletteColor = (rgb: [number, number, number]): string => {
+  let bestMatch = COLOR_PALETTE[0];
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (const entry of COLOR_PALETTE) {
+    const distance = colorDistance(entry.rgb, rgb);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestMatch = entry;
+    }
+  }
+  return bestMatch.name;
+};
+
+const extractDominantColorVector = (
+  colors: protos.google.cloud.vision.v1.IColorInfo[] | null | undefined,
+): [number, number, number] | undefined => {
+  if (!colors) return undefined;
+  let bestVector: [number, number, number] | undefined;
+  let bestScore = -Infinity;
+  for (const colorInfo of colors) {
+    if (!colorInfo?.color) continue;
+    const { red = 0, green = 0, blue = 0 } = colorInfo.color;
+    const fraction = colorInfo.pixelFraction ?? 0;
+    const score = colorInfo.score ?? 0;
+    const weight = fraction + score;
+    if (weight > bestScore) {
+      bestScore = weight;
+      bestVector = [Number(red), Number(green), Number(blue)] as [
+        number,
+        number,
+        number,
+      ];
+    }
+  }
+  return bestVector;
+};
+
+const extractColorFromResponse = (
+  response: protos.google.cloud.vision.v1.IAnnotateImageResponse | undefined,
+): string | undefined => {
+  const colors =
+    response?.imagePropertiesAnnotation?.dominantColors?.colors ?? [];
+  const vector = extractDominantColorVector(colors);
+  return vector ? matchPaletteColor(vector) : undefined;
+};
+
+const determineDominantColorName = (
+  images: ItemImage[],
+  responses: protos.google.cloud.vision.v1.IAnnotateImageResponse[],
+): string | undefined => {
+  const preferredIndices = [
+    images.findIndex((image) => image.role === "front"),
+    images.findIndex((image) => image.role === "back"),
+    0,
+  ].filter((index, i, arr) => index >= 0 && arr.indexOf(index) === i);
+
+  for (const index of preferredIndices) {
+    if (index < 0 || index >= responses.length) continue;
+    const colorName = extractColorFromResponse(responses[index]);
+    if (colorName) {
+      return colorName;
+    }
+  }
+
+  for (const response of responses) {
+    const colorName = extractColorFromResponse(response);
+    if (colorName) {
+      return colorName;
+    }
+  }
+
+  return undefined;
+};
+
+const generateInventoryFields = async (
+  labels: string[],
+  textBlocks: string[],
+): Promise<GeneratedFields | undefined> => {
+  if (!openAiClient || !openAiApiKey) {
+    return undefined;
+  }
+
+  try {
+    console.log("Calling OpenAI to generate inventory fields");
+    const systemPrompt =
+      "You are an assistant that extracts structured garment metadata from Vision labels and OCR text. Respond with concise JSON that matches the schema exactly.";
+    const userPrompt = `Use the provided data to infer garment details for a vintage clothing inventory. When direct evidence is missing, make your best educated guess consistent with the signals; if you truly cannot infer anything meaningful for a field, set it to the string "unsure" (never leave it blank).\n\nLabels (highest confidence first):\n- ${labels.join(
+      "\n- ",
+    )}\n\nOCR text snippets (one per image):\n- ${textBlocks.join(
+      "\n- ",
+    )}\n\nReturn a JSON object with keys: name, brand, category, color, condition, material, size, price, decade, style. Use the number 0 for unknown price. Never omit keys.`;
+
+    const response = await openAiClient.responses.create({
+      model: "gpt-4.1-mini",
+      input: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: userPrompt,
+        },
+      ],
+    });
+
+    const outputText = response.output_text ?? "";
+    if (!outputText) {
+      throw new Error("Model returned no text");
+    }
+    console.log("OpenAI response received:", outputText);
+
+    const parsed = extractJson(outputText) as Record<string, unknown>;
+
+    const ensureValue = (value?: string) =>
+      cleanGeneratedText(value) ?? "unsure";
+
+    const result: GeneratedFields = {
+      name: cleanGeneratedText(parsed.name as string | undefined),
+      brand: ensureValue(parsed.brand as string | undefined),
+      category: ensureValue(parsed.category as string | undefined),
+      color: ensureValue(parsed.color as string | undefined),
+      condition: ensureValue(parsed.condition as string | undefined),
+      material: ensureValue(parsed.material as string | undefined),
+      size: ensureValue(parsed.size as string | undefined),
+      price: parsePrice(parsed.price as string | number | undefined) ?? 0,
+      decade: ensureValue(parsed.decade as string | undefined),
+      style: ensureValue(parsed.style as string | undefined),
+    };
+
+    return result;
+  } catch (error) {
+    console.error("Failed to generate structured fields:", error);
+    return undefined;
+  }
+};
+
+const getAllStoragePaths = (data?: DocumentData): string[] => {
+  const fromImages = getStoragePathsFromImages(normalizeImages(data));
+  const legacy = Array.isArray(data?.imageStoragePaths)
+    ? (data?.imageStoragePaths as string[])
+    : [];
+  const legacyPaths = legacy.filter(
+    (path): path is string => typeof path === "string",
+  );
+  return Array.from(new Set([...fromImages, ...legacyPaths]));
+};
+
+const sortPaths = (paths: string[]): string[] => [...paths].sort();
+
+const storagePathsChanged = (before: string[], after: string[]): boolean => {
+  if (before.length !== after.length) return true;
+  const beforeSorted = sortPaths(before);
+  const afterSorted = sortPaths(after);
+  return beforeSorted.some((path, index) => path !== afterSorted[index]);
+};
+
+const hasAllRequiredImages = (images: ItemImage[]): boolean =>
+  REQUIRED_ROLES.every((role) =>
+    images.some(
+      (image) =>
+        image.role === role &&
+        typeof image.storagePath === "string" &&
+        image.storagePath.startsWith("items/"),
+    ),
+  );
 
 type PhotoRole = "front" | "back" | "label";
 
@@ -100,6 +471,14 @@ async function analyzeItemImages(itemId: string, images: ItemImage[]) {
       image.storagePath.startsWith("items/"),
   );
 
+  console.log(
+    "Stored image metadata:",
+    storedImages.map((image) => ({
+      path: image.storagePath,
+      role: image.role ?? "undefined",
+    })),
+  );
+
   if (storedImages.length === 0) {
     console.log(`No permanent images to analyze for item ${itemId}`);
     return;
@@ -117,7 +496,10 @@ async function analyzeItemImages(itemId: string, images: ItemImage[]) {
       image: {
         source: { imageUri: `gs://${bucketName}/${image.storagePath}` },
       },
-      features: [{ type: "LABEL_DETECTION" as const }],
+      features: [
+        { type: "LABEL_DETECTION" as const },
+        { type: "IMAGE_PROPERTIES" as const },
+      ],
     }));
 
   console.log(
@@ -168,30 +550,52 @@ async function analyzeItemImages(itemId: string, images: ItemImage[]) {
     .map(([description]) => description)
     .slice(0, 10);
 
-  // Attempt OCR on the label/tag photo
-  let labelText: string | undefined;
-  const labelImage = storedImages.find((image) => image.role === "label");
-  if (labelImage) {
-    try {
-      const [textResult] = await visionClient.textDetection(
-        `gs://${bucketName}/${labelImage.storagePath}`,
-      );
-      const annotations = textResult.textAnnotations ?? [];
-      const fullText = annotations[0]?.description?.trim();
-      if (fullText) {
-        labelText = fullText;
-        console.log(`Extracted label text for item ${itemId}:`, labelText);
-      } else {
-        console.log(`No text detected for label image on item ${itemId}`);
+  const labelColorFallback = inferColorFromLabels(labelList);
+  const dominantColorName = determineDominantColorName(storedImages, responses);
+
+  // Attempt OCR on every stored image
+  const textSnippets: string[] = [];
+  await Promise.all(
+    storedImages.map(async (image) => {
+      try {
+        const [textResult] = await visionClient.textDetection(
+          `gs://${bucketName}/${image.storagePath}`,
+        );
+        const annotations = textResult.textAnnotations ?? [];
+        const fullText = annotations[0]?.description?.trim();
+        if (fullText) {
+          textSnippets.push(fullText);
+          console.log(
+            `Extracted text for image ${image.storagePath}:`,
+            fullText,
+          );
+        } else {
+          console.log(
+            `No text detected for image ${image.storagePath} (role: ${image.role ?? "unset"})`,
+          );
+        }
+      } catch (ocrError) {
+        console.error(
+          `Failed to extract text for image ${image.storagePath}:`,
+          ocrError,
+        );
       }
-    } catch (ocrError) {
-      console.error(
-        `Failed to extract label text for item ${itemId}:`,
-        ocrError,
-      );
-    }
+    }),
+  );
+  const labelText =
+    textSnippets
+      .map((snippet) => snippet.trim())
+      .filter((snippet) => snippet.length > 0)
+      .join(" ")
+      .trim() || undefined;
+
+  let generatedFields: GeneratedFields | undefined;
+  let metadataStatus: MetadataStatus = openAiClient ? "error" : "skipped";
+  if (openAiClient) {
+    generatedFields = await generateInventoryFields(labelList, textSnippets);
+    metadataStatus = generatedFields ? "complete" : "error";
   } else {
-    console.warn(`No label image found for item ${itemId}; skipping text OCR`);
+    console.log("OpenAI client not configured; skipping metadata generation");
   }
 
   // Update Firestore with labels and optional labelText
@@ -202,6 +606,61 @@ async function analyzeItemImages(itemId: string, images: ItemImage[]) {
     };
     if (labelText) {
       updatePayload.labelText = labelText;
+      console.log(`Including labelText in update for item ${itemId}`);
+    }
+
+    updatePayload.metadataStatus = metadataStatus;
+
+    if (generatedFields) {
+      const {
+        name,
+        brand,
+        category,
+        color,
+        condition,
+        size,
+        price,
+        decade,
+        style,
+        material,
+      } = generatedFields;
+
+      if (name) updatePayload.name = name;
+      if (brand) updatePayload.brand = brand;
+      if (category) updatePayload.category = category;
+      if (condition) updatePayload.condition = condition;
+      if (size && size.toLowerCase() !== "unsure") updatePayload.size = size;
+      if (Number.isFinite(price) && typeof price === "number") {
+        updatePayload.price = price;
+      }
+      if (decade) updatePayload.decade = decade;
+      if (style) updatePayload.style = style;
+      if (material) updatePayload.material = material;
+
+      const llmColor =
+        color && color.toLowerCase() !== "unsure" ? color : undefined;
+      if (llmColor && !dominantColorName) {
+        updatePayload.color = llmColor;
+      }
+
+      console.log(
+        `Including generated fields for item ${itemId}:`,
+        JSON.stringify(generatedFields),
+      );
+    }
+
+    if (!updatePayload.color && dominantColorName) {
+      updatePayload.color = dominantColorName;
+      console.log(
+        `Using Vision-detected color for item ${itemId}: ${dominantColorName}`,
+      );
+    }
+
+    if (!updatePayload.color && labelColorFallback) {
+      updatePayload.color = labelColorFallback;
+      console.log(
+        `Using label-derived color fallback for item ${itemId}: ${labelColorFallback}`,
+      );
     }
 
     const doc = await itemRef.get();
