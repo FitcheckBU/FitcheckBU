@@ -41,6 +41,24 @@ interface FormData {
   description: string;
 }
 
+// Color options matching FilterSheet
+const colorOptions = [
+  { name: "Red", hex: "#EF4444" },
+  { name: "Orange", hex: "#F97316" },
+  { name: "Yellow", hex: "#EAB308" },
+  { name: "Green", hex: "#22C55E" },
+  { name: "Blue", hex: "#3B82F6" },
+  { name: "Purple", hex: "#A855F7" },
+  { name: "Pink", hex: "#EC4899" },
+  { name: "Gray", hex: "#6B7280" },
+  { name: "Black", hex: "#1F2937" },
+  { name: "Tan", hex: "#D4A574" },
+  { name: "Brown", hex: "#92400E" },
+];
+
+// Size options matching FilterSheet
+const sizeOptions = ["XS", "S", "M", "L", "XL"];
+
 const ItemConfirmationPage: React.FC = () => {
   const { itemId } = useParams<RouteParams>();
   const history = useHistory();
@@ -328,22 +346,37 @@ const ItemConfirmationPage: React.FC = () => {
             />
           </IonItem>
 
-          <IonItem>
-            <IonLabel position="stacked">Color</IonLabel>
-            <IonInput
-              value={formData.color}
-              onIonInput={(e) => handleInputChange("color", e.detail.value!)}
-              placeholder="Enter color"
-            />
-          </IonItem>
+          <div className="form-section">
+            <IonLabel className="form-section-label">Color</IonLabel>
+            <div className="color-selection-grid">
+              {colorOptions.map((color) => (
+                <button
+                  key={color.name}
+                  type="button"
+                  className={`color-circle ${formData.color === color.name ? "color-selected" : ""}`}
+                  style={{
+                    backgroundColor: color.hex,
+                  }}
+                  onClick={() => handleInputChange("color", color.name)}
+                  aria-label={color.name}
+                />
+              ))}
+            </div>
+          </div>
 
           <IonItem>
             <IonLabel position="stacked">Size</IonLabel>
-            <IonInput
+            <IonSelect
               value={formData.size}
-              onIonInput={(e) => handleInputChange("size", e.detail.value!)}
-              placeholder="Enter size"
-            />
+              onIonChange={(e) => handleInputChange("size", e.detail.value)}
+              placeholder="Select size"
+            >
+              {sizeOptions.map((size) => (
+                <IonSelectOption key={size} value={size}>
+                  {size}
+                </IonSelectOption>
+              ))}
+            </IonSelect>
           </IonItem>
 
           <IonItem>
