@@ -9,6 +9,7 @@ import {
   serverTimestamp,
   Timestamp,
   updateDoc,
+  deleteDoc,
   where,
   orderBy,
   limit,
@@ -124,6 +125,12 @@ export const updateItem = async (
 ): Promise<void> => {
   const itemRef = doc(db, "items", itemId);
   await updateDoc(itemRef, updates);
+};
+
+//delete
+export const deleteItem = async (itemId: string): Promise<void> => {
+  const itemRef = doc(db, "items", itemId);
+  await deleteDoc(itemRef);
 };
 
 //get all

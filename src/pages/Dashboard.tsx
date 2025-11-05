@@ -18,8 +18,6 @@ import {
 } from "../lib/filterService";
 import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
-import ItemDetailModal from "../components/ItemDetailModal";
-import EditItemModal from "../components/EditItemModal";
 import "./Dashboard.css";
 
 const PAGE_SIZE = 30;
@@ -39,8 +37,6 @@ const Dashboard: React.FC = () => {
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
-  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Pagination states
@@ -135,6 +131,7 @@ const Dashboard: React.FC = () => {
     } else {
       loadItems(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFilters]);
 
   const fetchMoreItems = async (event: InfiniteScrollCustomEvent) => {
@@ -165,40 +162,16 @@ const Dashboard: React.FC = () => {
     history.push("/sort-filter", { activeFilters });
   };
 
-  const hasActiveFilters =
-    activeFilters.categories.length > 0 ||
-    activeFilters.brands.length > 0 ||
-    activeFilters.colors.length > 0 ||
-    activeFilters.sizes.length > 0 ||
-    activeFilters.conditions.length > 0 ||
-    activeFilters.priceMin !== undefined ||
-    activeFilters.priceMax !== undefined ||
-    activeFilters.decades.length > 0 ||
-    activeFilters.styles.length > 0 ||
-    activeFilters.soldStatus !== "all" ||
-    activeFilters.sortBy.field !== "dateAdded" ||
-    activeFilters.sortBy.direction !== "desc";
-
   return (
     <>
       <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
         <IonRefresherContent></IonRefresherContent>
       </IonRefresher>
 
-      <div className="dashboard-search-section">
-        <IonSearchbar
-          value={searchText}
-          onIonInput={(e) => setSearchText(e.detail.value!)}
-          placeholder="Search Name or Description"
-          className="dashboard-searchbar"
-          data-testid="input-search"
-        ></IonSearchbar>
+      <div className="dashboard-header">
+        <h1 className="dashboard-title">User Dashboard</h1>
         <IonButton onClick={navigateToFilters} color="secondary">
-          <img
-            src={filterSvg}
-            alt="Filter"
-            className={`header-icon ${hasActiveFilters ? "filter-active" : ""}`}
-          />
+          <img src={filterSvg} alt="Filter" />
         </IonButton>
       </div>
 
@@ -219,13 +192,12 @@ const Dashboard: React.FC = () => {
               <ItemCard
                 key={item.id}
                 item={item}
-                onClick={() => setSelectedItem(item)}
-                onEdit={() => setEditingItem(item)}
+                onClick={() => history.push(`/item/${item.id}`)}
               />
             ))}
             <IonInfiniteScroll
               onIonInfinite={fetchMoreItems}
-              threshold="500px"
+              threshold="100px"
               disabled={false}
             >
               <IonInfiniteScrollContent
@@ -237,23 +209,15 @@ const Dashboard: React.FC = () => {
         )}
       </div>
 
-      <ItemDetailModal
-        isOpen={!!selectedItem}
-        item={selectedItem}
-        onClose={() => setSelectedItem(null)}
-        onUpdate={() => loadItems(true)}
-        onEdit={() => {
-          setEditingItem(selectedItem);
-          setSelectedItem(null);
-        }}
-      />
-
-      <EditItemModal
-        isOpen={!!editingItem}
-        item={editingItem}
-        onClose={() => setEditingItem(null)}
-        onUpdate={() => loadItems(true)}
-      />
+      <div className="dashboard-search-section">
+        <IonSearchbar
+          value={searchText}
+          onIonInput={(e) => setSearchText(e.detail.value!)}
+          placeholder="Search Name or Description"
+          className="dashboard-searchbar"
+          data-testid="input-search"
+        ></IonSearchbar>
+      </div>
     </>
   );
 };

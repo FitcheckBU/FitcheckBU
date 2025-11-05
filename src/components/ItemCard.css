@@ -13,16 +13,16 @@ ion-item.figma-item-card {
 
 .figma-card-content {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
-  padding: 12px;
+  padding: 14px 16px;
 }
 
 .figma-image-container {
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
-  border-radius: 8px;
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
   overflow: hidden;
   background: #f3f4f6;
 }
@@ -53,49 +53,66 @@ ion-item.figma-item-card {
 }
 
 .figma-item-name {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: #1f2937;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-bottom: 2px;
 }
 
-.figma-item-details {
+.figma-item-details-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+
+.figma-details-left {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.figma-detail-row {
+.figma-details-right {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+}
+
+.figma-detail-text {
   font-size: 13px;
+  color: #4b5563;
+  line-height: 1.5;
 }
 
-.figma-detail-label {
-  color: #6b7280;
-  min-width: 70px;
-}
-
-.figma-detail-value {
-  color: #1f2937;
-  font-weight: 500;
-}
-
-/* Swipeable action styles handled by Ionic */
+/* Swipeable action styles */
 ion-item-sliding {
   margin-bottom: 12px;
   overflow: visible;
 }
 
-ion-item-option {
+.swipe-actions {
+  background-color: #e8a76a !important;
+  border-radius: 0 16px 16px 0;
+  overflow: hidden;
+}
+
+ion-item-option.swipe-edit,
+ion-item-option.swipe-delete {
+  --background: #e8a76a !important;
+  background: #e8a76a !important;
+  background-color: #e8a76a !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 70px;
+  min-width: 65px;
+  padding: 0 8px;
 }
 
-ion-item-option ion-icon {
-  font-size: 24px;
+ion-item-option.swipe-edit ion-icon,
+ion-item-option.swipe-delete ion-icon {
+  font-size: 30px;
+  color: var(--ion-color-primary);
 }
