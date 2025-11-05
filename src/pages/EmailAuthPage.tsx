@@ -31,6 +31,8 @@ const normalizeEmail = (value: string) => value.trim().toLowerCase();
 const isValidEmail = (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
+const landingFor = (type: UserType) => (type === "buyer" ? "/buyer" : "/home");
+
 type Stage = "email" | "register";
 
 interface RegistrationState {
@@ -61,7 +63,7 @@ const EmailAuthPage = () => {
 
   useEffect(() => {
     if (user) {
-      history.replace("/home");
+      history.replace(landingFor(user.user_type));
     }
   }, [history, user]);
 
@@ -91,7 +93,7 @@ const EmailAuthPage = () => {
         buyerLocation,
         store: sellerStore,
       });
-      history.replace("/home");
+      history.replace(landingFor(profile.user.user_type));
     } catch (lookupError) {
       console.error("Failed to look up user:", lookupError);
       setError("Could not verify your email right now. Try again later.");
@@ -174,7 +176,7 @@ const EmailAuthPage = () => {
 
       setRegistration(initialRegistration);
       setStage("email");
-      history.replace("/home");
+      history.replace(landingFor(registration.userType));
     } catch (registrationError) {
       console.error("Failed to register user:", registrationError);
       setError("Could not register right now. Please try again.");

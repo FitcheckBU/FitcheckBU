@@ -10,6 +10,7 @@ import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import MainLayout from "./components/MainLayout";
 import EmailAuthPage from "./pages/EmailAuthPage";
 import { UserProvider, useUser } from "./context/UserContext";
+import BuyerHomePage from "./pages/BuyerHomePage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -45,22 +46,40 @@ setupIonicReact();
 
 const AppRoutes = () => {
   const { user } = useUser();
+  const authedLanding = user?.user_type === "buyer" ? "/buyer" : "/home";
 
   return (
     <IonRouterOutlet id="main">
       <Route
         exact
         path="/sign-in"
-        render={() => (user ? <Redirect to="/home" /> : <EmailAuthPage />)}
+        render={() =>
+          user ? <Redirect to={authedLanding} /> : <EmailAuthPage />
+        }
       />
       <Route
         exact
         path="/home"
         render={() =>
-          user ? (
+          user && user.user_type === "seller" ? (
             <MainLayout>
               <Dashboard />
             </MainLayout>
+          ) : (
+            <Redirect to={user ? authedLanding : "/sign-in"} />
+          )
+        }
+      />
+      <Route
+        exact
+        path="/buyer"
+        render={() =>
+          user ? (
+            user.user_type === "buyer" ? (
+              <BuyerHomePage />
+            ) : (
+              <Redirect to="/home" />
+            )
           ) : (
             <Redirect to="/sign-in" />
           )
@@ -70,12 +89,12 @@ const AppRoutes = () => {
         exact
         path="/upload"
         render={() =>
-          user ? (
+          user && user.user_type === "seller" ? (
             <MainLayout>
               <Upload />
             </MainLayout>
           ) : (
-            <Redirect to="/sign-in" />
+            <Redirect to={user ? authedLanding : "/sign-in"} />
           )
         }
       />
@@ -83,12 +102,12 @@ const AppRoutes = () => {
         exact
         path="/upload-flow"
         render={() =>
-          user ? (
+          user && user.user_type === "seller" ? (
             <MainLayout>
               <UploadFlow />
             </MainLayout>
           ) : (
-            <Redirect to="/sign-in" />
+            <Redirect to={user ? authedLanding : "/sign-in"} />
           )
         }
       />
@@ -96,20 +115,24 @@ const AppRoutes = () => {
         exact
         path="/item-confirmation/:itemId"
         render={() =>
-          user ? (
+          user && user.user_type === "seller" ? (
             <MainLayout>
               <ItemConfirmationPage />
             </MainLayout>
           ) : (
-            <Redirect to="/sign-in" />
+            <Redirect to={user ? authedLanding : "/sign-in"} />
           )
         }
       />
       <Route exact path="/camera">
-        {user ? <CameraPage /> : <Redirect to="/sign-in" />}
+        {user && user.user_type === "seller" ? (
+          <CameraPage />
+        ) : (
+          <Redirect to={user ? authedLanding : "/sign-in"} />
+        )}
       </Route>
       <Route exact path="/">
-        <Redirect to={user ? "/home" : "/sign-in"} />
+        <Redirect to={user ? authedLanding : "/sign-in"} />
       </Route>
     </IonRouterOutlet>
   );

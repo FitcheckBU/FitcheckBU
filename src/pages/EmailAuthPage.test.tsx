@@ -129,4 +129,74 @@ describe("EmailAuthPage", () => {
 
     expect(history.location.pathname).toBe("/home");
   });
+
+  it("registers a new buyer and redirects to buyer home", async () => {
+    mockFindUserProfileByEmail.mockResolvedValue(null);
+    mockCreateUser.mockResolvedValue({
+      id: "buyer123",
+      email: "buyer@example.com",
+      name: "Buyer Beth",
+      age: 29,
+      user_type: "buyer",
+    });
+
+    const { history } = renderPage();
+
+    const emailInput = findIonInputByLabel(/email/i);
+    await setIonInputValue(emailInput, "buyer@example.com");
+
+    await userEvent.click(screen.getByText(/continue/i));
+
+    const nameInput = findIonInputByLabel(/full name/i);
+    await setIonInputValue(nameInput, "Buyer Beth");
+    const ageInput = findIonInputByLabel(/age/i);
+    await setIonInputValue(ageInput, "29");
+
+    const buyerLocationInput = findIonInputByLabel(/buyer location/i);
+    await setIonInputValue(buyerLocationInput, "Brooklyn, NY");
+
+    await userEvent.click(screen.getByText(/register/i));
+
+    await waitFor(() => {
+      expect(mockCreateUser).toHaveBeenCalled();
+      expect(mockCreateBuyerProfile).toHaveBeenCalledWith(
+        "buyer123",
+        "Brooklyn, NY",
+      );
+    });
+
+    expect(history.location.pathname).toBe("/buyer");
+  });
+
+  it("redirects existing buyers to buyer home", async () => {
+    mockFindUserProfileByEmail.mockResolvedValue({
+      user: {
+        id: "buyerExisting",
+        email: "knownbuyer@example.com",
+        name: "Known Buyer",
+        age: 31,
+        user_type: "buyer",
+      },
+      buyer: {
+        id: "buyerExisting",
+        location: "Boston, MA",
+      },
+      seller: undefined,
+    });
+
+    const { history } = renderPage();
+
+    const emailInput = findIonInputByLabel(/email/i);
+    await setIonInputValue(emailInput, "knownbuyer@example.com");
+
+    await userEvent.click(screen.getByText(/continue/i));
+
+    await waitFor(() =>
+      expect(mockFindUserProfileByEmail).toHaveBeenCalledWith(
+        "knownbuyer@example.com",
+      ),
+    );
+
+    expect(history.location.pathname).toBe("/buyer");
+  });
 });
