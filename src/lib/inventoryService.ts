@@ -5,19 +5,19 @@ import {
   doc,
   getDoc,
   getDocs,
+  limit,
+  orderBy,
   query,
+  QueryDocumentSnapshot,
   serverTimestamp,
+  startAfter,
   Timestamp,
   updateDoc,
   where,
-  orderBy,
-  limit,
-  startAfter,
-  QueryDocumentSnapshot,
 } from "firebase/firestore";
+import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import { PhotoRole } from "../constants/photoStages";
 import { db, storage } from "./firebaseClient";
-import { getDownloadURL, ref as storageRef } from "firebase/storage";
 
 //-------------TYPES------------------
 export interface ItemImage {
