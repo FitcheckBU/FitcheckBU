@@ -1,4 +1,5 @@
 import {
+  IonButton,
   IonContent,
   IonHeader,
   IonPage,
@@ -6,8 +7,18 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
+import { useHistory } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 const BuyerHomePage = () => {
+  const history = useHistory();
+  const { signOut } = useUser();
+
+  const handleSignOut = () => {
+    signOut();
+    history.replace("/sign-in");
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -23,6 +34,9 @@ const BuyerHomePage = () => {
             manage reservations here.
           </p>
         </IonText>
+        <IonButton expand="block" onClick={handleSignOut}>
+          Sign out
+        </IonButton>
       </IonContent>
     </IonPage>
   );

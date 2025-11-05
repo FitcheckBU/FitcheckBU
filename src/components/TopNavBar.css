@@ -31,3 +31,7 @@
 .navbar-hamburger:hover {
   transform: scale(1.1);
 }
+
+.navbar-signout {
+  margin-right: 12px;
+}
