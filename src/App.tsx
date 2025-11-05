@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import UploadFlow from "./pages/UploadFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import MainLayout from "./components/MainLayout";
+import EmailAuthPage from "./pages/EmailAuthPage";
+import { UserProvider, useUser } from "./context/UserContext";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -41,57 +43,88 @@ import "./theme/variables.css";
 
 setupIonicReact();
 
-const App: React.FC = () => {
+const AppRoutes = () => {
+  const { user } = useUser();
+
+  return (
+    <IonRouterOutlet id="main">
+      <Route
+        exact
+        path="/sign-in"
+        render={() => (user ? <Redirect to="/home" /> : <EmailAuthPage />)}
+      />
+      <Route
+        exact
+        path="/home"
+        render={() =>
+          user ? (
+            <MainLayout>
+              <Dashboard />
+            </MainLayout>
+          ) : (
+            <Redirect to="/sign-in" />
+          )
+        }
+      />
+      <Route
+        exact
+        path="/upload"
+        render={() =>
+          user ? (
+            <MainLayout>
+              <Upload />
+            </MainLayout>
+          ) : (
+            <Redirect to="/sign-in" />
+          )
+        }
+      />
+      <Route
+        exact
+        path="/upload-flow"
+        render={() =>
+          user ? (
+            <MainLayout>
+              <UploadFlow />
+            </MainLayout>
+          ) : (
+            <Redirect to="/sign-in" />
+          )
+        }
+      />
+      <Route
+        exact
+        path="/item-confirmation/:itemId"
+        render={() =>
+          user ? (
+            <MainLayout>
+              <ItemConfirmationPage />
+            </MainLayout>
+          ) : (
+            <Redirect to="/sign-in" />
+          )
+        }
+      />
+      <Route exact path="/camera">
+        {user ? <CameraPage /> : <Redirect to="/sign-in" />}
+      </Route>
+      <Route exact path="/">
+        <Redirect to={user ? "/home" : "/sign-in"} />
+      </Route>
+    </IonRouterOutlet>
+  );
+};
+
+const App = () => {
   return (
     <IonApp>
-      <PhotoProvider>
-        <IonReactRouter>
-          <IonRouterOutlet id="main">
-            <Route
-              exact
-              path="/home"
-              render={() => (
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/upload"
-              render={() => (
-                <MainLayout>
-                  <Upload />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/upload-flow"
-              render={() => (
-                <MainLayout>
-                  <UploadFlow />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/item-confirmation/:itemId"
-              render={() => (
-                <MainLayout>
-                  <ItemConfirmationPage />
-                </MainLayout>
-              )}
-            />
-            <Route exact path="/camera">
-              <CameraPage />
-            </Route>
-            <Route exact path="/">
-              <Redirect to="/home" />
-            </Route>
-          </IonRouterOutlet>
-        </IonReactRouter>
-      </PhotoProvider>
+      <UserProvider>
+        <PhotoProvider>
+          <IonReactRouter>
+            <AppRoutes />
+          </IonReactRouter>
+        </PhotoProvider>
+      </UserProvider>
     </IonApp>
   );
 };

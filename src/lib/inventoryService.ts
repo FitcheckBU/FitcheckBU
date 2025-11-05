@@ -14,6 +14,8 @@ import {
   Timestamp,
   updateDoc,
   where,
+  type DocumentData,
+  type DocumentReference,
 } from "firebase/firestore";
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import { PhotoRole } from "../constants/photoStages";
@@ -48,6 +50,7 @@ export interface InventoryItem {
   images?: ItemImage[]; // Structured image metadata
   status?: "draft" | "active" | "archived";
   metadataStatus?: "pending" | "complete" | "skipped" | "error";
+  store_id?: DocumentReference<DocumentData>;
 
   //additional fields can be added later
 
