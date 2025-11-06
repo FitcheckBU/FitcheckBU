@@ -5,10 +5,19 @@ import {
   IonText,
   IonBackButton,
   IonInput,
+  IonModal,
+  IonSpinner,
 } from "@ionic/react";
 import { useState, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { markAsSoldByBarcode } from "../lib/inventoryService";
+import {
+  markAsSoldByBarcode,
+  findItemByBarcode,
+  InventoryItem,
+  getImageStoragePaths,
+} from "../lib/inventoryService";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../lib/firebaseClient";
 import "./ScanFlowPage.css";
 
 // TapToScan component
@@ -63,7 +72,7 @@ const ManualEntry: React.FC<{
         disabled={loading || !itemId.trim()}
         className="submit-button"
       >
-        {loading ? "Processing..." : "Mark as Sold"}
+        {loading ? "Processing..." : "Continue"}
       </IonButton>
 
       <IonText color="medium" className="hint-text">
@@ -73,13 +82,130 @@ const ManualEntry: React.FC<{
   );
 };
 
+// Confirmation Modal component
+const ConfirmationModal: React.FC<{
+  isOpen: boolean;
+  item: InventoryItem | null;
+  imageUrl: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  loading: boolean;
+}> = ({ isOpen, item, imageUrl, onConfirm, onCancel, loading }) => {
+  if (!item) return null;
+
+  return (
+    <IonModal
+      isOpen={isOpen}
+      onDidDismiss={onCancel}
+      className="confirmation-modal"
+    >
+      <div className="confirmation-modal-content">
+        {/* Blurred background image */}
+        <div className="confirmation-backdrop">
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt="Item background"
+              className="confirmation-backdrop-image"
+            />
+          )}
+        </div>
+
+        {/* Main item display */}
+        <div className="confirmation-item-display">
+          <div className="confirmation-image-container">
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={item.name}
+                className="confirmation-item-image"
+              />
+            ) : (
+              <div className="confirmation-image-placeholder">No Image</div>
+            )}
+          </div>
+
+          <div className="confirmation-item-info">
+            <h2 className="confirmation-item-name">
+              {item.name || "Unknown Item"}
+            </h2>
+            <p className="confirmation-item-status">
+              Status: <span>{item.isSold ? "Sold" : "Listed"}</span>
+            </p>
+            <p className="confirmation-item-sku">
+              SKU: {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
+            </p>
+          </div>
+
+          {/* Barcode */}
+          <div className="confirmation-barcode">
+            <svg className="barcode-svg" viewBox="0 0 280 80">
+              <rect x="0" y="0" width="8" height="80" fill="#000" />
+              <rect x="12" y="0" width="4" height="80" fill="#000" />
+              <rect x="20" y="0" width="8" height="80" fill="#000" />
+              <rect x="32" y="0" width="4" height="80" fill="#000" />
+              <rect x="40" y="0" width="12" height="80" fill="#000" />
+              <rect x="56" y="0" width="4" height="80" fill="#000" />
+              <rect x="64" y="0" width="8" height="80" fill="#000" />
+              <rect x="76" y="0" width="4" height="80" fill="#000" />
+              <rect x="84" y="0" width="12" height="80" fill="#000" />
+              <rect x="100" y="0" width="4" height="80" fill="#000" />
+              <rect x="108" y="0" width="8" height="80" fill="#000" />
+              <rect x="120" y="0" width="4" height="80" fill="#000" />
+              <rect x="128" y="0" width="12" height="80" fill="#000" />
+              <rect x="144" y="0" width="8" height="80" fill="#000" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Confirmation prompt overlay */}
+        <div className="confirmation-prompt-overlay">
+          <div className="confirmation-prompt">
+            <IonText>
+              <p className="confirmation-question">
+                Are you sure you want to mark{" "}
+                <strong>{item.name || "this item"}</strong> as sold?
+              </p>
+            </IonText>
+            <div className="confirmation-buttons">
+              <IonButton
+                expand="block"
+                fill="outline"
+                color="medium"
+                onClick={onCancel}
+                disabled={loading}
+                className="cancel-button"
+              >
+                Cancel
+              </IonButton>
+              <IonButton
+                expand="block"
+                color="primary"
+                onClick={onConfirm}
+                disabled={loading}
+                className="confirm-button"
+              >
+                {loading ? <IonSpinner name="crescent" /> : "Confirm"}
+              </IonButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </IonModal>
+  );
+};
+
 const ScanFlowPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [fetchingItem, setFetchingItem] = useState(false);
   const [message, setMessage] = useState<{
     text: string;
     color: "success" | "danger";
   } | null>(null);
   const [processedItemId, setProcessedItemId] = useState<string | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [itemImageUrl, setItemImageUrl] = useState<string>("");
   const history = useHistory();
   const location = useLocation();
 
@@ -93,19 +219,71 @@ const ScanFlowPage: React.FC = () => {
   const scannedBarcode = locationState?.scannedBarcode;
 
   const triggerCamera = () => {
-    if (loading) return;
+    if (loading || fetchingItem) return;
     history.push("/scan-camera");
   };
 
-  const handleMarkAsSold = async (itemId: string) => {
-    setLoading(true);
+  const loadItemImage = async (item: InventoryItem) => {
+    const storagePaths = getImageStoragePaths(item);
+    if (storagePaths.length === 0) {
+      setItemImageUrl("");
+      return;
+    }
+
+    try {
+      const storagePathRef = ref(storage, storagePaths[0]);
+      const url = await getDownloadURL(storagePathRef);
+      setItemImageUrl(url);
+    } catch (error) {
+      console.error("Failed to load image:", error);
+      setItemImageUrl("");
+    }
+  };
+
+  const handleLookupItem = async (itemId: string) => {
+    setFetchingItem(true);
     setMessage(null);
 
     try {
-      await markAsSoldByBarcode(itemId);
-      setProcessedItemId(itemId);
+      // Find the item by barcode
+      const item = await findItemByBarcode(itemId);
+
+      if (!item || !item.id) {
+        setMessage({
+          text: `Item not found with barcode ${itemId}`,
+          color: "danger",
+        });
+        setFetchingItem(false);
+        return;
+      }
+
+      // Load item image
+      await loadItemImage(item);
+
+      // Set the item and show confirmation modal
+      setSelectedItem(item);
+      setShowConfirmModal(true);
+      setFetchingItem(false);
+    } catch (error) {
+      console.error("Error looking up item:", error);
       setMessage({
-        text: `Item ${itemId} successfully marked as sold!`,
+        text: `Failed to lookup item: ${error instanceof Error ? error.message : "Unknown error"}`,
+        color: "danger",
+      });
+      setFetchingItem(false);
+    }
+  };
+
+  const handleConfirmSale = async () => {
+    if (!selectedItem?.id) return;
+
+    setLoading(true);
+    try {
+      await markAsSoldByBarcode(selectedItem.id);
+      setProcessedItemId(selectedItem.id);
+      setShowConfirmModal(false);
+      setMessage({
+        text: `${selectedItem.name || "Item"} successfully marked as sold!`,
         color: "success",
       });
     } catch (error) {
@@ -119,9 +297,17 @@ const ScanFlowPage: React.FC = () => {
     }
   };
 
+  const handleCancelConfirmation = () => {
+    setShowConfirmModal(false);
+    setSelectedItem(null);
+    setItemImageUrl("");
+  };
+
   const handleReset = () => {
     setMessage(null);
     setProcessedItemId(null);
+    setSelectedItem(null);
+    setItemImageUrl("");
     // Clear location state
     history.replace(location.pathname + location.search, {});
   };
@@ -135,7 +321,7 @@ const ScanFlowPage: React.FC = () => {
             <IonButton
               color="medium"
               fill="outline"
-              disabled={loading}
+              disabled={loading || fetchingItem}
               onClick={handleReset}
             >
               Scan Another
@@ -160,8 +346,8 @@ const ScanFlowPage: React.FC = () => {
             <TapToScanBarcode onClick={triggerCamera} />
           ) : (
             <ManualEntry
-              onSubmit={handleMarkAsSold}
-              loading={loading}
+              onSubmit={handleLookupItem}
+              loading={fetchingItem}
               initialValue={scannedBarcode}
             />
           )}
@@ -177,6 +363,16 @@ const ScanFlowPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        item={selectedItem}
+        imageUrl={itemImageUrl}
+        onConfirm={handleConfirmSale}
+        onCancel={handleCancelConfirmation}
+        loading={loading}
+      />
     </div>
   );
 };
