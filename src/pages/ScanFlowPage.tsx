@@ -5,7 +5,6 @@ import {
   IonText,
   IonBackButton,
   IonInput,
-  IonModal,
   IonSpinner,
 } from "@ionic/react";
 import { useState, useEffect } from "react";
@@ -82,84 +81,94 @@ const ManualEntry: React.FC<{
   );
 };
 
-// Confirmation Modal component
-const ConfirmationModal: React.FC<{
-  isOpen: boolean;
-  item: InventoryItem | null;
+// Item Detail Display component -- THIS PART NEEDS UI WORK!!!
+// for future reference --> right now if something has already been sold, it shouldn't show up -- this DOESN'T work right now
+
+const ItemDetailDisplay: React.FC<{
+  item: InventoryItem;
   imageUrl: string;
+  showConfirmation: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   loading: boolean;
-}> = ({ isOpen, item, imageUrl, onConfirm, onCancel, loading }) => {
-  if (!item) return null;
-
+}> = ({ item, imageUrl, showConfirmation, onConfirm, onCancel, loading }) => {
   return (
-    <IonModal
-      isOpen={isOpen}
-      onDidDismiss={onCancel}
-      className="confirmation-modal"
-    >
-      <div className="confirmation-modal-content">
-        {/* Blurred background image */}
-        <div className="confirmation-backdrop">
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Item background"
-              className="confirmation-backdrop-image"
-            />
-          )}
+    <div className="item-detail-display">
+      {/* Item Image */}
+      <div className="item-detail-image-container">
+        {imageUrl ? (
+          <img src={imageUrl} alt={item.name} className="item-detail-image" />
+        ) : (
+          <div className="item-detail-image-placeholder">No Image</div>
+        )}
+      </div>
+
+      {/* Item Info */}
+      <div className="item-detail-info">
+        <h2 className="item-detail-name">{item.name || "unsure"}</h2>
+        <p className="item-detail-status">
+          <span className="status-label">Status:</span>{" "}
+          {item.isSold ? "Sold" : "Listed"}
+        </p>
+        <p className="item-detail-sku">
+          <span className="sku-label">SKU:</span>{" "}
+          {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
+        </p>
+      </div>
+
+      {/* Barcode */}
+      <div className="item-detail-barcode">
+        <svg className="barcode-svg" viewBox="0 0 280 80">
+          <rect x="0" y="0" width="8" height="80" fill="#000" />
+          <rect x="12" y="0" width="4" height="80" fill="#000" />
+          <rect x="20" y="0" width="8" height="80" fill="#000" />
+          <rect x="32" y="0" width="4" height="80" fill="#000" />
+          <rect x="40" y="0" width="12" height="80" fill="#000" />
+          <rect x="56" y="0" width="4" height="80" fill="#000" />
+          <rect x="64" y="0" width="8" height="80" fill="#000" />
+          <rect x="76" y="0" width="4" height="80" fill="#000" />
+          <rect x="84" y="0" width="12" height="80" fill="#000" />
+          <rect x="100" y="0" width="4" height="80" fill="#000" />
+          <rect x="108" y="0" width="8" height="80" fill="#000" />
+          <rect x="120" y="0" width="4" height="80" fill="#000" />
+          <rect x="128" y="0" width="12" height="80" fill="#000" />
+          <rect x="144" y="0" width="8" height="80" fill="#000" />
+        </svg>
+      </div>
+
+      {/* Action Buttons */}
+      {!showConfirmation ? (
+        <div className="item-detail-actions">
+          <IonButton
+            expand="block"
+            color="primary"
+            className="mark-sold-button"
+            onClick={onConfirm}
+          >
+            Mark as Sold
+          </IonButton>
+          <IonButton
+            expand="block"
+            fill="outline"
+            color="medium"
+            className="action-button"
+          >
+            Edit
+          </IonButton>
+          <IonButton
+            expand="block"
+            fill="outline"
+            color="medium"
+            className="action-button"
+          >
+            More Info
+          </IonButton>
         </div>
+      ) : null}
 
-        {/* Main item display */}
-        <div className="confirmation-item-display">
-          <div className="confirmation-image-container">
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={item.name}
-                className="confirmation-item-image"
-              />
-            ) : (
-              <div className="confirmation-image-placeholder">No Image</div>
-            )}
-          </div>
-
-          <div className="confirmation-item-info">
-            <h2 className="confirmation-item-name">
-              {item.name || "Unknown Item"}
-            </h2>
-            <p className="confirmation-item-status">
-              Status: <span>{item.isSold ? "Sold" : "Listed"}</span>
-            </p>
-            <p className="confirmation-item-sku">
-              SKU: {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
-            </p>
-          </div>
-
-          {/* Barcode */}
-          <div className="confirmation-barcode">
-            <svg className="barcode-svg" viewBox="0 0 280 80">
-              <rect x="0" y="0" width="8" height="80" fill="#000" />
-              <rect x="12" y="0" width="4" height="80" fill="#000" />
-              <rect x="20" y="0" width="8" height="80" fill="#000" />
-              <rect x="32" y="0" width="4" height="80" fill="#000" />
-              <rect x="40" y="0" width="12" height="80" fill="#000" />
-              <rect x="56" y="0" width="4" height="80" fill="#000" />
-              <rect x="64" y="0" width="8" height="80" fill="#000" />
-              <rect x="76" y="0" width="4" height="80" fill="#000" />
-              <rect x="84" y="0" width="12" height="80" fill="#000" />
-              <rect x="100" y="0" width="4" height="80" fill="#000" />
-              <rect x="108" y="0" width="8" height="80" fill="#000" />
-              <rect x="120" y="0" width="4" height="80" fill="#000" />
-              <rect x="128" y="0" width="12" height="80" fill="#000" />
-              <rect x="144" y="0" width="8" height="80" fill="#000" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Confirmation prompt overlay */}
-        <div className="confirmation-prompt-overlay">
+      {/* Confirmation Overlay */}
+      {showConfirmation && (
+        <div className="confirmation-overlay">
           <div className="confirmation-prompt">
             <IonText>
               <p className="confirmation-question">
@@ -190,8 +199,8 @@ const ConfirmationModal: React.FC<{
             </div>
           </div>
         </div>
-      </div>
-    </IonModal>
+      )}
+    </div>
   );
 };
 
@@ -203,7 +212,7 @@ const ScanFlowPage: React.FC = () => {
     color: "success" | "danger";
   } | null>(null);
   const [processedItemId, setProcessedItemId] = useState<string | null>(null);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [itemImageUrl, setItemImageUrl] = useState<string>("");
   const history = useHistory();
@@ -260,9 +269,8 @@ const ScanFlowPage: React.FC = () => {
       // Load item image
       await loadItemImage(item);
 
-      // Set the item and show confirmation modal
+      // Set the item and show it (without confirmation yet)
       setSelectedItem(item);
-      setShowConfirmModal(true);
       setFetchingItem(false);
     } catch (error) {
       console.error("Error looking up item:", error);
@@ -274,6 +282,10 @@ const ScanFlowPage: React.FC = () => {
     }
   };
 
+  const handleShowConfirmation = () => {
+    setShowConfirmation(true);
+  };
+
   const handleConfirmSale = async () => {
     if (!selectedItem?.id) return;
 
@@ -281,7 +293,7 @@ const ScanFlowPage: React.FC = () => {
     try {
       await markAsSoldByBarcode(selectedItem.id);
       setProcessedItemId(selectedItem.id);
-      setShowConfirmModal(false);
+      setShowConfirmation(false);
       setMessage({
         text: `${selectedItem.name || "Item"} successfully marked as sold!`,
         color: "success",
@@ -298,9 +310,7 @@ const ScanFlowPage: React.FC = () => {
   };
 
   const handleCancelConfirmation = () => {
-    setShowConfirmModal(false);
-    setSelectedItem(null);
-    setItemImageUrl("");
+    setShowConfirmation(false);
   };
 
   const handleReset = () => {
@@ -308,6 +318,7 @@ const ScanFlowPage: React.FC = () => {
     setProcessedItemId(null);
     setSelectedItem(null);
     setItemImageUrl("");
+    setShowConfirmation(false);
     // Clear location state
     history.replace(location.pathname + location.search, {});
   };
@@ -340,7 +351,7 @@ const ScanFlowPage: React.FC = () => {
         </IonCard>
       )}
 
-      {!processedItemId ? (
+      {!processedItemId && !selectedItem ? (
         <div className="scan-flow-content">
           {isCameraMode ? (
             <TapToScanBarcode onClick={triggerCamera} />
@@ -352,7 +363,22 @@ const ScanFlowPage: React.FC = () => {
             />
           )}
         </div>
-      ) : (
+      ) : null}
+
+      {!processedItemId && selectedItem ? (
+        <ItemDetailDisplay
+          item={selectedItem}
+          imageUrl={itemImageUrl}
+          showConfirmation={showConfirmation}
+          onConfirm={
+            showConfirmation ? handleConfirmSale : handleShowConfirmation
+          }
+          onCancel={handleCancelConfirmation}
+          loading={loading}
+        />
+      ) : null}
+
+      {processedItemId ? (
         <div className="scan-flow-content">
           <div className="success-container">
             <IonText color="success">
@@ -362,17 +388,7 @@ const ScanFlowPage: React.FC = () => {
             </IonText>
           </div>
         </div>
-      )}
-
-      {/* Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={showConfirmModal}
-        item={selectedItem}
-        imageUrl={itemImageUrl}
-        onConfirm={handleConfirmSale}
-        onCancel={handleCancelConfirmation}
-        loading={loading}
-      />
+      ) : null}
     </div>
   );
 };
