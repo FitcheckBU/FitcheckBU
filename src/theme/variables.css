@@ -65,4 +65,6 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-dark-contrast-rgb: 255, 255, 255;
   --ion-color-dark-shade: #292929;
   --ion-color-dark-tint: #444444;
+
+  --item-card-drop-shadow-color: #f3b759;
 }

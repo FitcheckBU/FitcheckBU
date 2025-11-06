@@ -17,10 +17,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <Link to="/upload" className="sidebar-button" onClick={onClose}>
           Upload
         </Link>
-        <Link to="/home" className="sidebar-button" onClick={onClose}>
+        <Link to="/scan" className="sidebar-button" onClick={onClose}>
           Scan
         </Link>
-        <Link to="/home" className="sidebar-button" onClick={onClose}>
+        <Link to="/settings" className="sidebar-button" onClick={onClose}>
           Settings
         </Link>
       </div>

@@ -384,6 +384,85 @@ const hasAllRequiredImages = (images: ItemImage[]): boolean =>
     ),
   );
 
+type PhotoRole = "front" | "back" | "label";
+
+type ItemImage = {
+  role?: PhotoRole;
+  storagePath?: string;
+  originalName?: string;
+};
+
+const REQUIRED_ROLES: PhotoRole[] = ["front", "back", "label"];
+
+const isPhotoRole = (value: unknown): value is PhotoRole =>
+  typeof value === "string" &&
+  (REQUIRED_ROLES as unknown as string[]).includes(value);
+
+const normalizeImages = (data?: DocumentData): ItemImage[] => {
+  const rawImages = Array.isArray(data?.images)
+    ? (data?.images as Array<Record<string, unknown>>)
+    : [];
+
+  const structuredImages = rawImages
+    .filter(
+      (img): img is Record<string, unknown> & { storagePath: string } =>
+        Boolean(img?.storagePath) && typeof img.storagePath === "string",
+    )
+    .map((img) => ({
+      role: isPhotoRole(img.role) ? (img.role as PhotoRole) : undefined,
+      storagePath: img.storagePath as string,
+      originalName:
+        typeof img.originalName === "string" ? img.originalName : undefined,
+    }));
+
+  if (structuredImages.length > 0) {
+    return structuredImages;
+  }
+
+  const legacyPaths = Array.isArray(data?.imageStoragePaths)
+    ? (data?.imageStoragePaths as string[])
+    : [];
+
+  return legacyPaths
+    .filter((path): path is string => typeof path === "string")
+    .map((path) => ({ storagePath: path }));
+};
+
+const getStoragePathsFromImages = (images: ItemImage[]): string[] =>
+  images
+    .map((image) => image.storagePath)
+    .filter((path): path is string => typeof path === "string");
+
+const getAllStoragePaths = (data?: DocumentData): string[] => {
+  const fromImages = getStoragePathsFromImages(normalizeImages(data));
+  const legacy = Array.isArray(data?.imageStoragePaths)
+    ? (data?.imageStoragePaths as string[])
+    : [];
+  const legacyPaths = legacy.filter(
+    (path): path is string => typeof path === "string",
+  );
+  return Array.from(new Set([...fromImages, ...legacyPaths]));
+};
+
+const sortPaths = (paths: string[]): string[] => [...paths].sort();
+
+const storagePathsChanged = (before: string[], after: string[]): boolean => {
+  if (before.length !== after.length) return true;
+  const beforeSorted = sortPaths(before);
+  const afterSorted = sortPaths(after);
+  return beforeSorted.some((path, index) => path !== afterSorted[index]);
+};
+
+const hasAllRequiredImages = (images: ItemImage[]): boolean =>
+  REQUIRED_ROLES.every((role) =>
+    images.some(
+      (image) =>
+        image.role === role &&
+        typeof image.storagePath === "string" &&
+        image.storagePath.startsWith("items/"),
+    ),
+  );
+
 // Run Vision AI analysis on a Firestore item
 async function analyzeItemImages(itemId: string, images: ItemImage[]) {
   const storedImages = images.filter(
@@ -772,3 +851,6 @@ export const cleanupItemImages = onDocumentDeleted(
     }
   },
 );
+
+//getText function
+export { extractText, extractTextHttp } from "./extractText";
