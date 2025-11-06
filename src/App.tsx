@@ -14,10 +14,8 @@ import EmailAuthPage from "./pages/EmailAuthPage";
 import { UserProvider, useUser } from "./context/UserContext";
 import BuyerHomePage from "./pages/BuyerHomePage";
 import ScanFlowPage from "./pages/ScanFlowPage";
-import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 import SettingsPage from "./pages/SettingsPage";
-import MainLayout from "./components/MainLayout";
 import SortFilterPage from "./pages/SortFilterPage";
 
 /* Core CSS required for Ionic components to work properly */
@@ -36,25 +34,21 @@ import "@ionic/react/css/text-transformation.css";
 import "@ionic/react/css/flex-utils.css";
 import "@ionic/react/css/display.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-// import "@ionic/react/css/palettes/dark.system.css";
-
 /* Theme variables */
 import "./theme/variables.css";
 
 setupIonicReact();
 
-const AppRoutes = () => {
+const AppRoutes: React.FC = () => {
   const { user } = useUser();
   const authedLanding = user?.user_type === "buyer" ? "/buyer" : "/home";
+
+  const renderSeller = (element: React.ReactElement) =>
+    user && user.user_type === "seller" ? (
+      element
+    ) : (
+      <Redirect to={user ? authedLanding : "/sign-in"} />
+    );
 
   return (
     <IonRouterOutlet id="main">
@@ -65,180 +59,148 @@ const AppRoutes = () => {
           user ? <Redirect to={authedLanding} /> : <EmailAuthPage />
         }
       />
+
       <Route
         exact
         path="/home"
         render={() =>
-          user && user.user_type === "seller" ? (
+          renderSeller(
             <MainLayout>
               <Dashboard />
-            </MainLayout>
-          ) : (
-            <Redirect to={user ? authedLanding : "/sign-in"} />
+            </MainLayout>,
           )
         }
       />
+
       <Route
         exact
         path="/buyer"
-        render={() =>
-          user ? (
-            user.user_type === "buyer" ? (
-              <BuyerHomePage />
-            ) : (
-    <IonApp>
-      <PhotoProvider>
-        <IonReactRouter>
-          <IonRouterOutlet id="main">
-            <Route
-              exact
-              path="/home"
-              render={() => (
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/sort-filter"
-              render={() => (
-                <MainLayout>
-                  <SortFilterPage />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/upload"
-              render={() => (
-                <MainLayout>
-                  <Upload />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/upload-flow"
-              render={() => (
-                <MainLayout>
-                  <UploadFlow />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/scan"
-              render={() => (
-                <MainLayout>
-                  <Scan />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/scan-flow"
-              render={() => (
-                <MainLayout>
-                  <ScanFlowPage />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/item-confirmation/:itemId"
-              render={() => (
-                <MainLayout>
-                  <ItemConfirmationPage />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/item/:itemId"
-              render={() => (
-                <MainLayout>
-                  <ItemDetailPage />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/settings"
-              render={() => (
-                <MainLayout>
-                  <SettingsPage />
-                </MainLayout>
-              )}
-            />
-            <Route exact path="/camera">
-              <CameraPage />
-            </Route>
-            <Route exact path="/scan-camera">
-              <ScanCameraPage />
-            </Route>
-            <Route exact path="/">
-              <Redirect to="/home" />
-            )
+        render={() => {
+          if (!user) {
+            return <Redirect to="/sign-in" />;
+          }
+          return user.user_type === "buyer" ? (
+            <BuyerHomePage />
           ) : (
-            <Redirect to="/sign-in" />
+            <Redirect to="/home" />
+          );
+        }}
+      />
+
+      <Route
+        exact
+        path="/sort-filter"
+        render={() =>
+          renderSeller(
+            <MainLayout>
+              <SortFilterPage />
+            </MainLayout>,
           )
         }
       />
+
       <Route
         exact
         path="/upload"
         render={() =>
-          user && user.user_type === "seller" ? (
+          renderSeller(
             <MainLayout>
               <Upload />
-            </MainLayout>
-          ) : (
-            <Redirect to={user ? authedLanding : "/sign-in"} />
+            </MainLayout>,
           )
         }
       />
+
       <Route
         exact
         path="/upload-flow"
         render={() =>
-          user && user.user_type === "seller" ? (
+          renderSeller(
             <MainLayout>
               <UploadFlow />
-            </MainLayout>
-          ) : (
-            <Redirect to={user ? authedLanding : "/sign-in"} />
+            </MainLayout>,
           )
         }
       />
+
+      <Route
+        exact
+        path="/scan"
+        render={() =>
+          renderSeller(
+            <MainLayout>
+              <Scan />
+            </MainLayout>,
+          )
+        }
+      />
+
+      <Route
+        exact
+        path="/scan-flow"
+        render={() =>
+          renderSeller(
+            <MainLayout>
+              <ScanFlowPage />
+            </MainLayout>,
+          )
+        }
+      />
+
       <Route
         exact
         path="/item-confirmation/:itemId"
         render={() =>
-          user && user.user_type === "seller" ? (
+          renderSeller(
             <MainLayout>
               <ItemConfirmationPage />
-            </MainLayout>
-          ) : (
-            <Redirect to={user ? authedLanding : "/sign-in"} />
+            </MainLayout>,
           )
         }
       />
-      <Route exact path="/camera">
-        {user && user.user_type === "seller" ? (
-          <CameraPage />
-        ) : (
-          <Redirect to={user ? authedLanding : "/sign-in"} />
-        )}
-      </Route>
-      <Route exact path="/">
-        <Redirect to={user ? authedLanding : "/sign-in"} />
-      </Route>
+
+      <Route
+        exact
+        path="/item/:itemId"
+        render={() =>
+          renderSeller(
+            <MainLayout>
+              <ItemDetailPage />
+            </MainLayout>,
+          )
+        }
+      />
+
+      <Route
+        exact
+        path="/settings"
+        render={() =>
+          renderSeller(
+            <MainLayout>
+              <SettingsPage />
+            </MainLayout>,
+          )
+        }
+      />
+
+      <Route exact path="/camera" render={() => renderSeller(<CameraPage />)} />
+
+      <Route
+        exact
+        path="/scan-camera"
+        render={() => renderSeller(<ScanCameraPage />)}
+      />
+
+      <Route
+        exact
+        path="/"
+        render={() => <Redirect to={user ? authedLanding : "/sign-in"} />}
+      />
     </IonRouterOutlet>
   );
 };
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <IonApp>
       <UserProvider>

@@ -5,8 +5,7 @@ import {
   IonItemOptions,
   IonItemOption,
 } from "@ionic/react";
-import { createOutline, eyeOutline } from "ionicons/icons";
-import { createOutline, closeOutline } from "ionicons/icons";
+import { createOutline, eyeOutline, closeOutline } from "ionicons/icons";
 import { getImageStoragePaths, InventoryItem } from "../lib/inventoryService";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
@@ -57,6 +56,11 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit?.();
+  };
+
+  const handleView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClick?.();
   };
 
   const handleDelete = (e: React.MouseEvent) => {
