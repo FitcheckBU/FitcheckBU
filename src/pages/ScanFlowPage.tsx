@@ -265,10 +265,19 @@ const ScanFlowPage: React.FC = () => {
         setFetchingItem(false);
         return;
       }
+      if (item.isSold) {
+        setMessage({
+          text: `${item.name || "Item"} is already marked as sold.`,
+          color: "danger",
+        });
+        setSelectedItem(null);
+        setShowConfirmation(false);
+        setFetchingItem(false);
+        return; // Exit early - don't load image or set selectedItem
+      }
 
       // Load item image
       await loadItemImage(item);
-
       // Set the item and show it (without confirmation yet)
       setSelectedItem(item);
       setFetchingItem(false);
