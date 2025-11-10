@@ -8,15 +8,9 @@ import {
   IonButton,
   IonContent,
   IonIcon,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonTextarea,
-  IonSelect,
-  IonSelectOption,
   useIonToast,
 } from "@ionic/react";
-import { arrowBackOutline, saveOutline } from "ionicons/icons";
+import { arrowBackOutline } from "ionicons/icons";
 import { InventoryItem, updateItem } from "../lib/inventoryService";
 import "./EditItemModal.css";
 
@@ -146,7 +140,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
             {/* Basic Information Section */}
             <div className="form-section">
               <h3 className="section-title">Basic Information</h3>
-              
+
               <div className="form-field">
                 <label className="field-label">
                   Name <span className="required-mark">*</span>
@@ -178,7 +172,9 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
                   <label className="field-label">Category</label>
                   <select
                     value={formData.category}
-                    onChange={(e) => handleInputChange("category", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("category", e.target.value)
+                    }
                     className="field-select"
                     data-testid="select-edit-category"
                   >
@@ -198,7 +194,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
             {/* Details Section */}
             <div className="form-section">
               <h3 className="section-title">Details</h3>
-              
+
               <div className="form-row">
                 <div className="form-field">
                   <label className="field-label">Color</label>
@@ -230,7 +226,9 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
                   <label className="field-label">Condition</label>
                   <select
                     value={formData.condition}
-                    onChange={(e) => handleInputChange("condition", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("condition", e.target.value)
+                    }
                     className="field-select"
                     data-testid="select-edit-condition"
                   >
@@ -261,7 +259,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
             {/* Style & Era Section */}
             <div className="form-section">
               <h3 className="section-title">Style & Era</h3>
-              
+
               <div className="form-row">
                 <div className="form-field">
                   <label className="field-label">Style</label>
@@ -279,7 +277,9 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
                   <label className="field-label">Decade</label>
                   <select
                     value={formData.decade}
-                    onChange={(e) => handleInputChange("decade", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("decade", e.target.value)
+                    }
                     className="field-select"
                     data-testid="select-edit-decade"
                   >
@@ -300,11 +300,13 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
             {/* Description Section */}
             <div className="form-section">
               <h3 className="section-title">Description</h3>
-              
+
               <div className="form-field">
                 <textarea
                   value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                   placeholder="Add additional details about the item..."
                   rows={4}
                   className="field-textarea"

@@ -6,18 +6,9 @@ ion-item.figma-item-card {
   --padding-end: 0;
   --inner-padding-end: 0;
   margin: 0;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #3b82f6;
-  overflow: visible;
-}
-
-ion-item.figma-item-card.sold {
-  border-left-color: #ef4444;
-}
-
-ion-item.figma-item-card.pending {
-  border-left-color: #f59e0b;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px 0 var(--item-card-drop-shadow-color);
+  overflow: hidden;
 }
 
 .figma-card-content {
@@ -98,9 +89,8 @@ ion-item.figma-item-card.pending {
 
 /* Swipeable action styles */
 ion-item-sliding {
-  margin-bottom: 0;
-  border-radius: 16px;
-  overflow: hidden;
+  margin-bottom: 12px;
+  overflow: visible;
 }
 
 .swipe-actions {

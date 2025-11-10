@@ -3,134 +3,164 @@ import {
   IonButton,
   IonRefresher,
   IonRefresherContent,
-  IonAlert,
   RefresherEventDetail,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from "@ionic/react";
-import { useHistory } from "react-router-dom";
 import filterSvg from "../../public/filter.svg"; // Import the SVG directly
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import type { InfiniteScrollCustomEvent } from "@ionic/react";
+import { useHistory, useLocation } from "react-router-dom";
+import { InventoryItem, FilterState } from "../lib/inventoryService";
 import {
-  getAllItems,
-  deleteItem,
-  InventoryItem,
-} from "../lib/inventoryService";
+  getFilteredItems,
+  convertFilterStateToParams,
+} from "../lib/filterService";
+import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
-import FilterSheet from "../components/FilterSheet";
 import "./Dashboard.css";
+
+const PAGE_SIZE = 30;
+
+type DashboardRouteState =
+  | {
+      appliedFilters: FilterState;
+    }
+  | {
+      resetFilters: true;
+    }
+  | undefined;
 
 const Dashboard: React.FC = () => {
   const history = useHistory();
+  const location = useLocation<DashboardRouteState>();
   const [items, setItems] = useState<InventoryItem[]>([]);
-  const [filteredItems, setFilteredItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
-  const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Pagination states
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null);
+  const [hasMoreItems, setHasMoreItems] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const initialLoad = useRef(true);
 
   // Filter states
-  const [activeFilters, setActiveFilters] = useState({
-    sizes: [] as string[],
-    sexes: [] as string[],
-    colors: [] as string[],
-    materials: [] as string[],
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    categories: [],
+    brands: [],
+    colors: [],
+    sizes: [],
+    conditions: [],
+    priceMin: undefined,
+    priceMax: undefined,
+    decades: [],
+    styles: [],
+    soldStatus: "all",
+    sortBy: { field: "dateAdded", direction: "desc" },
   });
 
-  useEffect(() => {
-    loadItems();
-  }, []);
+  // Frontend search filtering - filters items by name and description
+  const filteredItems = useMemo(() => {
+    if (!searchText || searchText.trim() === "") {
+      return items;
+    }
+
+    const searchLower = searchText.toLowerCase().trim();
+    return items.filter((item) => {
+      const nameMatch = item.name?.toLowerCase().includes(searchLower);
+      const descMatch = item.description?.toLowerCase().includes(searchLower);
+      return nameMatch || descMatch;
+    });
+  }, [items, searchText]);
 
   useEffect(() => {
-    applyFilters();
-  }, [items, searchText, activeFilters]);
+    const state = location.state;
+    if (state && "appliedFilters" in state) {
+      setActiveFilters(state.appliedFilters);
+      history.replace({ ...location, state: undefined });
+    } else if (state && "resetFilters" in state) {
+      setActiveFilters({
+        categories: [],
+        brands: [],
+        colors: [],
+        sizes: [],
+        conditions: [],
+        priceMin: undefined,
+        priceMax: undefined,
+        decades: [],
+        styles: [],
+        soldStatus: "all",
+        sortBy: { field: "dateAdded", direction: "desc" },
+      });
+      history.replace({ ...location, state: undefined });
+    }
+  }, [history, location]);
 
-  const loadItems = async () => {
+  const loadItems = async (reset: boolean = false) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const fetchedItems = await getAllItems();
-      setItems(fetchedItems);
+      const currentLastDoc = reset ? undefined : (lastDoc ?? undefined);
+      const filterParams = convertFilterStateToParams(activeFilters);
+
+      const {
+        items: newItems,
+        lastDoc: newLastDoc,
+        hasMore,
+      } = await getFilteredItems(filterParams, PAGE_SIZE, currentLastDoc);
+
+      setItems((prevItems) => (reset ? newItems : [...prevItems, ...newItems]));
+      setLastDoc(newLastDoc);
+      setHasMoreItems(hasMore);
     } catch (error) {
       console.error("Failed to load items:", error);
+      setError(
+        "Failed to load items: " +
+          (error instanceof Error ? error.message : "Unknown error"),
+      );
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
-  const applyFilters = () => {
-    let filtered = [...items];
+  useEffect(() => {
+    if (initialLoad.current) {
+      loadItems(true);
+      initialLoad.current = false;
+    } else {
+      loadItems(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeFilters]);
 
-    // Apply search filter
-    if (searchText) {
-      const search = searchText.toLowerCase();
-      filtered = filtered.filter(
-        (item) =>
-          item.name?.toLowerCase().includes(search) ||
-          item.brand?.toLowerCase().includes(search) ||
-          item.category?.toLowerCase().includes(search) ||
-          item.color?.toLowerCase().includes(search),
-      );
+  const fetchMoreItems = async (event: InfiniteScrollCustomEvent) => {
+    // Handle the case where there are no more items
+    if (!hasMoreItems) {
+      event.target.complete();
+      event.target.disabled = true;
+      return;
     }
 
-    // Apply size filter
-    if (activeFilters.sizes.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.sizes.some((size) =>
-          item.category?.toLowerCase().includes(size.toLowerCase()),
-        ),
-      );
+    // Handle the case where we're already loading
+    if (loadingMore) {
+      event.target.complete();
+      return;
     }
 
-    // Apply color filter
-    if (activeFilters.colors.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.colors.some((color) =>
-          item.color?.toLowerCase().includes(color.toLowerCase()),
-        ),
-      );
-    }
-
-    // Apply material filter
-    if (activeFilters.materials.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.materials.some(
-          (material) =>
-            item.description?.toLowerCase().includes(material.toLowerCase()) ||
-            item.labels?.some((label) =>
-              label.toLowerCase().includes(material.toLowerCase()),
-            ),
-        ),
-      );
-    }
-
-    setFilteredItems(filtered);
+    setLoadingMore(true);
+    await loadItems(false);
+    event.target.complete();
   };
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
-    await loadItems();
+    await loadItems(true);
     event.detail.complete();
   };
 
-  const handleFilterApply = (filters: typeof activeFilters) => {
-    setActiveFilters(filters);
-    setShowFilterSheet(false);
+  const navigateToFilters = () => {
+    history.push("/sort-filter", { activeFilters });
   };
-
-  const handleDeleteConfirm = async () => {
-    if (!itemToDelete?.id) return;
-
-    try {
-      await deleteItem(itemToDelete.id);
-      await loadItems();
-      setItemToDelete(null);
-    } catch (error) {
-      console.error("Failed to delete item:", error);
-    }
-  };
-
-  const hasActiveFilters =
-    activeFilters.sizes.length > 0 ||
-    activeFilters.sexes.length > 0 ||
-    activeFilters.colors.length > 0 ||
-    activeFilters.materials.length > 0;
 
   return (
     <>
@@ -140,34 +170,42 @@ const Dashboard: React.FC = () => {
 
       <div className="dashboard-header">
         <h1 className="dashboard-title">User Dashboard</h1>
-        <IonButton
-          onClick={() => setShowFilterSheet(true)}
-          fill="clear"
-          className="filter-button"
-        >
-          <img
-            src={filterSvg}
-            alt="Filter"
-            className={`filter-icon ${hasActiveFilters ? "filter-active" : ""}`}
-          />
+        <IonButton onClick={navigateToFilters} color="secondary">
+          <img src={filterSvg} alt="Filter" />
         </IonButton>
       </div>
 
       <div className="dashboard-items">
-        {filteredItems.length === 0 && !loading ? (
+        {error ? (
+          <div className="error-state">
+            <p>{error}</p>
+          </div>
+        ) : loading && items.length === 0 ? (
+          <div className="loading-state">Loading items...</div>
+        ) : filteredItems.length === 0 && !loading ? (
           <div className="empty-state">
             <p>No items found</p>
           </div>
         ) : (
-          filteredItems.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              onClick={() => history.push(`/item/${item.id}`)}
-              onEdit={() => history.push(`/item/${item.id}`)}
-              onDelete={() => setItemToDelete(item)}
-            />
-          ))
+          <>
+            {filteredItems.map((item) => (
+              <ItemCard
+                key={item.id}
+                item={item}
+                onClick={() => history.push(`/item/${item.id}`)}
+              />
+            ))}
+            <IonInfiniteScroll
+              onIonInfinite={fetchMoreItems}
+              threshold="100px"
+              disabled={false}
+            >
+              <IonInfiniteScrollContent
+                loadingSpinner="bubbles"
+                loadingText="Loading more data..."
+              ></IonInfiniteScrollContent>
+            </IonInfiniteScroll>
+          </>
         )}
       </div>
 
@@ -175,37 +213,11 @@ const Dashboard: React.FC = () => {
         <IonSearchbar
           value={searchText}
           onIonInput={(e) => setSearchText(e.detail.value!)}
-          placeholder="Search Name, Size, Color, Etc."
+          placeholder="Search Name or Description"
           className="dashboard-searchbar"
           data-testid="input-search"
         ></IonSearchbar>
       </div>
-
-      <FilterSheet
-        isOpen={showFilterSheet}
-        onClose={() => setShowFilterSheet(false)}
-        onApply={handleFilterApply}
-        activeFilters={activeFilters}
-        items={items}
-      />
-
-      <IonAlert
-        isOpen={!!itemToDelete}
-        onDidDismiss={() => setItemToDelete(null)}
-        header="Delete Item"
-        message={`Are you sure you want to delete "${itemToDelete?.name || "this item"}"?`}
-        buttons={[
-          {
-            text: "Cancel",
-            role: "cancel",
-          },
-          {
-            text: "Delete",
-            role: "destructive",
-            handler: handleDeleteConfirm,
-          },
-        ]}
-      />
     </>
   );
 };
