@@ -128,7 +128,11 @@ const ScanFlowPage: React.FC = () => {
       }
 
       // Navigate to the existing ItemDetailPage
-      history.push(`/item/${item.id}`);
+      history.push(`/item-scan/${item.id}`, {
+        returnTo: isCameraMode
+          ? "/scan-flow?mode=camera"
+          : "/scan-flow?mode=manual",
+      });
     } catch (error) {
       console.error("Error looking up item:", error);
       setMessage({
