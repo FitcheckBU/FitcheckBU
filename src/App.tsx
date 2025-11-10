@@ -15,6 +15,7 @@ import { UserProvider, useUser } from "./context/UserContext";
 import BuyerHomePage from "./pages/BuyerHomePage";
 import ScanFlowPage from "./pages/ScanFlowPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
+import ScanItemDetailPage from "./pages/ScanItemDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import SortFilterPage from "./pages/SortFilterPage";
 
