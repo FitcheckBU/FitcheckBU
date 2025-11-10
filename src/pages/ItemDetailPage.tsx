@@ -1,4 +1,4 @@
-import { IonButton, IonIcon } from "@ionic/react";
+import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
@@ -21,6 +21,8 @@ const ItemDetailPage: React.FC = () => {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!itemId) return;
@@ -62,14 +64,26 @@ const ItemDetailPage: React.FC = () => {
     loadImage();
   }, [item]);
 
-  const handleMarkAsSold = async () => {
+  const handleMarkAsSoldClick = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmMarkAsSold = async () => {
     if (!item?.id) return;
 
+    setLoading(true);
     try {
       await updateItem(item.id, { isSold: true });
+      setShowConfirmation(false);
     } catch (error) {
       console.error("Failed to mark as sold:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCancelConfirmation = () => {
+    setShowConfirmation(false);
   };
 
   const handleBack = () => {
@@ -114,40 +128,45 @@ const ItemDetailPage: React.FC = () => {
             </div>
 
             <div className="item-info-section">
-              <h2 className="item-name">{item.name || "Unknown Item"}</h2>
+              <h2 className="item-name">{item.name || "Unnamed Item"}</h2>
+
               <div className="item-meta">
                 <p className="item-status">
-                  <span className="meta-label">Status:</span>{" "}
+                  <span className="meta-label">Status: </span>
                   <span className="meta-value">
-                    {item.isSold ? "Sold" : "Listed"}
+                    {item.isSold ? "Sold" : "Available"}
                   </span>
                 </p>
                 <p className="item-sku">
-                  <span className="meta-label">SKU:</span>{" "}
+                  <span className="meta-label">SKU: </span>
                   <span className="meta-value">
-                    {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
+                    {item.id?.substring(0, 9).toUpperCase() || "N/A"}
                   </span>
                 </p>
               </div>
 
               <div className="barcode-section">
-                <svg className="barcode-svg" viewBox="0 0 280 80">
-                  {/* Simple barcode pattern */}
-                  <rect x="0" y="0" width="8" height="80" fill="#000" />
-                  <rect x="12" y="0" width="4" height="80" fill="#000" />
-                  <rect x="20" y="0" width="8" height="80" fill="#000" />
-                  <rect x="32" y="0" width="4" height="80" fill="#000" />
-                  <rect x="40" y="0" width="12" height="80" fill="#000" />
-                  <rect x="56" y="0" width="4" height="80" fill="#000" />
-                  <rect x="64" y="0" width="8" height="80" fill="#000" />
-                  <rect x="76" y="0" width="4" height="80" fill="#000" />
-                  <rect x="84" y="0" width="12" height="80" fill="#000" />
-                  <rect x="100" y="0" width="4" height="80" fill="#000" />
-                  <rect x="108" y="0" width="8" height="80" fill="#000" />
-                  <rect x="120" y="0" width="4" height="80" fill="#000" />
-                  <rect x="128" y="0" width="12" height="80" fill="#000" />
-                  <rect x="144" y="0" width="8" height="80" fill="#000" />
-                  <rect x="156" y="0" width="4" height="80" fill="#000" />
+                <svg
+                  className="barcode-svg"
+                  viewBox="0 0 280 80"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect x="0" y="0" width="4" height="80" fill="#000" />
+                  <rect x="8" y="0" width="8" height="80" fill="#000" />
+                  <rect x="20" y="0" width="4" height="80" fill="#000" />
+                  <rect x="28" y="0" width="12" height="80" fill="#000" />
+                  <rect x="44" y="0" width="4" height="80" fill="#000" />
+                  <rect x="52" y="0" width="8" height="80" fill="#000" />
+                  <rect x="64" y="0" width="4" height="80" fill="#000" />
+                  <rect x="72" y="0" width="12" height="80" fill="#000" />
+                  <rect x="88" y="0" width="4" height="80" fill="#000" />
+                  <rect x="96" y="0" width="8" height="80" fill="#000" />
+                  <rect x="108" y="0" width="4" height="80" fill="#000" />
+                  <rect x="116" y="0" width="12" height="80" fill="#000" />
+                  <rect x="132" y="0" width="4" height="80" fill="#000" />
+                  <rect x="140" y="0" width="8" height="80" fill="#000" />
+                  <rect x="152" y="0" width="4" height="80" fill="#000" />
+                  <rect x="160" y="0" width="12" height="80" fill="#000" />
                   <rect x="164" y="0" width="8" height="80" fill="#000" />
                   <rect x="176" y="0" width="12" height="80" fill="#000" />
                   <rect x="192" y="0" width="4" height="80" fill="#000" />
@@ -189,9 +208,7 @@ const ItemDetailPage: React.FC = () => {
                   </div>
                   <div className="info-row">
                     <span className="info-label">Pattern:</span>
-                    <span className="info-value">
-                      {item.decade || "None"}
-                    </span>
+                    <span className="info-value">{item.decade || "None"}</span>
                   </div>
                 </div>
               )}
@@ -201,7 +218,7 @@ const ItemDetailPage: React.FC = () => {
                   expand="block"
                   color="primary"
                   className="mark-sold-button"
-                  onClick={handleMarkAsSold}
+                  onClick={handleMarkAsSoldClick}
                   disabled={item.isSold}
                   data-testid="button-mark-sold"
                 >
@@ -210,28 +227,59 @@ const ItemDetailPage: React.FC = () => {
 
                 <div className="action-buttons-row">
                   <IonButton
+                    expand="block"
                     fill="outline"
-                    color="primary"
+                    className="secondary-action-button"
+                    onClick={() => setShowMoreInfo(!showMoreInfo)}
+                  >
+                    {showMoreInfo ? "Less Info" : "More Info"}
+                  </IonButton>
+                  <IonButton
+                    expand="block"
+                    fill="outline"
                     className="secondary-action-button"
                     onClick={() => setShowEditModal(true)}
                     data-testid="button-edit"
                   >
                     Edit
                   </IonButton>
-                  <IonButton
-                    fill="outline"
-                    color="primary"
-                    className="secondary-action-button"
-                    onClick={() => setShowMoreInfo(!showMoreInfo)}
-                    data-testid="button-more-info"
-                  >
-                    {showMoreInfo ? "Less Info" : "More Info"}
-                  </IonButton>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Confirmation Overlay */}
+        {showConfirmation && (
+          <div className="confirmation-overlay">
+            <div className="confirmation-card">
+              <p className="confirmation-text">
+                Are you sure you want to mark{" "}
+                <strong>{item.name || "this item"}</strong> as sold?
+              </p>
+              <div className="confirmation-buttons">
+                <IonButton
+                  expand="block"
+                  fill="clear"
+                  onClick={handleCancelConfirmation}
+                  disabled={loading}
+                  className="cancel-button"
+                >
+                  Cancel
+                </IonButton>
+                <IonButton
+                  expand="block"
+                  color="primary"
+                  onClick={handleConfirmMarkAsSold}
+                  disabled={loading}
+                  className="confirm-button"
+                >
+                  {loading ? <IonSpinner name="crescent" /> : "Confirm"}
+                </IonButton>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <EditItemModal
