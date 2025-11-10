@@ -1,7 +1,7 @@
-import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
 import {
@@ -12,11 +12,14 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
-import "./ItemDetailPage.css";
+import "./ScanItemDetailPage.css";
 
-const ItemDetailPage: React.FC = () => {
+const ScanItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
   const history = useHistory();
+  const location = useLocation<{ returnTo?: string }>();
+  const returnTo = location.state?.returnTo;
+  const [showScanAgain, setShowScanAgain] = useState(false);
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [showEditModal, setShowEditModal] = useState(false);
@@ -75,6 +78,7 @@ const ItemDetailPage: React.FC = () => {
     try {
       await updateItem(item.id, { isSold: true });
       setShowConfirmation(false);
+      setShowScanAgain(true); // <-- show the prompt
     } catch (error) {
       console.error("Failed to mark as sold:", error);
     } finally {
@@ -249,7 +253,7 @@ const ItemDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Confirmation Overlay */}
+        {/* Confirmation Overlay (restore) */}
         {showConfirmation && (
           <div className="confirmation-overlay">
             <div className="confirmation-card">
@@ -261,20 +265,54 @@ const ItemDetailPage: React.FC = () => {
                 <IonButton
                   expand="block"
                   fill="clear"
+                  className="cancel-button"
                   onClick={handleCancelConfirmation}
                   disabled={loading}
-                  className="cancel-button"
                 >
                   Cancel
                 </IonButton>
                 <IonButton
                   expand="block"
                   color="primary"
+                  className="confirm-button"
                   onClick={handleConfirmMarkAsSold}
                   disabled={loading}
-                  className="confirm-button"
                 >
-                  {loading ? <IonSpinner name="crescent" /> : "Confirm"}
+                  {loading ? "Working..." : "Confirm"}
+                </IonButton>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Scan-again Overlay */}
+        {showScanAgain && (
+          <div className="confirmation-overlay">
+            <div className="confirmation-card">
+              <p className="confirmation-text">
+                Item marked as sold. Would you like to scan another item?
+              </p>
+              <div className="confirmation-buttons">
+                <IonButton
+                  expand="block"
+                  fill="clear"
+                  className="cancel-button"
+                  onClick={() => {
+                    // go to Dashboard and force full page reload
+                    window.location.href = "/home";
+                  }}
+                >
+                  Cancel
+                </IonButton>
+                <IonButton
+                  expand="block"
+                  color="primary"
+                  className="confirm-button"
+                  onClick={() => {
+                    // go back to the scan flow (preserve mode if available)
+                    window.location.href = returnTo || "/scan-flow";
+                  }}
+                >
+                  Scan Another
                 </IonButton>
               </div>
             </div>
@@ -294,4 +332,4 @@ const ItemDetailPage: React.FC = () => {
   );
 };
 
-export default ItemDetailPage;
+export default ScanItemDetailPage;

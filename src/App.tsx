@@ -11,6 +11,7 @@ import UploadFlow from "./pages/UploadFlowPage";
 import ScanFlowPage from "./pages/ScanFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
+import ScanItemDetailPage from "./pages/ScanItemDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import MainLayout from "./components/MainLayout";
 import SortFilterPage from "./pages/SortFilterPage";
@@ -122,6 +123,15 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <ItemDetailPage />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/item-scan/:itemId"
+              render={() => (
+                <MainLayout>
+                  <ScanItemDetailPage />
                 </MainLayout>
               )}
             />
