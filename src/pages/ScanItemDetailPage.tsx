@@ -284,8 +284,7 @@ const ScanItemDetailPage: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Scan-again Overlay (match confirmation styling) */}
+        {/* Scan-again Overlay */}
         {showScanAgain && (
           <div className="confirmation-overlay">
             <div className="confirmation-card">
@@ -298,8 +297,8 @@ const ScanItemDetailPage: React.FC = () => {
                   fill="clear"
                   className="cancel-button"
                   onClick={() => {
-                    // Cancel → go to Dashboard
-                    history.replace("/home");
+                    // go to Dashboard and force full page reload
+                    window.location.href = "/home";
                   }}
                 >
                   Cancel
@@ -309,8 +308,8 @@ const ScanItemDetailPage: React.FC = () => {
                   color="primary"
                   className="confirm-button"
                   onClick={() => {
-                    // Scan Another → back to beginning of scan flow
-                    history.replace(returnTo || "/scan-flow");
+                    // go back to the scan flow (preserve mode if available)
+                    window.location.href = returnTo || "/scan-flow";
                   }}
                 >
                   Scan Another
