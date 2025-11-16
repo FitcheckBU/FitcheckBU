@@ -1,5 +1,6 @@
-import { IonToolbar, IonButtons, IonButton } from "@ionic/react";
+import { IonButton, IonButtons, IonToolbar } from "@ionic/react";
 import { useHistory } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 import "./TopNavBar.css";
 
 interface TopNavBarProps {
@@ -12,9 +13,15 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   isSidebarOpen,
 }) => {
   const history = useHistory();
+  const { user, signOut } = useUser();
 
   const goHome = () => {
-    history.push("/home");
+    history.push(user?.user_type === "buyer" ? "/buyer" : "/home");
+  };
+
+  const handleSignOut = () => {
+    signOut();
+    history.replace("/sign-in");
   };
 
   return (
@@ -27,6 +34,16 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           onClick={goHome}
         />
         <IonButtons slot="end">
+          {user && (
+            <IonButton
+              className="navbar-signout"
+              color="light"
+              fill="outline"
+              onClick={handleSignOut}
+            >
+              Sign out
+            </IonButton>
+          )}
           <IonButton onClick={onMenuClick} color="primary">
             <img
               src={isSidebarOpen ? "/close.svg" : "/hamburger.svg"}
