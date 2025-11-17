@@ -5,7 +5,7 @@
   flex-direction: column;
   height: 100%;
   padding: 16px;
-  --background: var(--ion-background-color);
+  background-color: var(--ion-color-secondary);
 }
 
 .scan-flow-header {
@@ -356,4 +356,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Tap to Scan Barcode Component */
+.tap-to-scan-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 40px 20px;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.tap-to-scan-text {
+  font-family: "Georgia", serif;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ion-color-primary);
+  margin-top: 24px;
+  text-align: center;
+}
+
+.tap-to-scan-text p {
+  margin: 0;
+}
+
+.qr-icon {
+  width: 120px;
+  height: 120px;
+  color: var(--ion-color-primary);
 }
