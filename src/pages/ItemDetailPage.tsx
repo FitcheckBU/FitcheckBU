@@ -13,6 +13,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
 import "./ItemDetailPage.css";
+import { printBarcode } from "../lib/printerService";
 
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -23,6 +24,7 @@ const ItemDetailPage: React.FC = () => {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   useEffect(() => {
     if (!itemId) return;
@@ -63,6 +65,20 @@ const ItemDetailPage: React.FC = () => {
 
     loadImage();
   }, [item]);
+
+  const handlePrintBarcode = async () => {
+    if (!item?.id) return;
+
+    setIsPrinting(true);
+    try {
+      const sku = item.id.substring(0, 9).toUpperCase();
+      await printBarcode(sku);
+    } catch {
+      alert("An error occurred while printing. Please try again.");
+    } finally {
+      setIsPrinting(false);
+    }
+  };
 
   const handleMarkAsSoldClick = () => {
     setShowConfirmation(true);
@@ -178,6 +194,14 @@ const ItemDetailPage: React.FC = () => {
                   <rect x="256" y="0" width="4" height="80" fill="#000" />
                   <rect x="264" y="0" width="12" height="80" fill="#000" />
                 </svg>
+                <IonButton
+                  color="primary"
+                  className="print-barcode-button"
+                  onClick={handlePrintBarcode}
+                  disabled={isPrinting}
+                >
+                  {isPrinting ? <IonSpinner name="crescent" /> : "Print"}
+                </IonButton>
               </div>
 
               {showMoreInfo && (

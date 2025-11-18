@@ -102,23 +102,39 @@
   font-weight: 400;
 }
 
+.item-meta p {
+  margin: 0.25rem 0;
+}
+
 .barcode-section {
-  padding: 16px 0;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem; /* Adds space between barcode and button */
 }
 
 .barcode-svg {
-  width: 100%;
-  max-width: 280px;
-  height: 80px;
+  flex-shrink: 0; /* Prevents the SVG from shrinking */
+  width: 100%; /* Default width */
+  max-width: 280px; /* Adjust as needed */
+  height: 60px; /* Adjust height as needed */
+}
+
+.print-barcode-button {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --border-radius: 8px; /* Match other buttons */
+  height: 48px;
+  font-size: 1rem;
+  white-space: nowrap; /* Prevents text from wrapping */
+  flex-shrink: 0;
 }
 
 .more-info-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ion-color-step-200, #e0e0e0);
 }
 
 .info-row {
