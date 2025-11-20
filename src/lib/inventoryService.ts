@@ -2,23 +2,25 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
+  limit,
+  orderBy,
   query,
+  QueryDocumentSnapshot,
   serverTimestamp,
+  startAfter,
   Timestamp,
   updateDoc,
-  deleteDoc,
   where,
-  orderBy,
-  limit,
-  startAfter,
-  QueryDocumentSnapshot,
+  type DocumentData,
+  type DocumentReference,
 } from "firebase/firestore";
+import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import { PhotoRole } from "../constants/photoStages";
 import { db, storage } from "./firebaseClient";
-import { getDownloadURL, ref as storageRef } from "firebase/storage";
 
 //-------------TYPES------------------
 export interface ItemImage {
@@ -49,6 +51,7 @@ export interface InventoryItem {
   images?: ItemImage[]; // Structured image metadata
   status?: "draft" | "active" | "archived";
   metadataStatus?: "pending" | "complete" | "skipped" | "error";
+  store_id?: DocumentReference<DocumentData>;
 
   //NEST-buyer FEATURE
   store_id?: string; //added field just to store which seller is attached to item
