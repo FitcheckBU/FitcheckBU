@@ -20,26 +20,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 19px 20px 19px 26px;
+  padding: 19px 28px 19px 26px;
   background-color: #023E38;
   height: 70px;
 }
 
 .dashboard-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 22px;
-  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
   font-style: normal;
   margin: 0;
   flex: 1;
+  letter-spacing: 0.02em;
 }
 
 .title-fitcheck {
   color: #ffffff;
+  font-weight: 600;
 }
 
 .title-nest {
   color: #7B9996;
+  font-weight: 500;
 }
 
 .menu-button {
@@ -59,7 +62,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 28px 20px;
+  padding: 24px 20px;
   background-color: #EBF0EF;
   position: relative;
 }
@@ -67,7 +70,7 @@
 .subheader-title {
   font-family: 'ITC Souvenir Std', Georgia, serif;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 900;
   font-style: italic;
   color: #023E38;
   margin: 0;
