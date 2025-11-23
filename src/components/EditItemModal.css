@@ -9,14 +9,11 @@
 }
 
 .edit-title {
-  font-family: 'ITC Souvenir Std', Georgia, serif;
-  font-size: 20px;
-  font-weight: 700;
-  font-style: italic;
-  color: #023E38;
   text-align: center;
-  letter-spacing: -0.011em;
-  line-height: 150%;
+}
+
+.edit-modal-logo {
+  margin: 0 auto;
 }
 
 .edit-modal-content {

@@ -22,6 +22,7 @@ import {
 import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
 import Sidebar from "../components/Sidebar";
+import Logo from "../components/Logo";
 import "../components/MainLayout.css";
 import "./Dashboard.css";
 
@@ -178,10 +179,7 @@ const Dashboard: React.FC = () => {
         </IonRefresher>
 
         <div className="dashboard-header">
-          <h1 className="dashboard-title">
-            <span className="title-fitcheck">fitcheck</span>
-            <span className="title-nest">.nest</span>
-          </h1>
+          <Logo />
           <IonButton 
             fill="clear" 
             className="menu-button"

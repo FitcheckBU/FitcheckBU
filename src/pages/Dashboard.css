@@ -20,29 +20,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 19px 28px 19px 26px;
+  padding: 17.24px 28px 17.24px 26.9px;
   background-color: #023E38;
   height: 70px;
-}
-
-.dashboard-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 20px;
-  font-weight: 600;
-  font-style: normal;
-  margin: 0;
-  flex: 1;
-  letter-spacing: 0.02em;
-}
-
-.title-fitcheck {
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.title-nest {
-  color: #7B9996;
-  font-weight: 500;
 }
 
 .menu-button {

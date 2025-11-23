@@ -12,6 +12,7 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
+import Logo from "../components/Logo";
 import "./ItemDetailPage.css";
 
 const ItemDetailPage: React.FC = () => {
@@ -99,14 +100,7 @@ const ItemDetailPage: React.FC = () => {
           >
             <IonIcon icon={arrowBackOutline} slot="icon-only" />
           </IonButton>
-          {isBuyerView ? (
-            <h1 className="item-detail-title">fitcheck</h1>
-          ) : (
-            <h1 className="item-detail-title">
-              <span className="title-fitcheck">fitcheck</span>
-              <span className="title-nest">.nest</span>
-            </h1>
-          )}
+          <Logo variant={isBuyerView ? "buyer" : "default"} />
         </div>
 
         <div className="item-detail-content">
