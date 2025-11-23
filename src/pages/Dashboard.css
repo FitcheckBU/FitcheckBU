@@ -1,6 +1,6 @@
-/* Dashboard page styles */
+/* Dashboard page styles - Figma Design */
 .dashboard-container {
-  --background: #f0f0f0;
+  --background: #EBF0EF;
   --padding-start: 0;
   --padding-end: 0;
   --padding-top: 0;
@@ -8,7 +8,7 @@
 }
 
 .dashboard-container::part(scroll) {
-  background-color: #f0f0f0;
+  background-color: #EBF0EF;
 }
 
 /* Override page overlay for dashboard to start from top */
@@ -20,8 +20,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px;
-  background-color: #1f5650;
+  padding: 19px 20px 19px 26px;
+  background-color: #023E38;
+  height: 70px;
 }
 
 .dashboard-title {
@@ -38,7 +39,7 @@
 }
 
 .title-nest {
-  color: #c5c5c5;
+  color: #7B9996;
 }
 
 .menu-button {
@@ -57,33 +58,37 @@
 .dashboard-subheader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background-color: #d9d9d9;
+  justify-content: center;
+  padding: 28px 20px;
+  background-color: #EBF0EF;
+  position: relative;
 }
 
 .subheader-title {
-  font-family: Georgia, serif;
-  font-size: 24px;
+  font-family: 'ITC Souvenir Std', Georgia, serif;
+  font-size: 20px;
   font-weight: 700;
   font-style: italic;
-  color: #1f2937;
+  color: #023E38;
   margin: 0;
-  flex: 1;
   text-align: center;
+  letter-spacing: -0.011em;
+  line-height: 150%;
 }
 
 .filter-button-sub {
   --padding-start: 0;
   --padding-end: 0;
   margin: 0;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  right: 20px;
 }
 
 .filter-button-sub ion-icon {
-  font-size: 28px;
-  color: #1f2937;
+  font-size: 32px;
+  color: #023E38;
 }
 
 .filter-button {
@@ -107,31 +112,35 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 16px 20px 24px;
-  background-color: #f0f0f0;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  background-color: #EBF0EF;
   z-index: 10;
+  display: flex;
+  justify-content: center;
 }
 
 .dashboard-searchbar {
   --background: #ffffff;
-  --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  --border-radius: 24px;
-  --placeholder-color: #9ca3af;
-  --icon-color: #6b7280;
-  --padding-start: 16px;
-  --padding-end: 16px;
+  --box-shadow: 0px 4px 4px #7B9996;
+  --border-radius: 100px;
+  --placeholder-color: #7B9996;
+  --icon-color: #7B9996;
+  --padding-start: 20px;
+  --padding-end: 20px;
   padding: 0;
   margin: 0;
-  height: 48px;
+  height: 45px;
+  max-width: 350px;
+  width: 100%;
 }
 
 .dashboard-items {
-  padding: 16px 20px 120px 20px;
-  display: grid;
-  grid-template-columns: 1fr;
+  padding: 24px 20px 100px 20px;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  background-color: #f0f0f0;
+  background-color: #EBF0EF;
+  align-items: center;
 }
 
 .items-grid {
@@ -147,7 +156,7 @@
   align-items: center;
   justify-content: center;
   height: 60vh;
-  color: #1f5650;
+  color: #023E38;
   opacity: 0.6;
   text-align: center;
   padding: 20px;
