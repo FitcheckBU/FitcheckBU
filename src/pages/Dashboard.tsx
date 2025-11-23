@@ -1,13 +1,16 @@
 import {
+  IonPage,
+  IonContent,
   IonSearchbar,
   IonButton,
+  IonIcon,
   IonRefresher,
   IonRefresherContent,
   RefresherEventDetail,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
 } from "@ionic/react";
-import filterSvg from "../../public/filter.svg"; // Import the SVG directly
+import { menuOutline, optionsOutline } from "ionicons/icons";
 import { useState, useEffect, useRef, useMemo } from "react";
 import type { InfiniteScrollCustomEvent } from "@ionic/react";
 import { useHistory, useLocation } from "react-router-dom";
@@ -18,6 +21,8 @@ import {
 } from "../lib/filterService";
 import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
+import Sidebar from "../components/Sidebar";
+import "../components/MainLayout.css";
 import "./Dashboard.css";
 
 const PAGE_SIZE = 30;
@@ -44,6 +49,9 @@ const Dashboard: React.FC = () => {
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const initialLoad = useRef(true);
+  
+  // Sidebar state
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   // Filter states
   const [activeFilters, setActiveFilters] = useState<FilterState>({
@@ -163,62 +171,90 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <>
-      <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-        <IonRefresherContent></IonRefresherContent>
-      </IonRefresher>
+    <IonPage>
+      <IonContent className="dashboard-container">
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
 
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">User Dashboard</h1>
-        <IonButton onClick={navigateToFilters} color="secondary">
-          <img src={filterSvg} alt="Filter" />
-        </IonButton>
-      </div>
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">
+            <span className="title-fitcheck">fitcheck</span>
+            <span className="title-nest">.nest</span>
+          </h1>
+          <IonButton 
+            fill="clear" 
+            className="menu-button"
+            onClick={() => setSidebarOpen(!isSidebarOpen)}
+            data-testid="button-menu"
+          >
+            <IonIcon icon={menuOutline} slot="icon-only" />
+          </IonButton>
+        </div>
+        
+        <div
+          className={`page-overlay ${isSidebarOpen ? "active" : ""}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="dashboard-items">
-        {error ? (
-          <div className="error-state">
-            <p>{error}</p>
-          </div>
-        ) : loading && items.length === 0 ? (
-          <div className="loading-state">Loading items...</div>
-        ) : filteredItems.length === 0 && !loading ? (
-          <div className="empty-state">
-            <p>No items found</p>
-          </div>
-        ) : (
-          <>
-            {filteredItems.map((item) => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                onClick={() => history.push(`/item/${item.id}`)}
-              />
-            ))}
-            <IonInfiniteScroll
-              onIonInfinite={fetchMoreItems}
-              threshold="100px"
-              disabled={false}
-            >
-              <IonInfiniteScrollContent
-                loadingSpinner="bubbles"
-                loadingText="Loading more data..."
-              ></IonInfiniteScrollContent>
-            </IonInfiniteScroll>
-          </>
-        )}
-      </div>
+        <div className="dashboard-subheader">
+          <h2 className="subheader-title">User Dashboard</h2>
+          <IonButton 
+            fill="clear" 
+            onClick={navigateToFilters}
+            className="filter-button-sub"
+            data-testid="button-filter"
+          >
+            <IonIcon icon={optionsOutline} slot="icon-only" />
+          </IonButton>
+        </div>
 
-      <div className="dashboard-search-section">
-        <IonSearchbar
-          value={searchText}
-          onIonInput={(e) => setSearchText(e.detail.value!)}
-          placeholder="Search Name or Description"
-          className="dashboard-searchbar"
-          data-testid="input-search"
-        ></IonSearchbar>
-      </div>
-    </>
+        <div className="dashboard-items">
+          {error ? (
+            <div className="error-state">
+              <p>{error}</p>
+            </div>
+          ) : loading && items.length === 0 ? (
+            <div className="loading-state">Loading items...</div>
+          ) : filteredItems.length === 0 && !loading ? (
+            <div className="empty-state">
+              <p>No items found</p>
+            </div>
+          ) : (
+            <>
+              {filteredItems.map((item) => (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  onClick={() => history.push(`/item/${item.id}`)}
+                />
+              ))}
+              <IonInfiniteScroll
+                onIonInfinite={fetchMoreItems}
+                threshold="100px"
+                disabled={false}
+              >
+                <IonInfiniteScrollContent
+                  loadingSpinner="bubbles"
+                  loadingText="Loading more data..."
+                ></IonInfiniteScrollContent>
+              </IonInfiniteScroll>
+            </>
+          )}
+        </div>
+
+        <div className="dashboard-search-section">
+          <IonSearchbar
+            value={searchText}
+            onIonInput={(e) => setSearchText(e.detail.value!)}
+            placeholder="Search Name, Size, Color, Etc."
+            className="dashboard-searchbar"
+            data-testid="input-search"
+          ></IonSearchbar>
+        </div>
+      </IonContent>
+    </IonPage>
   );
 };
 

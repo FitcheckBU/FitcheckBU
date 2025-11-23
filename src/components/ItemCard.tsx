@@ -63,6 +63,11 @@ const ItemCard: React.FC<ItemCardProps> = ({
     onDelete?.();
   };
 
+  // Generate a short ID from the item ID
+  const shortId = item.id 
+    ? `${item.id.substring(0, 3).toUpperCase()}-${item.id.substring(3, 7)}`
+    : "NO-ID";
+
   return (
     <IonItemSliding>
       <IonItem
@@ -93,17 +98,15 @@ const ItemCard: React.FC<ItemCardProps> = ({
             </div>
             <div className="figma-item-details-grid">
               <div className="figma-details-left">
-                <div className="figma-detail-text">
-                  {item.id ? item.id.substring(0, 9).toUpperCase() : "NO-ID"}
-                </div>
+                <div className="figma-detail-text">{shortId}</div>
                 <div className="figma-detail-text">
                   {extractSize(item.labels) || item.size || "Medium"}
                 </div>
                 <div className="figma-detail-text">
-                  {item.category || "Unknown"}
+                  {item.category || "Clothing"}
                 </div>
                 <div className="figma-detail-text">
-                  {item.description?.split(" ")[0] || "Material"}
+                  {item.description?.split(" ")[0] || "Cotton"}
                 </div>
               </div>
               <div className="figma-details-right">
@@ -111,7 +114,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
                   {item.color || extractColor(item.labels) || "Unknown"}
                 </div>
                 <div className="figma-detail-text">
-                  {item.style || "Unisex"}
+                  {item.sex === "men" ? "Men's" : item.sex === "women" ? "Women's" : "Unisex"}
                 </div>
               </div>
             </div>

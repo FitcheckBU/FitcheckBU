@@ -1,0 +1,212 @@
+/* Buyer Dashboard Styles - fitcheck branding */
+
+.buyer-dashboard {
+  --background: #ffeda8;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.buyer-dashboard::part(scroll) {
+  background-color: #ffeda8;
+}
+
+/* Header - Dark teal/green background, sticky */
+.buyer-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background-color: #1a4d47;
+  border-bottom: none;
+}
+
+.buyer-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.buyer-header-icon {
+  font-size: 24px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Search Bar */
+.buyer-search-container {
+  padding: 12px 16px;
+  background-color: #ffeda8;
+}
+
+.buyer-search-wrapper {
+  position: relative;
+  background: #ffffff;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 44px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.buyer-search-icon {
+  font-size: 20px;
+  color: #9ca3af;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.buyer-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #2f2f2f;
+  background: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.buyer-search-input::placeholder {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.buyer-filter-icon {
+  font-size: 20px;
+  color: #6b7280;
+  margin-left: 10px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* Promo Card */
+.promo-card {
+  background: #ffffff;
+  border-radius: 16px;
+  margin: 0 16px 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.promo-image-container {
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+}
+
+.promo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promo-text {
+  padding: 20px 20px 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1f2937;
+  text-align: left;
+}
+
+.promo-highlight {
+  font-weight: 700;
+  font-style: italic;
+}
+
+.promo-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px 20px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+  transition: background-color 0.3s ease;
+}
+
+.dot.active {
+  background-color: #1f2937;
+}
+
+/* Tagline Section */
+.tagline-section {
+  padding: 0 16px 24px;
+  background-color: #ffeda8;
+}
+
+.tagline-text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #1f2937;
+  text-align: left;
+}
+
+.tagline-highlight {
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* Category Section */
+.category-section {
+  padding: 0 16px 20px;
+  background-color: #ffeda8;
+}
+
+.category-header {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 700;
+  font-style: italic;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.category-card {
+  position: relative;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.category-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.category-overlay {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  font-style: italic;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}

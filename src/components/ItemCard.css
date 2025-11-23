@@ -1,4 +1,4 @@
-/* Item Card Styles - Matching Figma */
+/* Item Card Styles - Matching Screenshot */
 
 ion-item.figma-item-card {
   --background: #ffffff;
@@ -6,23 +6,23 @@ ion-item.figma-item-card {
   --padding-end: 0;
   --inner-padding-end: 0;
   margin: 0;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px 0 var(--item-card-drop-shadow-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
 
 .figma-card-content {
   display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 14px 16px;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px 18px;
 }
 
 .figma-image-container {
   flex-shrink: 0;
-  width: 90px;
-  height: 90px;
-  border-radius: 12px;
+  width: 110px;
+  height: 110px;
+  border-radius: 8px;
   overflow: hidden;
   background: #f3f4f6;
 }
@@ -49,47 +49,49 @@ ion-item.figma-item-card {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .figma-item-name {
-  font-size: 16px;
+  font-family: Georgia, serif;
+  font-size: 18px;
   font-weight: 700;
   color: #1f2937;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .figma-item-details-grid {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 12px;
+  gap: 16px;
 }
 
 .figma-details-left {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .figma-details-right {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   text-align: right;
 }
 
 .figma-detail-text {
-  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
   color: #4b5563;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* Swipeable action styles */
 ion-item-sliding {
-  margin-bottom: 12px;
+  margin-bottom: 0;
   overflow: visible;
 }
 
