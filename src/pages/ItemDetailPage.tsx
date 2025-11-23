@@ -16,11 +16,14 @@ import "./ItemDetailPage.css";
 
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
-  const history = useHistory();
+  const history = useHistory<{ fromBuyer?: boolean }>();
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
+
+  // Check if this is a buyer view
+  const isBuyerView = history.location.state?.fromBuyer === true;
 
   useEffect(() => {
     if (!itemId) return;
@@ -86,7 +89,7 @@ const ItemDetailPage: React.FC = () => {
 
   return (
     <>
-      <div className="item-detail-page">
+      <div className={`item-detail-page ${isBuyerView ? "buyer-view" : ""}`}>
         <div className="item-detail-header">
           <IonButton
             fill="clear"
@@ -96,7 +99,14 @@ const ItemDetailPage: React.FC = () => {
           >
             <IonIcon icon={arrowBackOutline} slot="icon-only" />
           </IonButton>
-          <h1 className="item-detail-title">User Dashboard</h1>
+          {isBuyerView ? (
+            <h1 className="item-detail-title">fitcheck</h1>
+          ) : (
+            <h1 className="item-detail-title">
+              <span className="title-fitcheck">fitcheck</span>
+              <span className="title-nest">.nest</span>
+            </h1>
+          )}
         </div>
 
         <div className="item-detail-content">
@@ -189,45 +199,77 @@ const ItemDetailPage: React.FC = () => {
                   </div>
                   <div className="info-row">
                     <span className="info-label">Pattern:</span>
-                    <span className="info-value">
-                      {item.decade || "None"}
-                    </span>
+                    <span className="info-value">{item.decade || "None"}</span>
                   </div>
                 </div>
               )}
 
               <div className="item-actions">
-                <IonButton
-                  expand="block"
-                  color="primary"
-                  className="mark-sold-button"
-                  onClick={handleMarkAsSold}
-                  disabled={item.isSold}
-                  data-testid="button-mark-sold"
-                >
-                  {item.isSold ? "Marked as Sold" : "Mark as Sold"}
-                </IonButton>
+                {isBuyerView ? (
+                  <>
+                    {/* Buyer View - Show Price and Contact */}
+                    <div className="buyer-price-section">
+                      <span className="price-label">Price:</span>
+                      <span className="price-value">
+                        ${item.price?.toFixed(2) || "0.00"}
+                      </span>
+                    </div>
+                    <IonButton
+                      expand="block"
+                      color="primary"
+                      className="contact-seller-button"
+                      data-testid="button-contact-seller"
+                    >
+                      Contact Seller
+                    </IonButton>
+                    <div className="action-buttons-row">
+                      <IonButton
+                        fill="outline"
+                        color="primary"
+                        className="secondary-action-button"
+                        onClick={() => setShowMoreInfo(!showMoreInfo)}
+                        data-testid="button-more-info"
+                      >
+                        {showMoreInfo ? "Less Info" : "More Info"}
+                      </IonButton>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Seller View - Show Mark as Sold and Edit */}
+                    <IonButton
+                      expand="block"
+                      color="primary"
+                      className="mark-sold-button"
+                      onClick={handleMarkAsSold}
+                      disabled={item.isSold}
+                      data-testid="button-mark-sold"
+                    >
+                      {item.isSold ? "Marked as Sold" : "Mark as Sold"}
+                    </IonButton>
 
-                <div className="action-buttons-row">
-                  <IonButton
-                    fill="outline"
-                    color="primary"
-                    className="secondary-action-button"
-                    onClick={() => setShowEditModal(true)}
-                    data-testid="button-edit"
-                  >
-                    Edit
-                  </IonButton>
-                  <IonButton
-                    fill="outline"
-                    color="primary"
-                    className="secondary-action-button"
-                    onClick={() => setShowMoreInfo(!showMoreInfo)}
-                    data-testid="button-more-info"
-                  >
-                    {showMoreInfo ? "Less Info" : "More Info"}
-                  </IonButton>
-                </div>
+                    <div className="action-buttons-row">
+                      <IonButton
+                        fill="outline"
+                        color="primary"
+                        className="secondary-action-button"
+                        onClick={() => setShowEditModal(true)}
+                        data-testid="button-edit"
+                      >
+                        Edit
+                      </IonButton>
+                      <IonButton
+                        fill="outline"
+                        color="primary"
+                        className="secondary-action-button"
+                        onClick={() => setShowMoreInfo(!showMoreInfo)}
+                        data-testid="button-more-info"
+                      >
+                        {showMoreInfo ? "Less Info" : "More Info"}
+                      </IonButton>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ import ScanFlowPage from "./pages/ScanFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 import SettingsPage from "./pages/SettingsPage";
+import BuyerDashboard from "./pages/BuyerDashboard";
 import MainLayout from "./components/MainLayout";
 import SortFilterPage from "./pages/SortFilterPage";
 
@@ -53,15 +54,9 @@ const App: React.FC = () => {
       <PhotoProvider>
         <IonReactRouter>
           <IonRouterOutlet id="main">
-            <Route
-              exact
-              path="/home"
-              render={() => (
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              )}
-            />
+            <Route exact path="/home">
+              <Dashboard />
+            </Route>
             <Route
               exact
               path="/sort-filter"
@@ -134,6 +129,9 @@ const App: React.FC = () => {
                 </MainLayout>
               )}
             />
+            <Route exact path="/buyer">
+              <BuyerDashboard />
+            </Route>
             <Route exact path="/camera">
               <CameraPage />
             </Route>

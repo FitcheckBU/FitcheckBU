@@ -8,7 +8,11 @@ import {
 } from "@ionic/react";
 import { useState, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { markAsSoldByBarcode } from "../lib/inventoryService";
+import {
+  //markAsSoldByBarcode,
+  findItemByBarcode,
+  //InventoryItem,
+} from "../lib/inventoryService";
 import "./ScanFlowPage.css";
 
 // TapToScan component
@@ -63,7 +67,7 @@ const ManualEntry: React.FC<{
         disabled={loading || !itemId.trim()}
         className="submit-button"
       >
-        {loading ? "Processing..." : "Mark as Sold"}
+        {loading ? "Processing..." : "Continue"}
       </IonButton>
 
       <IonText color="medium" className="hint-text">
@@ -79,7 +83,6 @@ const ScanFlowPage: React.FC = () => {
     text: string;
     color: "success" | "danger";
   } | null>(null);
-  const [processedItemId, setProcessedItemId] = useState<string | null>(null);
   const history = useHistory();
   const location = useLocation();
 
@@ -97,51 +100,53 @@ const ScanFlowPage: React.FC = () => {
     history.push("/scan-camera");
   };
 
-  const handleMarkAsSold = async (itemId: string) => {
+  const handleLookupItem = async (itemId: string) => {
     setLoading(true);
     setMessage(null);
 
     try {
-      await markAsSoldByBarcode(itemId);
-      setProcessedItemId(itemId);
-      setMessage({
-        text: `Item ${itemId} successfully marked as sold!`,
-        color: "success",
+      // Find the item by barcode
+      const item = await findItemByBarcode(itemId);
+
+      if (!item || !item.id) {
+        setMessage({
+          text: `Item not found with barcode ${itemId}`,
+          color: "danger",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Check if item is already sold
+      if (item.isSold) {
+        setMessage({
+          text: `${item.name || "Item"} is already marked as sold.`,
+          color: "danger",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Navigate to the existing ItemDetailPage
+      history.push(`/item-scan/${item.id}`, {
+        returnTo: isCameraMode
+          ? "/scan-flow?mode=camera"
+          : "/scan-flow?mode=manual",
       });
     } catch (error) {
-      console.error("Error marking item as sold:", error);
+      console.error("Error looking up item:", error);
       setMessage({
-        text: `Failed to mark item as sold: ${error instanceof Error ? error.message : "Unknown error"}`,
+        text: `Failed to lookup item: ${error instanceof Error ? error.message : "Unknown error"}`,
         color: "danger",
       });
-    } finally {
       setLoading(false);
     }
-  };
-
-  const handleReset = () => {
-    setMessage(null);
-    setProcessedItemId(null);
-    // Clear location state
-    history.replace(location.pathname + location.search, {});
   };
 
   return (
     <div className="scan-flow-wrapper">
       <div className="scan-flow-header">
         <IonBackButton defaultHref="/scan" className="back-button" />
-        {processedItemId && (
-          <div className="reset-button-container">
-            <IonButton
-              color="medium"
-              fill="outline"
-              disabled={loading}
-              onClick={handleReset}
-            >
-              Scan Another
-            </IonButton>
-          </div>
-        )}
       </div>
 
       {message && (
@@ -154,29 +159,17 @@ const ScanFlowPage: React.FC = () => {
         </IonCard>
       )}
 
-      {!processedItemId ? (
-        <div className="scan-flow-content">
-          {isCameraMode ? (
-            <TapToScanBarcode onClick={triggerCamera} />
-          ) : (
-            <ManualEntry
-              onSubmit={handleMarkAsSold}
-              loading={loading}
-              initialValue={scannedBarcode}
-            />
-          )}
-        </div>
-      ) : (
-        <div className="scan-flow-content">
-          <div className="success-container">
-            <IonText color="success">
-              <h1>✓</h1>
-              <h2>Item Marked as Sold</h2>
-              <p>Item ID: {processedItemId}</p>
-            </IonText>
-          </div>
-        </div>
-      )}
+      <div className="scan-flow-content">
+        {isCameraMode ? (
+          <TapToScanBarcode onClick={triggerCamera} />
+        ) : (
+          <ManualEntry
+            onSubmit={handleLookupItem}
+            loading={loading}
+            initialValue={scannedBarcode}
+          />
+        )}
+      </div>
     </div>
   );
 };
