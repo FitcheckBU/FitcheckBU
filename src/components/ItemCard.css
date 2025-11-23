@@ -104,16 +104,16 @@ ion-item-sliding {
 }
 
 .swipe-actions {
-  background-color: #e8a76a !important;
-  border-radius: 0 16px 16px 0;
+  background-color: #7B9996 !important;
+  border-radius: 0 15px 15px 0;
   overflow: hidden;
 }
 
 ion-item-option.swipe-edit,
 ion-item-option.swipe-delete {
-  --background: #e8a76a !important;
-  background: #e8a76a !important;
-  background-color: #e8a76a !important;
+  --background: #7B9996 !important;
+  background: #7B9996 !important;
+  background-color: #7B9996 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,6 +123,6 @@ ion-item-option.swipe-delete {
 
 ion-item-option.swipe-edit ion-icon,
 ion-item-option.swipe-delete ion-icon {
-  font-size: 30px;
-  color: var(--ion-color-primary);
+  font-size: 32px;
+  color: #023E38;
 }
