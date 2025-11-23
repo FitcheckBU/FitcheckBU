@@ -1,10 +1,11 @@
-/* Sort & Filter Page Styles */
+/* Sort & Filter Page Styles - Figma Design */
 .sort-filter-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100%;
-  padding: 20px;
+  min-height: 100vh;
+  padding: 24px 20px;
+  background-color: #EBF0EF;
 }
 
 .sort-filter-header {
@@ -12,13 +13,13 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 600px;
-  margin-bottom: 16px;
+  max-width: 350px;
+  margin-bottom: 24px;
   position: relative;
 }
 
 .sort-filter-back-button {
-  --color: var(--ion-color-primary);
+  --color: #023E38;
   --padding-start: 0;
   --padding-end: 8px;
   position: absolute;
@@ -29,25 +30,28 @@
 }
 
 .sort-filter-back-button ion-icon {
-  font-size: 24px;
+  font-size: 28px;
+  color: #023E38;
 }
 
 .sort-filter-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--ion-color-primary);
+  font-family: 'ITC Souvenir Std', Georgia, serif;
+  font-size: 20px;
+  font-weight: 900;
+  font-style: italic;
+  color: #023E38;
   margin: 0;
   text-align: center;
+  letter-spacing: -0.011em;
 }
 
 .sort-filter-card {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-  padding-bottom: 100px;
-  /* Space for absolute positioned buttons at bottom */
+  max-width: 350px;
+  min-height: 636px;
+  background-color: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0px 4px 4px #7B9996;
+  padding: 27px 27px 100px 27px;
 }
