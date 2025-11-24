@@ -232,59 +232,62 @@
   font-size: 12px;
 }
 
-/* Store List */
-.map-store-list {
-  padding: 16px;
+/* Near By Section - Clean design matching screenshot */
+.nearby-section {
+  padding: 20px 24px;
   background: #ffffff;
   border-top: 1px solid #e8e8e8;
 }
 
-.store-list-header {
+.nearby-header {
   font-family: "DM Sans", sans-serif;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 700;
-  color: #023e38;
-  margin-bottom: 12px;
+  color: #000000;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
 }
 
-.store-list-items {
+.nearby-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
-.store-list-item {
-  padding: 12px;
-  background: #f5f5f5;
-  border-radius: 8px;
+.nearby-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e8e8e8;
   cursor: pointer;
   transition: background 0.2s;
 }
 
-.store-list-item:hover {
-  background: #e8e8e8;
+.nearby-item:last-child {
+  border-bottom: none;
 }
 
-.store-item-name {
-  font-family: "DM Sans", sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: #023e38;
-  margin-bottom: 4px;
+.nearby-item:active {
+  background: #f5f5f5;
 }
 
-.store-item-address {
-  font-family: "DM Sans", sans-serif;
-  font-size: 12px;
-  color: #7b9996;
-  margin-bottom: 4px;
+.nearby-pin-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 }
 
-.store-item-distance {
+.nearby-item-content {
+  flex: 1;
+}
+
+.nearby-item-name {
   font-family: "DM Sans", sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  color: #023e38;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.5;
 }
 
 /* No stores message */

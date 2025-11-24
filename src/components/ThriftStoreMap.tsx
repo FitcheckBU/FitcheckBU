@@ -40,9 +40,9 @@ const MapUpdater: React.FC<MapUpdaterProps> = ({ center, zoom }) => {
 };
 
 const ThriftStoreMap: React.FC = () => {
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState("Boston University, Boston, MA");
   const [location, setLocation] = useState<[number, number]>([42.3505, -71.1054]); // Boston University default
-  const [radius, setRadius] = useState(2000); // 2km default
+  const [radius, setRadius] = useState(5000); // 5km default for better coverage
   const [stores, setStores] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -102,14 +102,10 @@ const ThriftStoreMap: React.FC = () => {
         return;
       }
 
-      // Search for thrift stores, secondhand shops, charity shops, vintage stores
-      const categories = [
-        "commercial.second_hand",
-        "commercial.charity", 
-        "commercial.vintage",
-      ].join(",");
-
-      const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lon},${lat},${radius}&limit=20&apiKey=${apiKey}`;
+      // Use Geocoding API with text search - more flexible than Places API categories
+      const searchQuery = `thrift store near ${lat},${lon}`;
+      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&limit=20&bias=proximity:${lon},${lat}&filter=circle:${lon},${lat},${radius}&apiKey=${apiKey}`;
+      
       console.log("Searching for stores at:", lat, lon, "with radius:", radius);
 
       const response = await fetch(url);
@@ -124,14 +120,46 @@ const ThriftStoreMap: React.FC = () => {
       console.log("API Response:", data);
       console.log("Found stores:", data.features?.length || 0);
       
-      const places: Place[] = (data.features || []).map((feature: any) => ({
-        lat: feature.geometry.coordinates[1],
-        lon: feature.geometry.coordinates[0],
-        name: feature.properties.name || feature.properties.datasource?.raw?.name || "Thrift Store",
-        address: feature.properties.formatted || feature.properties.address_line1 || "Address not available",
-        distance: feature.properties.distance || 0,
-      }));
+      // Filter to only include results with "thrift" or related keywords in the name
+      const filtered = (data.features || []).filter((feature: any) => {
+        const name = (feature.properties.name || feature.properties.address_line1 || "").toLowerCase();
+        return name.includes("thrift") || 
+               name.includes("secondhand") || 
+               name.includes("second hand") ||
+               name.includes("consignment") || 
+               name.includes("vintage") ||
+               name.includes("resale") ||
+               name.includes("goodwill") ||
+               name.includes("salvation army");
+      });
 
+      const places: Place[] = filtered.map((feature: any) => {
+        const coords = feature.geometry.coordinates;
+        const props = feature.properties;
+        
+        // Calculate distance
+        const R = 6371e3; // Earth's radius in meters
+        const φ1 = lat * Math.PI/180;
+        const φ2 = coords[1] * Math.PI/180;
+        const Δφ = (coords[1]-lat) * Math.PI/180;
+        const Δλ = (coords[0]-lon) * Math.PI/180;
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c;
+
+        return {
+          lat: coords[1],
+          lon: coords[0],
+          name: props.name || props.address_line1 || "Thrift Store",
+          address: props.formatted || props.address_line2 || "Address not available",
+          distance: distance,
+        };
+      });
+
+      // Sort by distance
+      places.sort((a, b) => a.distance - b.distance);
       setStores(places);
     } catch (error: any) {
       console.error("Error searching for stores:", error.message || error);
@@ -298,18 +326,28 @@ const ThriftStoreMap: React.FC = () => {
         </MapContainer>
       </div>
 
-      {/* Store List */}
+      {/* Near By Section - Clean design like screenshot */}
       {!loading && stores.length > 0 && (
-        <div className="map-store-list">
-          <div className="store-list-header">
-            {stores.length} thrift {stores.length === 1 ? "store" : "stores"} nearby
-          </div>
-          <div className="store-list-items">
-            {stores.slice(0, 5).map((store, index) => (
-              <div key={index} className="store-list-item" data-testid={`store-item-${index}`}>
-                <div className="store-item-name">{store.name}</div>
-                <div className="store-item-address">{store.address}</div>
-                <div className="store-item-distance">{(store.distance / 1000).toFixed(2)} km away</div>
+        <div className="nearby-section">
+          <div className="nearby-header">Near By:</div>
+          <div className="nearby-list">
+            {stores.slice(0, 8).map((store, index) => (
+              <div key={index} className="nearby-item" data-testid={`store-item-${index}`}>
+                <svg 
+                  className="nearby-pin-icon" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none"
+                >
+                  <path 
+                    d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" 
+                    fill="#023E38"
+                  />
+                </svg>
+                <div className="nearby-item-content">
+                  <div className="nearby-item-name">{store.name}</div>
+                </div>
               </div>
             ))}
           </div>
