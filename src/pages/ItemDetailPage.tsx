@@ -89,20 +89,23 @@ const ItemDetailPage: React.FC = () => {
   }
 
   return (
-    <IonPage>
-      <div className={`item-detail-page ${isBuyerView ? "buyer-view" : ""}`}>
-        {/* Navbar matching Dashboard */}
-        <div className="item-detail-navbar">
-          <IonButton
-            fill="clear"
-            onClick={handleBack}
-            className="item-back-button"
-            data-testid="button-back"
-          >
-            <IonIcon icon={arrowBackOutline} slot="icon-only" />
-          </IonButton>
-          <Logo variant={isBuyerView ? "buyer" : "default"} />
-        </div>
+    <IonPage className={`item-detail-page ${isBuyerView ? "buyer-view" : ""}`}>
+      {/* Navbar with logo only */}
+      <div className="item-detail-navbar">
+        <Logo variant={isBuyerView ? "buyer" : "default"} />
+      </div>
+
+      {/* Scrollable content area */}
+      <IonContent className="item-detail-body">
+        {/* Back button */}
+        <IonButton
+          fill="clear"
+          onClick={handleBack}
+          className="item-back-button"
+          data-testid="button-back"
+        >
+          <IonIcon icon={arrowBackOutline} slot="icon-only" />
+        </IonButton>
 
         <div className="item-detail-content">
           <div className="item-detail-card">
@@ -269,7 +272,7 @@ const ItemDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </IonContent>
 
       <EditItemModal
         isOpen={showEditModal}

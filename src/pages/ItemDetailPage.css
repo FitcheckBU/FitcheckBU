@@ -4,15 +4,16 @@
 }
 
 /* Default Seller View - Blue/Gray with fitcheck.nest */
-/* Navbar - Figma Specs (matches Dashboard) */
+/* Navbar - Figma Specs */
 .item-detail-navbar {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   height: 70px;
   background: #023E38;
-  display: flex;
-  align-items: center;
-  padding: 0;
+  z-index: 1000;
 }
 
 /* Logo positioned at exact Figma specs */
@@ -23,13 +24,22 @@
   top: 17.24px;
 }
 
-/* Back button positioned like hamburger menu */
+/* Body content area - scrollable, starts below navbar */
+.item-detail-body {
+  --background: #EBF0EF;
+  --padding-top: 70px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-bottom: 20px;
+}
+
+/* Back button positioned on LEFT side in content area */
 .item-back-button {
   --padding-start: 0;
   --padding-end: 0;
   position: absolute;
-  right: 7.95%;
-  top: 19px;
+  left: 20px;
+  top: 90px;
   margin: 0;
   width: 32px;
   height: 32px;
@@ -38,7 +48,7 @@
 
 .item-back-button ion-icon {
   font-size: 32px;
-  color: #FFFFFF;
+  color: #023E38;
 }
 
 .contact-seller-button {
@@ -79,7 +89,8 @@
 }
 
 .item-detail-content {
-  padding: 0 20px 40px;
+  padding: 62px 20px 40px;
+  position: relative;
 }
 
 .item-detail-card {
