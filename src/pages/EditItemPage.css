@@ -60,17 +60,17 @@
   color: #023E38;
 }
 
-/* Title - ITC Souvenir Std Bold Italic 20px */
+/* Title matching Dashboard style */
 .edit-item-title {
-  font-family: 'ITC Souvenir Std', serif;
-  font-style: italic;
-  font-weight: 700;
+  font-family: 'ITC Souvenir Std', Georgia, serif;
   font-size: 20px;
-  line-height: 150%;
+  font-weight: 700;
+  font-style: italic;
   color: #023E38;
   margin: 0;
   text-align: center;
   letter-spacing: -0.011em;
+  line-height: 150%;
 }
 
 /* Content wrapper */
