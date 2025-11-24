@@ -91,11 +91,12 @@ const ItemDetailPage: React.FC = () => {
   return (
     <>
       <div className={`item-detail-page ${isBuyerView ? "buyer-view" : ""}`}>
-        <div className="item-detail-header">
+        {/* Navbar matching Dashboard */}
+        <div className="item-detail-navbar">
           <IonButton
             fill="clear"
             onClick={handleBack}
-            className="back-button"
+            className="item-back-button"
             data-testid="button-back"
           >
             <IonIcon icon={arrowBackOutline} slot="icon-only" />
