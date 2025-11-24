@@ -23,6 +23,7 @@ import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
 import Sidebar from "../components/Sidebar";
 import Logo from "../components/Logo";
+import EditItemModal from "../components/EditItemModal";
 import "../components/MainLayout.css";
 import "./Dashboard.css";
 
@@ -53,6 +54,10 @@ const Dashboard: React.FC = () => {
   
   // Sidebar state
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
   // Filter states
   const [activeFilters, setActiveFilters] = useState<FilterState>({
@@ -171,6 +176,16 @@ const Dashboard: React.FC = () => {
     history.push("/sort-filter", { activeFilters });
   };
 
+  const handleEditItem = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedItem(null);
+  };
+
   return (
     <IonPage>
       <IonContent className="dashboard-container">
@@ -226,6 +241,7 @@ const Dashboard: React.FC = () => {
                   key={item.id}
                   item={item}
                   onClick={() => history.push(`/item/${item.id}`)}
+                  onEdit={() => handleEditItem(item)}
                 />
               ))}
               <IonInfiniteScroll
@@ -252,6 +268,12 @@ const Dashboard: React.FC = () => {
           ></IonSearchbar>
         </div>
       </IonContent>
+
+      <EditItemModal
+        isOpen={showEditModal}
+        item={selectedItem}
+        onClose={handleCloseEditModal}
+      />
     </IonPage>
   );
 };
