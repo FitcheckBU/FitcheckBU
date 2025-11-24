@@ -2,7 +2,7 @@
 
 /* Default fitcheck.nest logo */
 .logo {
-  width: 95.95px;
+  min-width: 95.95px;
   height: 35.52px;
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 20px;
@@ -13,6 +13,8 @@
   line-height: 35.52px;
   display: inline-block;
   text-transform: lowercase;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 .logo-fitcheck {
