@@ -1,4 +1,4 @@
-/* Buyer Dashboard Styles - fitcheck branding */
+/* Buyer Dashboard Styles - Exact Figma specs */
 
 .buyer-dashboard {
   --background: #ffeda8;
@@ -6,63 +6,107 @@
   --padding-end: 0;
   --padding-top: 0;
   --padding-bottom: 0;
+  position: relative;
+  width: 100%;
+  background: #ffffff;
 }
 
 .buyer-dashboard::part(scroll) {
   background-color: #ffeda8;
 }
 
-/* Header - Dark teal/green background, sticky */
+/* Navbar - Exact Figma specs */
 .buyer-header {
   position: sticky;
   top: 0;
   z-index: 100;
+  width: 100%;
+  height: 70px;
+  background: #023e38;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
-  background-color: #1a4d47;
+  padding: 0;
   border-bottom: none;
 }
 
 .buyer-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
   font-size: 20px;
-  font-weight: 600;
   color: #ffffff;
   margin: 0;
   text-align: center;
-  flex: 1;
+  letter-spacing: 0.03em;
 }
 
-.buyer-header-icon {
-  font-size: 24px;
+/* Bookmark icon - left: 28.52px, top: 19px */
+.buyer-header-icon-left {
+  position: absolute;
+  left: 28.52px;
+  top: 19px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
   color: #ffffff;
   cursor: pointer;
 }
 
-/* Search Bar */
+/* Profile icon - left: 282.25px, top: 20.27px */
+.buyer-header-icon-right {
+  position: absolute;
+  left: 282.25px;
+  top: 20.27px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Body - Yellow background */
+.buyer-body {
+  position: relative;
+  width: 100%;
+  background: #ffeda8;
+  padding-bottom: 40px;
+}
+
+/* Search Bar - Exact Figma specs */
 .buyer-search-container {
-  padding: 12px 16px;
-  background-color: #ffeda8;
+  position: relative;
+  width: 100%;
+  height: 44px;
+  margin-top: 18.37px;
+  padding: 0 20px;
+  background-color: transparent;
 }
 
 .buyer-search-wrapper {
   position: relative;
+  width: 350px;
+  height: 44px;
+  margin: 0 auto;
   background: #ffffff;
-  border: none;
-  border-radius: 12px;
+  box-shadow: 0px 4px 4px #f3b759;
+  border-radius: 100px;
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  height: 44px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  padding: 0;
 }
 
+/* Search icon - left: 30px from container */
 .buyer-search-icon {
-  font-size: 20px;
-  color: #9ca3af;
-  margin-right: 10px;
+  position: absolute;
+  left: 30px;
+  width: 32px;
+  height: 32px;
+  font-size: 24px;
+  color: #7b9996;
   flex-shrink: 0;
 }
 
@@ -70,38 +114,53 @@
   flex: 1;
   border: none;
   outline: none;
-  font-size: 14px;
-  color: #2f2f2f;
+  font-family: "DM Sans", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  text-align: center;
+  letter-spacing: -0.011em;
+  color: #7b9996;
   background: transparent;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  padding: 0 70px;
 }
 
 .buyer-search-input::placeholder {
-  color: #9ca3af;
-  font-size: 14px;
+  color: #7b9996;
+  font-size: 16px;
 }
 
+/* Filter icon - right: 30px from container */
 .buyer-filter-icon {
-  font-size: 20px;
-  color: #6b7280;
-  margin-left: 10px;
+  position: absolute;
+  right: 30px;
+  width: 32px;
+  height: 32px;
+  font-size: 24px;
+  color: #7b9996;
   flex-shrink: 0;
   cursor: pointer;
 }
 
-/* Promo Card */
+/* Promo Card - Exact Figma specs */
 .promo-card {
+  position: relative;
+  width: 350px;
+  height: 561.03px;
+  margin: 32.38px auto 0;
   background: #ffffff;
-  border-radius: 16px;
-  margin: 0 16px 20px;
+  box-shadow: 0px 4px 4px #f3b759;
+  border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .promo-image-container {
-  width: 100%;
-  height: 280px;
+  position: relative;
+  width: 350px;
+  height: 339.26px;
   overflow: hidden;
+  border-radius: 15px 15px 0px 0px;
 }
 
 .promo-image {
@@ -111,49 +170,68 @@
 }
 
 .promo-text {
-  padding: 20px 20px 16px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  color: #1f2937;
+  position: relative;
+  width: 296px;
+  margin: 0 auto;
+  padding-top: 20px;
+  font-family: "DM Sans", sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 150%;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.03em;
+  color: #023e38;
   text-align: left;
 }
 
 .promo-highlight {
   font-weight: 700;
-  font-style: italic;
 }
 
+/* Dots - Exact Figma specs */
 .promo-dots {
+  position: relative;
   display: flex;
   justify-content: center;
-  gap: 8px;
+  align-items: center;
+  gap: 25.42px;
+  margin-top: 10px;
   padding: 0 20px 20px;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 11.11px;
+  height: 11.11px;
   border-radius: 50%;
-  background-color: #d1d5db;
+  background-color: transparent;
+  border: 1px solid #000000;
   transition: background-color 0.3s ease;
 }
 
 .dot.active {
-  background-color: #1f2937;
+  background-color: #023e38;
+  border: none;
 }
 
-/* Tagline Section */
+/* Tagline Section - Exact Figma specs */
 .tagline-section {
-  padding: 0 16px 24px;
-  background-color: #ffeda8;
+  position: relative;
+  width: 227px;
+  margin: 30px auto 0;
+  padding: 0;
+  background-color: transparent;
 }
 
 .tagline-text {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 16px;
-  line-height: 1.8;
-  color: #1f2937;
+  font-family: "ITC Souvenir Std", Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 150%;
+  letter-spacing: 0.03em;
+  color: #023e38;
   text-align: left;
 }
 
@@ -162,34 +240,50 @@
   font-style: italic;
 }
 
-/* Category Section */
+/* Category Section - Exact Figma specs */
 .category-section {
-  padding: 0 16px 20px;
-  background-color: #ffeda8;
+  position: relative;
+  width: 350px;
+  margin: 30px auto 0;
+  padding: 0;
+  background-color: transparent;
 }
 
 .category-header {
-  font-family: Georgia, serif;
-  font-size: 18px;
-  font-weight: 700;
+  font-family: "ITC Souvenir Std", Georgia, serif;
   font-style: italic;
-  color: #1f2937;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 150%;
+  letter-spacing: -0.011em;
+  color: #023e38;
   margin-bottom: 12px;
+  text-align: left;
 }
 
 .category-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.category-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .category-card {
   position: relative;
-  height: 180px;
-  border-radius: 12px;
+  width: 165px;
+  height: 234.26px;
+  flex-shrink: 0;
+  border-radius: 15px;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  scroll-snap-align: start;
+  filter: drop-shadow(0px 4px 4px #f3b759);
 }
 
 .category-image {
@@ -200,13 +294,22 @@
 
 .category-overlay {
   position: absolute;
-  bottom: 12px;
-  left: 12px;
-  font-family: Georgia, serif;
-  font-size: 22px;
-  font-weight: 700;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 20px;
+  font-family: "ITC Souvenir Std", Georgia, serif;
   font-style: italic;
-  color: #ffffff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 150%;
+  text-align: center;
+  letter-spacing: -0.011em;
+  color: #ffeda8;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
   z-index: 10;
 }
