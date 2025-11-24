@@ -31,6 +31,10 @@ const MapUpdater: React.FC<MapUpdaterProps> = ({ center, zoom }) => {
   const map = useMap();
   useEffect(() => {
     map.setView(center, zoom);
+    // Force map to recalculate size
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
   }, [center, zoom, map]);
   return null;
 };
@@ -43,8 +47,14 @@ const ThriftStoreMap: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [mapKey, setMapKey] = useState(0); // Force map re-render
 
   const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
+
+  // Load initial stores on mount
+  useEffect(() => {
+    searchNearbyStores(location[0], location[1]);
+  }, []);
 
   // Get address suggestions as user types
   const handleAddressInput = async (value: string) => {
@@ -76,6 +86,7 @@ const ThriftStoreMap: React.FC = () => {
     setAddress(formattedAddress);
     setLocation([lat, lon]);
     setShowSuggestions(false);
+    setMapKey(prev => prev + 1); // Force map re-render
     
     // Search for stores at this location
     await searchNearbyStores(lat, lon);
@@ -85,31 +96,46 @@ const ThriftStoreMap: React.FC = () => {
   const searchNearbyStores = async (lat: number, lon: number) => {
     setLoading(true);
     try {
-      // Search for thrift stores, secondhand shops, charity shops, consignment shops
+      if (!apiKey) {
+        console.error("Geoapify API key not found. Please add VITE_GEOAPIFY_API_KEY to your environment variables.");
+        setStores([]);
+        return;
+      }
+
+      // Search for thrift stores, secondhand shops, charity shops, vintage stores
       const categories = [
         "commercial.second_hand",
-        "commercial.charity",
+        "commercial.charity", 
         "commercial.vintage",
-        "commercial.clothes",
       ].join(",");
 
-      const response = await fetch(
-        `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lon},${lat},${radius}&limit=20&apiKey=${apiKey}`
-      );
+      const url = `https://api.geoapify.com/v2/places?categories=${categories}&filter=circle:${lon},${lat},${radius}&limit=20&apiKey=${apiKey}`;
+      console.log("Searching for stores at:", lat, lon, "with radius:", radius);
+
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API error: ${response.status}`, errorText);
+        throw new Error(`API error: ${response.status}`);
+      }
       
       const data = await response.json();
+      console.log("API Response:", data);
+      console.log("Found stores:", data.features?.length || 0);
       
       const places: Place[] = (data.features || []).map((feature: any) => ({
         lat: feature.geometry.coordinates[1],
         lon: feature.geometry.coordinates[0],
-        name: feature.properties.name || "Secondhand Store",
+        name: feature.properties.name || feature.properties.datasource?.raw?.name || "Thrift Store",
         address: feature.properties.formatted || feature.properties.address_line1 || "Address not available",
         distance: feature.properties.distance || 0,
       }));
 
       setStores(places);
-    } catch (error) {
-      console.error("Error searching for stores:", error);
+    } catch (error: any) {
+      console.error("Error searching for stores:", error.message || error);
+      setStores([]);
     } finally {
       setLoading(false);
     }
@@ -130,6 +156,7 @@ const ThriftStoreMap: React.FC = () => {
       if (data.features && data.features.length > 0) {
         const { lat, lon } = data.features[0].properties;
         setLocation([lat, lon]);
+        setMapKey(prev => prev + 1); // Force map re-render
         await searchNearbyStores(lat, lon);
       }
     } catch (error) {
@@ -219,10 +246,12 @@ const ThriftStoreMap: React.FC = () => {
       {/* Map */}
       <div className="map-wrapper">
         <MapContainer
+          key={mapKey}
           center={location}
           zoom={14}
           className="leaflet-map"
           scrollWheelZoom={true}
+          zoomControl={true}
         >
           <MapUpdater center={location} zoom={14} />
           <TileLayer
@@ -270,7 +299,7 @@ const ThriftStoreMap: React.FC = () => {
       </div>
 
       {/* Store List */}
-      {stores.length > 0 && (
+      {!loading && stores.length > 0 && (
         <div className="map-store-list">
           <div className="store-list-header">
             {stores.length} thrift {stores.length === 1 ? "store" : "stores"} nearby
@@ -284,6 +313,15 @@ const ThriftStoreMap: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* No stores message */}
+      {!loading && stores.length === 0 && address && (
+        <div className="map-no-stores">
+          <div className="no-stores-icon">🏪</div>
+          <div className="no-stores-text">No thrift stores found within {radius / 1000} km</div>
+          <div className="no-stores-hint">Try increasing the search radius or searching a different area</div>
         </div>
       )}
     </div>

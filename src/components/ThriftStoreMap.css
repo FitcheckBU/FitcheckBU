@@ -182,13 +182,32 @@
 .map-wrapper {
   position: relative;
   width: 100%;
-  height: 300px;
+  height: 400px;
   overflow: hidden;
+  background: #e8e8e8;
 }
 
 .leaflet-map {
   width: 100%;
   height: 100%;
+  z-index: 1;
+}
+
+/* Ensure Leaflet container is properly sized */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* Fix for tiles not loading */
+.leaflet-tile-container {
+  will-change: transform;
+}
+
+.leaflet-tile {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 /* Override Leaflet popup styles */
@@ -266,4 +285,31 @@
   font-size: 12px;
   font-weight: 600;
   color: #023e38;
+}
+
+/* No stores message */
+.map-no-stores {
+  padding: 32px 16px;
+  text-align: center;
+  background: #ffffff;
+  border-top: 1px solid #e8e8e8;
+}
+
+.no-stores-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.no-stores-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #023e38;
+  margin-bottom: 8px;
+}
+
+.no-stores-hint {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  color: #7b9996;
 }
