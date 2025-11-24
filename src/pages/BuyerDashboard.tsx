@@ -16,12 +16,18 @@ const BuyerDashboard: React.FC = () => {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(["Jeans", "Tees", "Hoodies", "Toes"]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [showProximityDropdown, setShowProximityDropdown] = useState(false);
+  const [showPriceDropdown, setShowPriceDropdown] = useState(false);
+  const [selectedProximity, setSelectedProximity] = useState<string | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
 
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
         setShowSearchDropdown(false);
+        setShowProximityDropdown(false);
+        setShowPriceDropdown(false);
       }
     };
 
@@ -56,7 +62,7 @@ const BuyerDashboard: React.FC = () => {
     }
 
     const searchLower = searchText.toLowerCase();
-    const filtered = allItems.filter((item) => {
+    let filtered = allItems.filter((item) => {
       return (
         item.name?.toLowerCase().includes(searchLower) ||
         item.brand?.toLowerCase().includes(searchLower) ||
@@ -66,6 +72,25 @@ const BuyerDashboard: React.FC = () => {
         item.description?.toLowerCase().includes(searchLower)
       );
     });
+
+    // Apply price filter if selected
+    if (selectedPrice) {
+      filtered = filtered.filter((item) => {
+        const price = item.price || 0;
+        switch (selectedPrice) {
+          case "Under $20":
+            return price < 20;
+          case "$20 - $50":
+            return price >= 20 && price <= 50;
+          case "$50 - $100":
+            return price >= 50 && price <= 100;
+          case "Over $100":
+            return price > 100;
+          default:
+            return true;
+        }
+      });
+    }
 
     setSearchResults(filtered);
     setIsSearching(true);
@@ -84,7 +109,7 @@ const BuyerDashboard: React.FC = () => {
         }
       }
     });
-  }, [searchText, allItems, itemImages]);
+  }, [searchText, allItems, itemImages, selectedPrice, selectedProximity]);
 
   const clearSearch = () => {
     setSearchText("");
@@ -108,6 +133,16 @@ const BuyerDashboard: React.FC = () => {
 
   const handleItemClick = (itemId: string) => {
     history.push(`/item/${itemId}`, { fromBuyer: true });
+  };
+
+  const handleProximitySelect = (value: string) => {
+    setSelectedProximity(value);
+    setShowProximityDropdown(false);
+  };
+
+  const handlePriceSelect = (value: string) => {
+    setSelectedPrice(value);
+    setShowPriceDropdown(false);
   };
 
   return (
@@ -185,18 +220,101 @@ const BuyerDashboard: React.FC = () => {
 
                   {/* Filter Buttons */}
                   <div className="search-filter-buttons">
-                    <button className="search-filter-btn" data-testid="button-proximity">
-                      Proximity
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M5 6L8 9L11 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                    </button>
-                    <button className="search-filter-btn" data-testid="button-price">
-                      Price
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M5 6L8 9L11 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                    </button>
+                    <div className="filter-btn-wrapper">
+                      <button 
+                        className="search-filter-btn" 
+                        onClick={() => {
+                          setShowProximityDropdown(!showProximityDropdown);
+                          setShowPriceDropdown(false);
+                        }}
+                        data-testid="button-proximity"
+                      >
+                        {selectedProximity || "Proximity"}
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path d="M5 6L8 9L11 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </button>
+                      {showProximityDropdown && (
+                        <div className="filter-dropdown proximity-dropdown" data-testid="dropdown-proximity">
+                          <button 
+                            className="filter-dropdown-item"
+                            onClick={() => handleProximitySelect("5 mi")}
+                            data-testid="proximity-5mi"
+                          >
+                            5 mi
+                          </button>
+                          <button 
+                            className="filter-dropdown-item"
+                            onClick={() => handleProximitySelect("10 mi")}
+                            data-testid="proximity-10mi"
+                          >
+                            10 mi
+                          </button>
+                          <button 
+                            className="filter-dropdown-item"
+                            onClick={() => handleProximitySelect("20 mi")}
+                            data-testid="proximity-20mi"
+                          >
+                            20 mi
+                          </button>
+                          <button 
+                            className="filter-dropdown-item"
+                            onClick={() => handleProximitySelect("50 mi")}
+                            data-testid="proximity-50mi"
+                          >
+                            50 mi
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="filter-btn-wrapper">
+                      <button 
+                        className="search-filter-btn" 
+                        onClick={() => {
+                          setShowPriceDropdown(!showPriceDropdown);
+                          setShowProximityDropdown(false);
+                        }}
+                        data-testid="button-price"
+                      >
+                        {selectedPrice || "Price"}
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path d="M5 6L8 9L11 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </button>
+                      {showPriceDropdown && (
+                        <div className="filter-dropdown price-dropdown" data-testid="dropdown-price">
+                          <button 
+                            className="filter-dropdown-item"
+                            onClick={() => handlePriceSelect("Under $20")}
+                            data-testid="price-under20"
+                          >
+                            Under $20
+                          </button>
+                          <button 
+                            className="filter-dropdown-item"
+                            onClick={() => handlePriceSelect("$20 - $50")}
+                            data-testid="price-20-50"
+                          >
+                            $20 - $50
+                          </button>
+                          <button 
+                            className="filter-dropdown-item"
+                            onClick={() => handlePriceSelect("$50 - $100")}
+                            data-testid="price-50-100"
+                          >
+                            $50 - $100
+                          </button>
+                          <button 
+                            className="filter-dropdown-item"
+                            onClick={() => handlePriceSelect("Over $100")}
+                            data-testid="price-over100"
+                          >
+                            Over $100
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Recents Section */}
