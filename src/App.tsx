@@ -12,7 +12,6 @@ import ScanFlowPage from "./pages/ScanFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 import EditItemPage from "./pages/EditItemPage";
-import SettingsPage from "./pages/SettingsPage";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import ScanItemDetailPage from "./pages/ScanItemDetailPage";
 import SettingsPage from "./pages/SettingsPage";
