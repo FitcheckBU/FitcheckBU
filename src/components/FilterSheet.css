@@ -1,7 +1,7 @@
-/* Filter Sheet Styles */
+/* Filter Sheet Styles - Figma Design */
 .filter-toolbar {
-  --background: var(--ion-color-primary);
-  --color: var(--ion-color-secondary);
+  --background: #023E38;
+  --color: #FFFFFF;
 }
 
 .filter-sheet-content {
@@ -11,37 +11,47 @@
 }
 
 .filter-section {
-  margin-bottom: 24px;
+  margin-bottom: 34px;
   padding: 0;
 }
 
 .filter-section-title {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
-  font-weight: 600;
-  color: var(--ion-color-primary);
-  margin: 0 0 12px 0;
+  font-weight: 700;
+  color: #023E38;
+  margin: 0 0 14px 0;
+  letter-spacing: -0.011em;
+  line-height: 150%;
 }
 
 .filter-chips-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .filter-chips-wrap {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .filter-chip {
-  padding: 8px 16px;
-  border: 1px solid var(--ion-color-primary);
-  border-radius: 20px;
-  background-color: transparent;
-  color: var(--ion-color-primary);
-  font-size: 14px;
-  font-weight: 500;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  width: 85px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #023E38;
+  border-radius: 100px;
+  background-color: #FFFFFF;
+  color: #023E38;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.011em;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -51,25 +61,26 @@
 }
 
 .chip-selected {
-  background-color: var(--ion-color-primary);
-  color: white;
+  background-color: #023E38;
+  color: #FFFFFF;
+  border-color: #023E38;
 }
 
 .filter-colors-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  max-width: 400px;
+  max-width: 296px;
 }
 
 .color-circle {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .color-circle:active {
@@ -77,10 +88,19 @@
 }
 
 .color-selected {
-  border: 3px solid var(--ion-color-primary);
-  box-shadow:
-    0 0 0 2px var(--ion-color-secondary),
-    0 0 0 5px var(--ion-color-primary);
+  position: relative;
+}
+
+.color-selected::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
 }
 
 .filter-actions-footer {
@@ -88,38 +108,42 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 16px 24px 24px 24px;
-  background-color: white;
-  border-radius: 0 0 12px 12px;
+  padding: 20px 27px 27px 27px;
+  background-color: #FFFFFF;
+  border-radius: 0 0 15px 15px;
   display: flex;
-  gap: 12px;
+  gap: 16px;
   z-index: 10;
   width: 100%;
   box-sizing: border-box;
 }
 
 .filter-reset-button {
-  --color: var(--ion-color-primary);
-  --border-color: var(--ion-color-primary);
-  --border-radius: 20px;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color: #023E38;
+  --border-color: #023E38;
+  --border-radius: 100px;
   --border-width: 1px;
-  --padding-top: 8px;
-  --padding-bottom: 8px;
-  height: auto;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  height: 45px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   flex: 1;
+  text-transform: none;
 }
 
 .filter-apply-button {
-  --background: var(--ion-color-primary);
-  --background-activated: #153d3d;
-  --color: white;
-  --border-radius: 20px;
-  --padding-top: 8px;
-  --padding-bottom: 8px;
-  height: auto;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --background: #023E38;
+  --background-activated: #01332e;
+  --color: #FFFFFF;
+  --border-radius: 100px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  height: 45px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   flex: 1;
+  text-transform: none;
 }

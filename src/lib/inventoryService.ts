@@ -38,6 +38,7 @@ export interface InventoryItem {
   price: number;
   decade: string;
   style: string;
+  sex?: string; // Gender category: "Men", "Women", "Unisex"
   isSold: boolean;
   dateAdded: Timestamp;
   description?: string; // human-written or AI-generated

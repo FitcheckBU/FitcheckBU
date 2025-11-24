@@ -10,7 +10,7 @@ import {
 } from "@ionic/react";
 import { cameraReverse, checkmarkDoneCircle } from "ionicons/icons";
 import { PHOTO_STAGES, PhotoRole } from "../constants/photoStages";
-import { usePhotoContext } from "../context/PhotoContext";
+import { usePhotoContext } from "../context/usePhotoContext";
 import "./CameraPage.css";
 
 const isPhotoRole = (value: string | null): value is PhotoRole =>
