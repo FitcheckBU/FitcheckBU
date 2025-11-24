@@ -156,6 +156,30 @@
   border-top: 1px solid #e8e8e8;
 }
 
+.store-back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #023e38;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  transition: opacity 0.2s;
+}
+
+.store-back-button:hover {
+  opacity: 0.7;
+}
+
+.store-back-button svg {
+  flex-shrink: 0;
+}
+
 .store-detail-name {
   font-family: "DM Sans", sans-serif;
   font-size: 24px;

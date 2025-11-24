@@ -204,7 +204,7 @@ const BuyerDashboard: React.FC = () => {
             </div>
 
             {/* Search Dropdown Menu */}
-            {showSearchDropdown && !isSearching && (
+            {showSearchDropdown && (
               <div className="buyer-search-dropdown" data-testid="search-dropdown">
                 <div className="search-dropdown-content">
                   {/* Location Section */}
@@ -392,7 +392,7 @@ const BuyerDashboard: React.FC = () => {
           {!isSearching && (
             <>
               {/* Thrift Store Map */}
-              <ThriftStoreMap />
+              <ThriftStoreMap proximityFilter={selectedProximity} />
 
               {/* Tagline Section - Exact Figma specs */}
               <div className="tagline-section">

@@ -39,7 +39,11 @@ const MapUpdater: React.FC<MapUpdaterProps> = ({ center, zoom }) => {
   return null;
 };
 
-const ThriftStoreMap: React.FC = () => {
+interface ThriftStoreMapProps {
+  proximityFilter?: string | null;
+}
+
+const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
   const [address, setAddress] = useState("Boston University, Boston, MA");
   const [location, setLocation] = useState<[number, number]>([42.3505, -71.1054]); // Boston University default
   const [radius, setRadius] = useState(5000); // 5km default for better coverage
@@ -52,10 +56,28 @@ const ThriftStoreMap: React.FC = () => {
 
   const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
 
+  // Update radius when proximity filter changes
+  useEffect(() => {
+    if (proximityFilter) {
+      const milesValue = parseInt(proximityFilter.split(' ')[0]);
+      const metersValue = milesValue * 1609.34; // Convert miles to meters
+      setRadius(metersValue);
+    } else {
+      setRadius(5000); // Default 5km
+    }
+  }, [proximityFilter]);
+
   // Load initial stores on mount
   useEffect(() => {
     searchNearbyStores(location[0], location[1]);
   }, []);
+
+  // Reload stores when radius changes
+  useEffect(() => {
+    if (location) {
+      searchNearbyStores(location[0], location[1]);
+    }
+  }, [radius]);
 
   // Get address suggestions as user types
   const handleAddressInput = async (value: string) => {
@@ -275,6 +297,17 @@ const ThriftStoreMap: React.FC = () => {
       {/* Store Detail View */}
       {selectedStore && (
         <div className="store-detail-view">
+          <button 
+            className="store-back-button"
+            onClick={() => setSelectedStore(null)}
+            data-testid="button-back"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="#023E38" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Back
+          </button>
+
           <div className="store-detail-name">{selectedStore.name}</div>
           <div className="store-detail-address">{selectedStore.address}</div>
           
