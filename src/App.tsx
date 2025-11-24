@@ -58,15 +58,9 @@ const App: React.FC = () => {
             <Route exact path="/home">
               <Dashboard />
             </Route>
-            <Route
-              exact
-              path="/sort-filter"
-              render={() => (
-                <MainLayout>
-                  <SortFilterPage />
-                </MainLayout>
-              )}
-            />
+            <Route exact path="/sort-filter">
+              <SortFilterPage />
+            </Route>
             <Route
               exact
               path="/upload"
