@@ -16,26 +16,40 @@
   top: 0;
 }
 
+/* Navbar - Figma Specs */
 .dashboard-header {
+  position: relative;
+  width: 100%;
+  height: 70px;
+  background: #023E38;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 17.24px 28px 17.24px 26.9px;
-  background-color: #023E38;
-  height: 70px;
+  padding: 0;
 }
 
+/* Logo positioned at exact Figma specs */
+.dashboard-header .logo {
+  position: absolute;
+  left: 26.9px;
+  top: 17.24px;
+}
+
+/* Hamburger menu positioned at exact Figma specs */
 .menu-button {
   --padding-start: 0;
   --padding-end: 0;
+  position: absolute;
+  right: 7.95%;
+  top: 19px;
   margin: 0;
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
 }
 
 .menu-button ion-icon {
   font-size: 32px;
-  color: #ffffff;
+  color: #FFFFFF;
 }
 
 .dashboard-subheader {
