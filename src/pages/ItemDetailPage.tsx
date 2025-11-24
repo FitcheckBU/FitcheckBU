@@ -97,15 +97,18 @@ const ItemDetailPage: React.FC = () => {
 
       {/* Scrollable content area */}
       <IonContent className="item-detail-body">
-        {/* Back button */}
-        <IonButton
-          fill="clear"
-          onClick={handleBack}
-          className="item-back-button"
-          data-testid="button-back"
-        >
-          <IonIcon icon={arrowBackOutline} slot="icon-only" />
-        </IonButton>
+        {/* Back button and title section */}
+        <div className="item-detail-header-section">
+          <IonButton
+            fill="clear"
+            onClick={handleBack}
+            className="item-back-button"
+            data-testid="button-back"
+          >
+            <IonIcon icon={arrowBackOutline} slot="icon-only" />
+          </IonButton>
+          <h1 className="item-detail-title">View</h1>
+        </div>
 
         <div className="item-detail-content">
           <div className="item-detail-card">
