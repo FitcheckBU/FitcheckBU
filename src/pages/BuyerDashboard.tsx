@@ -7,6 +7,12 @@ import ThriftStoreMap from "../components/ThriftStoreMap";
 import Logo from "../components/Logo";
 import "./BuyerDashboard.css";
 
+interface AddressSuggestion {
+  formatted: string;
+  lat: number;
+  lon: number;
+}
+
 const BuyerDashboard: React.FC = () => {
   const history = useHistory();
   const [searchText, setSearchText] = useState("");
@@ -21,6 +27,9 @@ const BuyerDashboard: React.FC = () => {
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [selectedProximity, setSelectedProximity] = useState<string | null>(null);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
+  const [locationText, setLocationText] = useState("");
+  const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -146,6 +155,45 @@ const BuyerDashboard: React.FC = () => {
     setShowPriceDropdown(false);
   };
 
+  // Fetch address suggestions from Geoapify
+  useEffect(() => {
+    if (locationText.trim().length < 3) {
+      setAddressSuggestions([]);
+      setShowAddressSuggestions(false);
+      return;
+    }
+
+    const fetchAddressSuggestions = async () => {
+      try {
+        const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
+        const response = await fetch(
+          `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(locationText)}&apiKey=${apiKey}&limit=5`
+        );
+        const data = await response.json();
+        
+        if (data.features) {
+          const suggestions: AddressSuggestion[] = data.features.map((feature: any) => ({
+            formatted: feature.properties.formatted,
+            lat: feature.properties.lat,
+            lon: feature.properties.lon,
+          }));
+          setAddressSuggestions(suggestions);
+          setShowAddressSuggestions(true);
+        }
+      } catch (error) {
+        console.error("Error fetching address suggestions:", error);
+      }
+    };
+
+    const debounce = setTimeout(fetchAddressSuggestions, 300);
+    return () => clearTimeout(debounce);
+  }, [locationText]);
+
+  const handleAddressSelect = (suggestion: AddressSuggestion) => {
+    setLocationText(suggestion.formatted);
+    setShowAddressSuggestions(false);
+  };
+
   return (
     <IonPage>
       <IonContent className="buyer-dashboard">
@@ -211,12 +259,30 @@ const BuyerDashboard: React.FC = () => {
                   {/* Location Section */}
                   <div className="search-dropdown-section">
                     <div className="search-dropdown-label">Location:</div>
-                    <input
-                      type="text"
-                      placeholder="Search City, State, Zip Code"
-                      className="search-location-input"
-                      data-testid="input-location"
-                    />
+                    <div style={{ position: "relative" }}>
+                      <input
+                        type="text"
+                        value={locationText}
+                        onChange={(e) => setLocationText(e.target.value)}
+                        placeholder="Search City, State, Zip Code"
+                        className="search-location-input"
+                        data-testid="input-location"
+                      />
+                      {showAddressSuggestions && addressSuggestions.length > 0 && (
+                        <div className="address-suggestions" data-testid="address-suggestions">
+                          {addressSuggestions.map((suggestion, index) => (
+                            <div
+                              key={index}
+                              className="address-suggestion-item"
+                              onClick={() => handleAddressSelect(suggestion)}
+                              data-testid={`address-suggestion-${index}`}
+                            >
+                              {suggestion.formatted}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Filter Buttons */}
