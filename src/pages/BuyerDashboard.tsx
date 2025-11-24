@@ -3,7 +3,6 @@ import { bookmarkOutline, personOutline, searchOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./BuyerDashboard.css";
-import promoImage from "../../attached_assets/promo-megan.png";
 
 const BuyerDashboard: React.FC = () => {
   const history = useHistory();
@@ -63,7 +62,7 @@ const BuyerDashboard: React.FC = () => {
           <div className="promo-card" data-testid="card-promo">
             <div className="promo-image-container">
               <img 
-                src={promoImage} 
+                src="/promo-megan.png" 
                 alt="Megan Fehling" 
                 className="promo-image"
               />
