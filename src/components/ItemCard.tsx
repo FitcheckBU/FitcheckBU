@@ -63,8 +63,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
     onDelete?.();
   };
 
-  // Generate a short ID from the item ID
-  const shortId = item.id 
+  const shortId = item.id
     ? `${item.id.substring(0, 3).toUpperCase()}-${item.id.substring(3, 7)}`
     : "NO-ID";
 
@@ -98,9 +97,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
             </div>
             <div className="figma-item-details-grid">
               <div className="figma-details-left">
-                <div className="figma-detail-text">
-                  {item.id ? item.id.substring(0, 9).toUpperCase() : "NO-ID"}
-                </div>
+                <div className="figma-detail-text">{shortId}</div>
                 <div className="figma-detail-text">
                   {extractSize(item.labels) || item.size || "Medium"}
                 </div>
@@ -116,7 +113,11 @@ const ItemCard: React.FC<ItemCardProps> = ({
                   {item.color || extractColor(item.labels) || "Unknown"}
                 </div>
                 <div className="figma-detail-text">
-                  {item.sex === "men" ? "Men's" : item.sex === "women" ? "Women's" : "Unisex"}
+                  {item.sex === "men"
+                    ? "Men's"
+                    : item.sex === "women"
+                      ? "Women's"
+                      : "Unisex"}
                 </div>
               </div>
             </div>

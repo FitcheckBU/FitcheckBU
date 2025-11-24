@@ -75,7 +75,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         size: item.size || "",
         sex: item.sex || "",
       });
-      
+
       // Load item image
       const loadImage = async () => {
         try {
@@ -159,7 +159,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     if (!item?.id) return;
 
     const confirmed = window.confirm(
-      "Are you sure you want to delete this item? This action cannot be undone."
+      "Are you sure you want to delete this item? This action cannot be undone.",
     );
     if (!confirmed) return;
 
@@ -179,34 +179,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
       console.error("Failed to delete item:", error);
       await presentToast({
         message: "Failed to delete item. Please try again.",
-        duration: 3000,
-        color: "danger",
-        position: "top",
-      });
-    }
-  };
-
-  const handleMarkAsSold = async () => {
-    if (!item?.id) return;
-
-    try {
-      await updateItem(item.id, { isSold: !item.isSold });
-
-      await presentToast({
-        message: item.isSold
-          ? "Item marked as available"
-          : "Item marked as sold",
-        duration: 2000,
-        color: "success",
-        position: "top",
-      });
-
-      onUpdate();
-      onClose();
-    } catch (error) {
-      console.error("Failed to update item:", error);
-      await presentToast({
-        message: "Failed to update item. Please try again.",
         duration: 3000,
         color: "danger",
         position: "top",
@@ -282,8 +254,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
             </button>
 
             {/* Form Fields */}
-            <div className="form-section">
-              <div className="form-field">
             {/* Basic Information Section */}
             <div className="form-section">
               <h3 className="section-title">Basic Information</h3>

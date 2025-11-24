@@ -1,4 +1,10 @@
-import { IonButton, IonIcon, IonPage, IonContent } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonPage,
+  IonContent,
+  IonSpinner,
+} from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
@@ -261,7 +267,7 @@ const ItemDetailPage: React.FC = () => {
                       expand="block"
                       color="primary"
                       className="mark-sold-button"
-                      onClick={handleMarkAsSold}
+                      onClick={handleMarkAsSoldClick}
                       disabled={item.isSold}
                       data-testid="button-mark-sold"
                     >
@@ -326,7 +332,7 @@ const ItemDetailPage: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+      </IonContent>
 
       <EditItemModal
         isOpen={showEditModal}
