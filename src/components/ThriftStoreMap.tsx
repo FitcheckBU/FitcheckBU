@@ -48,6 +48,7 @@ const ThriftStoreMap: React.FC = () => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [mapKey, setMapKey] = useState(0); // Force map re-render
+  const [selectedStore, setSelectedStore] = useState<Place | null>(null);
 
   const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
 
@@ -184,13 +185,16 @@ const ThriftStoreMap: React.FC = () => {
       <div className="map-wrapper">
         <MapContainer
           key={mapKey}
-          center={location}
-          zoom={14}
+          center={selectedStore ? [selectedStore.lat, selectedStore.lon] : location}
+          zoom={selectedStore ? 15 : 14}
           className="leaflet-map"
           scrollWheelZoom={true}
           zoomControl={true}
         >
-          <MapUpdater center={location} zoom={14} />
+          <MapUpdater 
+            center={selectedStore ? [selectedStore.lat, selectedStore.lon] : location} 
+            zoom={selectedStore ? 15 : 14} 
+          />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -236,12 +240,17 @@ const ThriftStoreMap: React.FC = () => {
       </div>
 
       {/* Near By Section - Clean design like screenshot */}
-      {!loading && stores.length > 0 && (
+      {!loading && stores.length > 0 && !selectedStore && (
         <div className="nearby-section">
           <div className="nearby-header">Near By:</div>
           <div className="nearby-list">
             {stores.slice(0, 8).map((store, index) => (
-              <div key={index} className="nearby-item" data-testid={`store-item-${index}`}>
+              <div 
+                key={index} 
+                className="nearby-item" 
+                onClick={() => setSelectedStore(store)}
+                data-testid={`store-item-${index}`}
+              >
                 <svg 
                   className="nearby-pin-icon" 
                   width="24" 
@@ -259,6 +268,26 @@ const ThriftStoreMap: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Store Detail View */}
+      {selectedStore && (
+        <div className="store-detail-view">
+          <div className="store-detail-name">{selectedStore.name}</div>
+          <div className="store-detail-address">{selectedStore.address}</div>
+          
+          <div className="store-action-buttons">
+            <button className="store-btn store-btn-primary" data-testid="button-directions">
+              Directions
+            </button>
+            <button className="store-btn store-btn-secondary" data-testid="button-call">
+              Call
+            </button>
+            <button className="store-btn store-btn-secondary" data-testid="button-website">
+              Website
+            </button>
           </div>
         </div>
       )}
