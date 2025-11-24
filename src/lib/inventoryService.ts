@@ -51,12 +51,10 @@ export interface InventoryItem {
   status?: "draft" | "active" | "archived";
   metadataStatus?: "pending" | "complete" | "skipped" | "error";
 
-  //additional fields can be added later
+  //NEST-buyer FEATURE
+  store_id?: string; //added field just to store which seller is attached to item
 
-  //imageUrls?: string[];
-  //description?: string;
-  //size?: string;
-  //material?: string;
+  //...additional fields can be added later
 }
 
 export interface SortOption {

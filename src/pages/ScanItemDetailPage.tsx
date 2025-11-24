@@ -1,7 +1,7 @@
-import { IonButton, IonIcon, IonPage, IonContent } from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
 import {
@@ -12,19 +12,18 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
-import Logo from "../components/Logo";
-import "./ItemDetailPage.css";
+import "./ScanItemDetailPage.css";
 
-const ItemDetailPage: React.FC = () => {
+const ScanItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
-  const history = useHistory<{ fromBuyer?: boolean }>();
+  const history = useHistory();
+  const location = useLocation<{ returnTo?: string }>();
+  const returnTo = location.state?.returnTo;
+  const [showScanAgain, setShowScanAgain] = useState(false);
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
-
-  // Check if this is a buyer view
-  const isBuyerView = history.location.state?.fromBuyer === true;
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -79,6 +78,7 @@ const ItemDetailPage: React.FC = () => {
     try {
       await updateItem(item.id, { isSold: true });
       setShowConfirmation(false);
+      setShowScanAgain(true); // <-- show the prompt
     } catch (error) {
       console.error("Failed to mark as sold:", error);
     } finally {
@@ -103,25 +103,18 @@ const ItemDetailPage: React.FC = () => {
   }
 
   return (
-    <IonPage className={`item-detail-page ${isBuyerView ? "buyer-view" : ""}`}>
-      {/* Navbar with logo only */}
-      <div className="item-detail-navbar">
-        <Logo variant={isBuyerView ? "buyer" : "default"} />
-      </div>
-
-      {/* Scrollable content area */}
-      <IonContent className="item-detail-body">
-        {/* Back button and title section */}
-        <div className="item-detail-header-section">
+    <>
+      <div className="item-detail-page">
+        <div className="item-detail-header">
           <IonButton
             fill="clear"
             onClick={handleBack}
-            className="item-back-button"
+            className="back-button"
             data-testid="button-back"
           >
             <IonIcon icon={arrowBackOutline} slot="icon-only" />
           </IonButton>
-          <h1 className="item-detail-title">View</h1>
+          <h1 className="item-detail-title">User Dashboard</h1>
         </div>
 
         <div className="item-detail-content">
@@ -225,77 +218,42 @@ const ItemDetailPage: React.FC = () => {
               )}
 
               <div className="item-actions">
-                {isBuyerView ? (
-                  <>
-                    {/* Buyer View - Show Price and Contact */}
-                    <div className="buyer-price-section">
-                      <span className="price-label">Price:</span>
-                      <span className="price-value">
-                        ${item.price?.toFixed(2) || "0.00"}
-                      </span>
-                    </div>
-                    <IonButton
-                      expand="block"
-                      color="primary"
-                      className="contact-seller-button"
-                      data-testid="button-contact-seller"
-                    >
-                      Contact Seller
-                    </IonButton>
-                    <div className="action-buttons-row">
-                      <IonButton
-                        fill="outline"
-                        color="primary"
-                        className="secondary-action-button"
-                        onClick={() => setShowMoreInfo(!showMoreInfo)}
-                        data-testid="button-more-info"
-                      >
-                        {showMoreInfo ? "Less Info" : "More Info"}
-                      </IonButton>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Seller View - Show Mark as Sold and Edit */}
-                    <IonButton
-                      expand="block"
-                      color="primary"
-                      className="mark-sold-button"
-                      onClick={handleMarkAsSold}
-                      disabled={item.isSold}
-                      data-testid="button-mark-sold"
-                    >
-                      {item.isSold ? "Marked as Sold" : "Mark as Sold"}
-                    </IonButton>
+                <IonButton
+                  expand="block"
+                  color="primary"
+                  className="mark-sold-button"
+                  onClick={handleMarkAsSoldClick}
+                  disabled={item.isSold}
+                  data-testid="button-mark-sold"
+                >
+                  {item.isSold ? "Marked as Sold" : "Mark as Sold"}
+                </IonButton>
 
-                    <div className="action-buttons-row">
-                      <IonButton
-                        fill="outline"
-                        color="primary"
-                        className="secondary-action-button"
-                        onClick={() => history.push(`/edit-item/${item.id}`)}
-                        data-testid="button-edit"
-                      >
-                        Edit
-                      </IonButton>
-                      <IonButton
-                        fill="outline"
-                        color="primary"
-                        className="secondary-action-button"
-                        onClick={() => setShowMoreInfo(!showMoreInfo)}
-                        data-testid="button-more-info"
-                      >
-                        {showMoreInfo ? "Less Info" : "More Info"}
-                      </IonButton>
-                    </div>
-                  </>
-                )}
+                <div className="action-buttons-row">
+                  <IonButton
+                    expand="block"
+                    fill="outline"
+                    className="secondary-action-button"
+                    onClick={() => setShowMoreInfo(!showMoreInfo)}
+                  >
+                    {showMoreInfo ? "Less Info" : "More Info"}
+                  </IonButton>
+                  <IonButton
+                    expand="block"
+                    fill="outline"
+                    className="secondary-action-button"
+                    onClick={() => setShowEditModal(true)}
+                    data-testid="button-edit"
+                  >
+                    Edit
+                  </IonButton>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Confirmation Overlay */}
+        {/* Confirmation Overlay (restore) */}
         {showConfirmation && (
           <div className="confirmation-overlay">
             <div className="confirmation-card">
@@ -307,20 +265,54 @@ const ItemDetailPage: React.FC = () => {
                 <IonButton
                   expand="block"
                   fill="clear"
+                  className="cancel-button"
                   onClick={handleCancelConfirmation}
                   disabled={loading}
-                  className="cancel-button"
                 >
                   Cancel
                 </IonButton>
                 <IonButton
                   expand="block"
                   color="primary"
+                  className="confirm-button"
                   onClick={handleConfirmMarkAsSold}
                   disabled={loading}
-                  className="confirm-button"
                 >
-                  {loading ? <IonSpinner name="crescent" /> : "Confirm"}
+                  {loading ? "Working..." : "Confirm"}
+                </IonButton>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Scan-again Overlay */}
+        {showScanAgain && (
+          <div className="confirmation-overlay">
+            <div className="confirmation-card">
+              <p className="confirmation-text">
+                Item marked as sold. Would you like to scan another item?
+              </p>
+              <div className="confirmation-buttons">
+                <IonButton
+                  expand="block"
+                  fill="clear"
+                  className="cancel-button"
+                  onClick={() => {
+                    // go to Dashboard and force full page reload
+                    window.location.href = "/home";
+                  }}
+                >
+                  Cancel
+                </IonButton>
+                <IonButton
+                  expand="block"
+                  color="primary"
+                  className="confirm-button"
+                  onClick={() => {
+                    // go back to the scan flow (preserve mode if available)
+                    window.location.href = returnTo || "/scan-flow";
+                  }}
+                >
+                  Scan Another
                 </IonButton>
               </div>
             </div>
@@ -336,8 +328,8 @@ const ItemDetailPage: React.FC = () => {
           setShowEditModal(false);
         }}
       />
-    </IonPage>
+    </>
   );
 };
 
-export default ItemDetailPage;
+export default ScanItemDetailPage;

@@ -109,11 +109,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px;
-  background-color: #EBF0EF;
+  padding: 12px 16px 20px;
+  background-color: var(--ion-color-secondary);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  display: flex;
-  justify-content: center;
 }
 
 .dashboard-searchbar {

@@ -14,6 +14,8 @@ import ItemDetailPage from "./pages/ItemDetailPage";
 import EditItemPage from "./pages/EditItemPage";
 import SettingsPage from "./pages/SettingsPage";
 import BuyerDashboard from "./pages/BuyerDashboard";
+import ScanItemDetailPage from "./pages/ScanItemDetailPage";
+import SettingsPage from "./pages/SettingsPage";
 import MainLayout from "./components/MainLayout";
 import SortFilterPage from "./pages/SortFilterPage";
 
@@ -112,6 +114,24 @@ const App: React.FC = () => {
             <Route exact path="/edit-item/:itemId">
               <EditItemPage />
             </Route>
+            <Route
+              exact
+              path="/item/:itemId"
+              render={() => (
+                <MainLayout>
+                  <ItemDetailPage />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/item-scan/:itemId"
+              render={() => (
+                <MainLayout>
+                  <ScanItemDetailPage />
+                </MainLayout>
+              )}
+            />
             <Route
               exact
               path="/settings"

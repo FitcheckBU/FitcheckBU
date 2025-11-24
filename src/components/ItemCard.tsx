@@ -98,7 +98,9 @@ const ItemCard: React.FC<ItemCardProps> = ({
             </div>
             <div className="figma-item-details-grid">
               <div className="figma-details-left">
-                <div className="figma-detail-text">{shortId}</div>
+                <div className="figma-detail-text">
+                  {item.id ? item.id.substring(0, 9).toUpperCase() : "NO-ID"}
+                </div>
                 <div className="figma-detail-text">
                   {extractSize(item.labels) || item.size || "Medium"}
                 </div>

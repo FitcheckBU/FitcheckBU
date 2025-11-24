@@ -235,7 +235,18 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
   if (!item) return null;
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose} className="edit-item-modal">
+    <IonModal isOpen={isOpen} onDidDismiss={onClose}>
+      <IonHeader>
+        <IonToolbar className="edit-toolbar">
+          <IonButtons slot="start">
+            <IonButton onClick={onClose} data-testid="button-close-edit">
+              <IonIcon icon={arrowBackOutline} />
+            </IonButton>
+          </IonButtons>
+          <IonTitle className="edit-title">Edit Item</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+
       <IonContent className="edit-modal-content">
         {/* Header with back button and title - positioned to account for navbar */}
         <div className="edit-header-section">
@@ -273,130 +284,169 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
             {/* Form Fields */}
             <div className="form-section">
               <div className="form-field">
+            {/* Basic Information Section */}
+            <div className="form-section">
+              <h3 className="section-title">Basic Information</h3>
+
+              <div className="form-field">
+                <label className="field-label">
+                  Name <span className="required-mark">*</span>
+                </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  placeholder="Name"
+                  placeholder="Enter item name"
                   className="field-input"
                   data-testid="input-edit-name"
                 />
               </div>
 
-              <div className="form-field">
-                <input
-                  type="text"
-                  value={formData.brand}
-                  onChange={(e) => handleInputChange("brand", e.target.value)}
-                  placeholder="Brand"
-                  className="field-input"
-                  data-testid="input-edit-brand"
-                />
+              <div className="form-row">
+                <div className="form-field">
+                  <label className="field-label">Brand</label>
+                  <input
+                    type="text"
+                    value={formData.brand}
+                    onChange={(e) => handleInputChange("brand", e.target.value)}
+                    placeholder="Enter brand"
+                    className="field-input"
+                    data-testid="input-edit-brand"
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label className="field-label">Category</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) =>
+                      handleInputChange("category", e.target.value)
+                    }
+                    className="field-select"
+                    data-testid="select-edit-category"
+                  >
+                    <option value="">Select category</option>
+                    <option value="Tops">Tops</option>
+                    <option value="Bottoms">Bottoms</option>
+                    <option value="Outerwear">Outerwear</option>
+                    <option value="Dresses">Dresses</option>
+                    <option value="Shoes">Shoes</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Details Section */}
+            <div className="form-section">
+              <h3 className="section-title">Details</h3>
+
+              <div className="form-row">
+                <div className="form-field">
+                  <label className="field-label">Color</label>
+                  <input
+                    type="text"
+                    value={formData.color}
+                    onChange={(e) => handleInputChange("color", e.target.value)}
+                    placeholder="Enter color"
+                    className="field-input"
+                    data-testid="input-edit-color"
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label className="field-label">Size</label>
+                  <input
+                    type="text"
+                    value={formData.size}
+                    onChange={(e) => handleInputChange("size", e.target.value)}
+                    placeholder="Enter size"
+                    className="field-input"
+                    data-testid="input-edit-size"
+                  />
+                </div>
               </div>
 
-              <div className="form-field">
-                <select
-                  value={formData.category}
-                  onChange={(e) =>
-                    handleInputChange("category", e.target.value)
-                  }
-                  className="field-select"
-                  data-testid="select-edit-category"
-                >
-                  <option value="">Category</option>
-                  <option value="Tops">Tops</option>
-                  <option value="Bottoms">Bottoms</option>
-                  <option value="Outerwear">Outerwear</option>
-                  <option value="Dresses">Dresses</option>
-                  <option value="Shoes">Shoes</option>
-                  <option value="Accessories">Accessories</option>
-                </select>
-              </div>
+              <div className="form-row">
+                <div className="form-field">
+                  <label className="field-label">Condition</label>
+                  <select
+                    value={formData.condition}
+                    onChange={(e) =>
+                      handleInputChange("condition", e.target.value)
+                    }
+                    className="field-select"
+                    data-testid="select-edit-condition"
+                  >
+                    <option value="">Select condition</option>
+                    <option value="New">New</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                  </select>
+                </div>
 
-              <div className="form-field">
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => handleInputChange("price", e.target.value)}
-                  placeholder="Price"
-                  className="field-input"
-                  data-testid="input-edit-price"
-                />
+                <div className="form-field">
+                  <label className="field-label">Price ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => handleInputChange("price", e.target.value)}
+                    placeholder="0.00"
+                    className="field-input"
+                    data-testid="input-edit-price"
+                  />
+                </div>
               </div>
+            </div>
 
-              <div className="form-field">
-                <input
-                  type="text"
-                  value={formData.size}
-                  onChange={(e) => handleInputChange("size", e.target.value)}
-                  placeholder="Size"
-                  className="field-input"
-                  data-testid="input-edit-size"
-                />
-              </div>
+            {/* Style & Era Section */}
+            <div className="form-section">
+              <h3 className="section-title">Style & Era</h3>
 
-              <div className="form-field">
-                <select
-                  value={formData.condition}
-                  onChange={(e) =>
-                    handleInputChange("condition", e.target.value)
-                  }
-                  className="field-select"
-                  data-testid="select-edit-condition"
-                >
-                  <option value="">Condition</option>
-                  <option value="New">New</option>
-                  <option value="Like New">Like New</option>
-                  <option value="Good">Good</option>
-                  <option value="Fair">Fair</option>
-                  <option value="Poor">Poor</option>
-                </select>
-              </div>
+              <div className="form-row">
+                <div className="form-field">
+                  <label className="field-label">Style</label>
+                  <input
+                    type="text"
+                    value={formData.style}
+                    onChange={(e) => handleInputChange("style", e.target.value)}
+                    placeholder="e.g., Casual, Formal"
+                    className="field-input"
+                    data-testid="input-edit-style"
+                  />
+                </div>
 
-              <div className="form-field">
-                <select
-                  value={formData.decade}
-                  onChange={(e) => handleInputChange("decade", e.target.value)}
-                  className="field-select"
-                  data-testid="select-edit-decade"
-                >
-                  <option value="">Decade</option>
-                  <option value="2020s">2020s</option>
-                  <option value="2010s">2010s</option>
-                  <option value="2000s">2000s</option>
-                  <option value="1990s">1990s</option>
-                  <option value="1980s">1980s</option>
-                  <option value="1970s">1970s</option>
-                  <option value="1960s">1960s</option>
-                  <option value="1950s">1950s</option>
-                </select>
+                <div className="form-field">
+                  <label className="field-label">Decade</label>
+                  <select
+                    value={formData.decade}
+                    onChange={(e) =>
+                      handleInputChange("decade", e.target.value)
+                    }
+                    className="field-select"
+                    data-testid="select-edit-decade"
+                  >
+                    <option value="">Select decade</option>
+                    <option value="2020s">2020s</option>
+                    <option value="2010s">2010s</option>
+                    <option value="2000s">2000s</option>
+                    <option value="1990s">1990s</option>
+                    <option value="1980s">1980s</option>
+                    <option value="1970s">1970s</option>
+                    <option value="1960s">1960s</option>
+                    <option value="Vintage">Vintage (Pre-1960)</option>
+                  </select>
+                </div>
               </div>
+            </div>
 
-              <div className="form-field">
-                <input
-                  type="text"
-                  value={formData.style}
-                  onChange={(e) => handleInputChange("style", e.target.value)}
-                  placeholder="Style"
-                  className="field-input"
-                  data-testid="input-edit-style"
-                />
-              </div>
-
-              <div className="form-field">
-                <select
-                  value={formData.sex}
-                  onChange={(e) => handleInputChange("sex", e.target.value)}
-                  className="field-select"
-                  data-testid="select-edit-sex"
-                >
-                  <option value="">Gender</option>
-                  <option value="men">Men</option>
-                  <option value="women">Women</option>
-                  <option value="unisex">Unisex</option>
-                </select>
-              </div>
+            {/* Description Section */}
+            <div className="form-section">
+              <h3 className="section-title">Description</h3>
 
               <div className="form-field">
                 <textarea
@@ -404,7 +454,8 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
                   onChange={(e) =>
                     handleInputChange("description", e.target.value)
                   }
-                  placeholder="Description"
+                  placeholder="Add additional details about the item..."
+                  rows={4}
                   className="field-textarea"
                   data-testid="textarea-edit-description"
                 />
