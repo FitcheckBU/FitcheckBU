@@ -1,34 +1,18 @@
 /* Edit Item Modal Styles - Figma Design */
 
-/* Modal should not cover navbar */
+/* Modal with transparent backdrop to show parent navbar */
 .edit-item-modal {
   --height: auto;
+  --backdrop-opacity: 0.5;
 }
 
 .edit-modal-content {
-  --background: #EBF0EF;
-  --padding-top: 0;
+  --background: transparent;
+  --padding-top: 70px;
   --padding-bottom: 24px;
 }
 
-/* Dashboard Navbar inside modal */
-.edit-navbar {
-  position: relative;
-  width: 100%;
-  height: 70px;
-  background: #023E38;
-  display: flex;
-  align-items: center;
-  padding: 0;
-}
-
-.edit-navbar .logo {
-  position: absolute;
-  left: 26.9px;
-  top: 17.24px;
-}
-
-/* Edit header section - positioned below navbar */
+/* Edit header section - positioned below parent navbar (70px offset) */
 .edit-header-section {
   position: relative;
   width: 100%;

@@ -13,7 +13,6 @@ import {
 import { arrowBackOutline } from "ionicons/icons";
 import { InventoryItem, updateItem, deleteItem } from "../lib/inventoryService";
 import { getItemImageUrls } from "../lib/inventoryService";
-import Logo from "./Logo";
 import "./EditItemModal.css";
 
 interface EditItemModalProps {
@@ -238,12 +237,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
   return (
     <IonModal isOpen={isOpen} onDidDismiss={onClose} className="edit-item-modal">
       <IonContent className="edit-modal-content">
-        {/* Dashboard Navbar */}
-        <div className="edit-navbar">
-          <Logo />
-        </div>
-
-        {/* Header with back button and title */}
+        {/* Header with back button and title - positioned to account for navbar */}
         <div className="edit-header-section">
           <IonButton
             fill="clear"
