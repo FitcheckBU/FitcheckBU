@@ -34,9 +34,9 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-family: Georgia, serif;
-  font-style: italic;
-  font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  font-style: normal;
+  font-weight: 800;
   font-size: 20px;
   color: #ffffff;
   margin: 0;
