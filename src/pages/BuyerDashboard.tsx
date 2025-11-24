@@ -3,6 +3,7 @@ import { bookmarkOutline, personOutline, searchOutline, closeOutline } from "ion
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { getUnsoldItems, InventoryItem, getItemImageUrls } from "../lib/inventoryService";
+import ThriftStoreMap from "../components/ThriftStoreMap";
 import "./BuyerDashboard.css";
 
 const BuyerDashboard: React.FC = () => {
@@ -51,11 +52,12 @@ const BuyerDashboard: React.FC = () => {
 
     // Load images for search results
     filtered.slice(0, 20).forEach(async (item) => {
+      if (!item.id) return;
       if (!itemImages[item.id]) {
         try {
           const urls = await getItemImageUrls(item);
           if (urls.length > 0) {
-            setItemImages((prev) => ({ ...prev, [item.id]: urls[0] }));
+            setItemImages((prev) => ({ ...prev, [item.id!]: urls[0] }));
           }
         } catch (error) {
           console.error(`Error loading image for item ${item.id}:`, error);
@@ -149,11 +151,11 @@ const BuyerDashboard: React.FC = () => {
                   <div 
                     key={item.id} 
                     className="search-result-card"
-                    onClick={() => handleItemClick(item.id)}
+                    onClick={() => item.id && handleItemClick(item.id)}
                     data-testid={`card-search-result-${item.id}`}
                   >
                     <div className="search-result-image">
-                      {itemImages[item.id] ? (
+                      {item.id && itemImages[item.id] ? (
                         <img src={itemImages[item.id]} alt={item.name} />
                       ) : (
                         <div className="search-result-placeholder">No Image</div>
@@ -173,24 +175,8 @@ const BuyerDashboard: React.FC = () => {
           {/* Show content only when not searching */}
           {!isSearching && (
             <>
-              {/* Promo Card - Exact Figma specs */}
-              <div className="promo-card" data-testid="card-promo">
-                <div className="promo-image-container">
-                  <img 
-                    src="/promo-megan.png" 
-                    alt="Megan Fehling" 
-                    className="promo-image"
-                  />
-                </div>
-                <div className="promo-text">
-                  Meet the <span className="promo-highlight">Megan Fehling</span>, founder of Found Boston.
-                </div>
-                <div className="promo-dots">
-                  <div className="dot active" data-testid="dot-1"></div>
-                  <div className="dot" data-testid="dot-2"></div>
-                  <div className="dot" data-testid="dot-3"></div>
-                </div>
-              </div>
+              {/* Thrift Store Map */}
+              <ThriftStoreMap />
 
               {/* Tagline Section - Exact Figma specs */}
               <div className="tagline-section">
