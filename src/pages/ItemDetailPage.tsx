@@ -254,7 +254,7 @@ const ItemDetailPage: React.FC = () => {
                         fill="outline"
                         color="primary"
                         className="secondary-action-button"
-                        onClick={() => setShowEditModal(true)}
+                        onClick={() => history.push(`/edit-item/${item.id}`)}
                         data-testid="button-edit"
                       >
                         Edit
