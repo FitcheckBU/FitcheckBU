@@ -13,7 +13,6 @@ import {
 import { arrowBackOutline } from "ionicons/icons";
 import { InventoryItem, updateItem, deleteItem } from "../lib/inventoryService";
 import { getItemImageUrls } from "../lib/inventoryService";
-import Logo from "./Logo";
 import "./EditItemModal.css";
 
 interface EditItemModalProps {
@@ -244,9 +243,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
               <IonIcon icon={arrowBackOutline} />
             </IonButton>
           </IonButtons>
-          <IonTitle className="edit-title">
-            <Logo className="edit-modal-logo" />
-          </IonTitle>
+          <IonTitle className="edit-title">Edit Listing</IonTitle>
         </IonToolbar>
       </IonHeader>
 
