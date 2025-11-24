@@ -36,7 +36,7 @@
   transform: translateX(-50%);
   font-family: Georgia, serif;
   font-style: italic;
-  font-weight: 400;
+  font-weight: 700;
   font-size: 20px;
   color: #ffffff;
   margin: 0;
@@ -56,10 +56,10 @@
   cursor: pointer;
 }
 
-/* Profile icon - left: 282.25px, top: 20.27px */
+/* Profile icon - responsive positioning from right */
 .buyer-header-icon-right {
   position: absolute;
-  left: 282.25px;
+  right: 28px;
   top: 20.27px;
   width: 32px;
   height: 32px;
@@ -121,7 +121,7 @@
   line-height: 150%;
   text-align: center;
   letter-spacing: -0.011em;
-  color: #7b9996;
+  color: #023e38;
   background: transparent;
   padding: 0 70px;
 }
@@ -129,6 +129,22 @@
 .buyer-search-input::placeholder {
   color: #7b9996;
   font-size: 16px;
+}
+
+/* Clear icon */
+.buyer-clear-icon {
+  position: absolute;
+  right: 70px;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  color: #7b9996;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.buyer-clear-icon:hover {
+  color: #023e38;
 }
 
 /* Filter icon - right: 30px from container */
@@ -141,6 +157,100 @@
   color: #7b9996;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+/* Search Results Section */
+.search-results-section {
+  position: relative;
+  width: 350px;
+  margin: 20px auto 0;
+  padding: 0;
+}
+
+.search-results-header {
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.search-results-count {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #023e38;
+}
+
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.search-result-card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.search-result-card:active {
+  transform: scale(0.98);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-image {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  background: #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-result-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-result-placeholder {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  color: #7b9996;
+}
+
+.search-result-info {
+  padding: 12px;
+}
+
+.search-result-name {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #023e38;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-brand {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  color: #7b9996;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-price {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #023e38;
 }
 
 /* Promo Card - Exact Figma specs */
@@ -284,6 +394,11 @@
   cursor: pointer;
   scroll-snap-align: start;
   filter: drop-shadow(0px 4px 4px #f3b759);
+  transition: transform 0.2s;
+}
+
+.category-card:active {
+  transform: scale(0.98);
 }
 
 .category-image {
