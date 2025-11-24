@@ -61,7 +61,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
   const [imageUrl, setImageUrl] = useState<string>("");
 
   useEffect(() => {
-    if (isOpen && item) {
+    if (isOpen && item && item.id) {
       setFormData({
         name: item.name || "",
         brand: item.brand || "",
@@ -79,7 +79,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
       // Load item image
       const loadImage = async () => {
         try {
-          const urls = await getItemImageUrls(item.id);
+          const urls = await getItemImageUrls(item);
           if (urls.length > 0) {
             setImageUrl(urls[0]);
           } else {

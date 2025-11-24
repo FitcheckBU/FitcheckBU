@@ -93,7 +93,7 @@ const EditItemPage: React.FC = () => {
   };
 
   const handleConfirm = async () => {
-    if (!item) return;
+    if (!item || !item.id) return;
 
     try {
       await updateItem(item.id, {
@@ -121,7 +121,7 @@ const EditItemPage: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (!item) return;
+    if (!item || !item.id) return;
     
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
@@ -134,7 +134,7 @@ const EditItemPage: React.FC = () => {
   };
 
   const handleMarkAsSold = async () => {
-    if (!item) return;
+    if (!item || !item.id) return;
 
     try {
       await updateItem(item.id, { isSold: true });
