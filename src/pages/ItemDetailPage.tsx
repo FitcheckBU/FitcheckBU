@@ -1,4 +1,4 @@
-import { IonButton, IonIcon } from "@ionic/react";
+import { IonButton, IonIcon, IonPage, IonContent } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
@@ -89,7 +89,7 @@ const ItemDetailPage: React.FC = () => {
   }
 
   return (
-    <>
+    <IonPage>
       <div className={`item-detail-page ${isBuyerView ? "buyer-view" : ""}`}>
         {/* Navbar matching Dashboard */}
         <div className="item-detail-navbar">
@@ -279,7 +279,7 @@ const ItemDetailPage: React.FC = () => {
           setShowEditModal(false);
         }}
       />
-    </>
+    </IonPage>
   );
 };
 

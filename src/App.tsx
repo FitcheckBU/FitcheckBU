@@ -111,15 +111,9 @@ const App: React.FC = () => {
                 </MainLayout>
               )}
             />
-            <Route
-              exact
-              path="/item/:itemId"
-              render={() => (
-                <MainLayout>
-                  <ItemDetailPage />
-                </MainLayout>
-              )}
-            />
+            <Route exact path="/item/:itemId">
+              <ItemDetailPage />
+            </Route>
             <Route
               exact
               path="/settings"
