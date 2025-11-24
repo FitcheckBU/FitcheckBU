@@ -13,6 +13,7 @@ import {
 import { arrowBackOutline } from "ionicons/icons";
 import { InventoryItem, updateItem, deleteItem } from "../lib/inventoryService";
 import { getItemImageUrls } from "../lib/inventoryService";
+import Logo from "./Logo";
 import "./EditItemModal.css";
 
 interface EditItemModalProps {
@@ -235,19 +236,26 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
   if (!item) return null;
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose}>
-      <IonHeader>
-        <IonToolbar className="edit-toolbar">
-          <IonButtons slot="start">
-            <IonButton onClick={onClose} data-testid="button-close-edit">
-              <IonIcon icon={arrowBackOutline} />
-            </IonButton>
-          </IonButtons>
-          <IonTitle className="edit-title">Edit Listing</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-
+    <IonModal isOpen={isOpen} onDidDismiss={onClose} className="edit-item-modal">
       <IonContent className="edit-modal-content">
+        {/* Dashboard Navbar */}
+        <div className="edit-navbar">
+          <Logo />
+        </div>
+
+        {/* Header with back button and title */}
+        <div className="edit-header-section">
+          <IonButton
+            fill="clear"
+            onClick={onClose}
+            className="edit-back-button"
+            data-testid="button-close-edit"
+          >
+            <IonIcon icon={arrowBackOutline} />
+          </IonButton>
+          <h1 className="edit-title">Edit Listing</h1>
+        </div>
+
         <div className="edit-form-container">
           <div className="edit-form-card">
             {/* Item Image */}
