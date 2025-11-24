@@ -251,13 +251,17 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         <div className="edit-form-container">
           <div className="edit-form-card">
             {/* Item Image */}
-            {imageUrl && (
-              <img
-                src={imageUrl}
-                alt={formData.name}
-                className="edit-item-image"
-              />
-            )}
+            <div className="edit-image-container">
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={formData.name}
+                  className="edit-item-image"
+                />
+              ) : (
+                <div className="edit-image-placeholder">No Image</div>
+              )}
+            </div>
 
             {/* Upload Button */}
             <button className="upload-button" data-testid="button-upload-photo">
