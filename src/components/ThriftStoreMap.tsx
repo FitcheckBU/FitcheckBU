@@ -96,53 +96,25 @@ const ThriftStoreMap: React.FC = () => {
   const searchNearbyStores = async (lat: number, lon: number) => {
     setLoading(true);
     try {
-      if (!apiKey) {
-        console.error("Geoapify API key not found. Please add VITE_GEOAPIFY_API_KEY to your environment variables.");
-        setStores([]);
-        return;
-      }
+      // Sample thrift stores in Boston area
+      const bostonThriftStores = [
+        { name: "Thrifty Threads", lat: 42.3505, lon: -71.0900, address: "123 Commonwealth Ave, Boston, MA" },
+        { name: "2nd Street Coolidge Corner", lat: 42.3424, lon: -71.1255, address: "1348 Beacon St, Brookline, MA" },
+        { name: "Buffalo Exchange", lat: 42.3480, lon: -71.0812, address: "238 Newbury St, Boston, MA" },
+        { name: "Groovy Thrifty", lat: 42.3398, lon: -71.0892, address: "678 Centre St, Jamaica Plain, MA" },
+        { name: "DIVERSITY Men's and Women's", lat: 42.3141, lon: -71.0650, address: "80 South St, Boston, MA" },
+        { name: "Boomerangs", lat: 42.3434, lon: -71.0934, address: "716 Centre St, Jamaica Plain, MA" },
+        { name: "Garment District", lat: 42.3643, lon: -71.0851, address: "200 Broadway, Cambridge, MA" },
+        { name: "Urban Renewals", lat: 42.3656, lon: -71.1040, address: "122 Brighton Ave, Allston, MA" },
+      ];
 
-      // Use Geocoding API with text search - more flexible than Places API categories
-      const searchQuery = `thrift store near ${lat},${lon}`;
-      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&limit=20&bias=proximity:${lon},${lat}&filter=circle:${lon},${lat},${radius}&apiKey=${apiKey}`;
-      
-      console.log("Searching for stores at:", lat, lon, "with radius:", radius);
-
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`API error: ${response.status}`, errorText);
-        throw new Error(`API error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log("API Response:", data);
-      console.log("Found stores:", data.features?.length || 0);
-      
-      // Filter to only include results with "thrift" or related keywords in the name
-      const filtered = (data.features || []).filter((feature: any) => {
-        const name = (feature.properties.name || feature.properties.address_line1 || "").toLowerCase();
-        return name.includes("thrift") || 
-               name.includes("secondhand") || 
-               name.includes("second hand") ||
-               name.includes("consignment") || 
-               name.includes("vintage") ||
-               name.includes("resale") ||
-               name.includes("goodwill") ||
-               name.includes("salvation army");
-      });
-
-      const places: Place[] = filtered.map((feature: any) => {
-        const coords = feature.geometry.coordinates;
-        const props = feature.properties;
-        
-        // Calculate distance
+      // Calculate distance for each store
+      const places: Place[] = bostonThriftStores.map((store) => {
         const R = 6371e3; // Earth's radius in meters
         const φ1 = lat * Math.PI/180;
-        const φ2 = coords[1] * Math.PI/180;
-        const Δφ = (coords[1]-lat) * Math.PI/180;
-        const Δλ = (coords[0]-lon) * Math.PI/180;
+        const φ2 = store.lat * Math.PI/180;
+        const Δφ = (store.lat - lat) * Math.PI/180;
+        const Δλ = (store.lon - lon) * Math.PI/180;
         const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
                   Math.cos(φ1) * Math.cos(φ2) *
                   Math.sin(Δλ/2) * Math.sin(Δλ/2);
@@ -150,17 +122,19 @@ const ThriftStoreMap: React.FC = () => {
         const distance = R * c;
 
         return {
-          lat: coords[1],
-          lon: coords[0],
-          name: props.name || props.address_line1 || "Thrift Store",
-          address: props.formatted || props.address_line2 || "Address not available",
+          lat: store.lat,
+          lon: store.lon,
+          name: store.name,
+          address: store.address,
           distance: distance,
         };
       });
 
-      // Sort by distance
-      places.sort((a, b) => a.distance - b.distance);
-      setStores(places);
+      // Filter by radius and sort by distance
+      const filtered = places.filter(place => place.distance <= radius);
+      filtered.sort((a, b) => a.distance - b.distance);
+      
+      setStores(filtered);
     } catch (error: any) {
       console.error("Error searching for stores:", error.message || error);
       setStores([]);
