@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { getUnsoldItems, InventoryItem, getItemImageUrls } from "../lib/inventoryService";
 import ThriftStoreMap from "../components/ThriftStoreMap";
+import Logo from "../components/Logo";
 import "./BuyerDashboard.css";
 
 const BuyerDashboard: React.FC = () => {
@@ -155,7 +156,7 @@ const BuyerDashboard: React.FC = () => {
             className="buyer-header-icon-left"
             data-testid="icon-bookmark"
           />
-          <div className="buyer-title">fitcheck</div>
+          <Logo variant="buyer" className="buyer-title" />
           <IonIcon 
             icon={personOutline} 
             className="buyer-header-icon-right"

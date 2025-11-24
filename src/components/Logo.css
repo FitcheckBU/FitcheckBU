@@ -29,14 +29,16 @@
 
 /* Buyer variant - just "fitcheck" */
 .logo-buyer {
-  font-family: 'Georgia', serif;
-  font-size: 24px;
-  font-weight: 700;
-  font-style: italic;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  font-style: normal;
   color: #ffffff;
   margin: 0;
   line-height: 35.52px;
   display: inline-block;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
 }
 
 /* Logo variant for dark backgrounds (EditModal) */
