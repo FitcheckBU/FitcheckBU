@@ -1,6 +1,6 @@
 import { IonPage, IonContent, IonIcon } from "@ionic/react";
 import { bookmarkOutline, personOutline, searchOutline, closeOutline } from "ionicons/icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { getUnsoldItems, InventoryItem, getItemImageUrls } from "../lib/inventoryService";
 import ThriftStoreMap from "../components/ThriftStoreMap";
@@ -13,6 +13,26 @@ const BuyerDashboard: React.FC = () => {
   const [searchResults, setSearchResults] = useState<InventoryItem[]>([]);
   const [itemImages, setItemImages] = useState<{ [key: string]: string }>({});
   const [isSearching, setIsSearching] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(["Jeans", "Tees", "Hoodies", "Toes"]);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowSearchDropdown(false);
+      }
+    };
+
+    if (showSearchDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSearchDropdown]);
 
   // Load all items on mount
   useEffect(() => {
@@ -74,6 +94,16 @@ const BuyerDashboard: React.FC = () => {
 
   const handleCategoryClick = (category: string) => {
     setSearchText(category);
+    setShowSearchDropdown(false);
+  };
+
+  const handleRecentClick = (search: string) => {
+    setSearchText(search);
+    setShowSearchDropdown(false);
+  };
+
+  const clearRecents = () => {
+    setRecentSearches([]);
   };
 
   const handleItemClick = (itemId: string) => {
@@ -101,13 +131,14 @@ const BuyerDashboard: React.FC = () => {
         {/* Body - Yellow background */}
         <div className="buyer-body">
           {/* Search Bar - Exact Figma specs */}
-          <div className="buyer-search-container">
+          <div className="buyer-search-container" ref={searchContainerRef}>
             <div className="buyer-search-wrapper">
               <IonIcon icon={searchOutline} className="buyer-search-icon" />
               <input
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
+                onFocus={() => setShowSearchDropdown(true)}
                 placeholder="Search Name, Size, Color, Etc."
                 className="buyer-search-input"
                 data-testid="input-search"
@@ -136,6 +167,73 @@ const BuyerDashboard: React.FC = () => {
                 />
               </svg>
             </div>
+
+            {/* Search Dropdown Menu */}
+            {showSearchDropdown && !isSearching && (
+              <div className="buyer-search-dropdown" data-testid="search-dropdown">
+                <div className="search-dropdown-content">
+                  {/* Location Section */}
+                  <div className="search-dropdown-section">
+                    <div className="search-dropdown-label">Location:</div>
+                    <input
+                      type="text"
+                      placeholder="Search City, State, Zip Code"
+                      className="search-location-input"
+                      data-testid="input-location"
+                    />
+                  </div>
+
+                  {/* Filter Buttons */}
+                  <div className="search-filter-buttons">
+                    <button className="search-filter-btn" data-testid="button-proximity">
+                      Proximity
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M5 6L8 9L11 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    </button>
+                    <button className="search-filter-btn" data-testid="button-price">
+                      Price
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M5 6L8 9L11 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Recents Section */}
+                  {recentSearches.length > 0 && (
+                    <>
+                      <div className="search-dropdown-section">
+                        <div className="search-dropdown-label">Recents:</div>
+                      </div>
+                      
+                      <div className="search-recents-list">
+                        {recentSearches.map((search, index) => (
+                          <button
+                            key={index}
+                            className="search-recent-item"
+                            onClick={() => handleRecentClick(search)}
+                            data-testid={`recent-${index}`}
+                          >
+                            <span>{search}</span>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                              <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+                        ))}
+                      </div>
+
+                      <button 
+                        className="search-clear-recents"
+                        onClick={clearRecents}
+                        data-testid="button-clear-recents"
+                      >
+                        Clear Recents
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Search Results */}
