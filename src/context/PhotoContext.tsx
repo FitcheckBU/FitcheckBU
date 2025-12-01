@@ -1,13 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
-
-interface PhotoContextType {
-  photos: string[];
-  addPhoto: (photo: string) => void;
-  setPhotos: (photos: string[]) => void;
-  clearPhotos: () => void;
-}
-
-const PhotoContext = createContext<PhotoContextType | undefined>(undefined);
+import React, { useState, ReactNode } from "react";
+import { PhotoContext } from "./photoContextStore";
 
 export const PhotoProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -31,12 +23,4 @@ export const PhotoProvider: React.FC<{ children: ReactNode }> = ({
       {children}
     </PhotoContext.Provider>
   );
-};
-
-export const usePhotoContext = () => {
-  const context = useContext(PhotoContext);
-  if (!context) {
-    throw new Error("usePhotoContext must be used within a PhotoProvider");
-  }
-  return context;
 };

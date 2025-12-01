@@ -11,7 +11,8 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
-import { InventoryItem, updateItem } from "../lib/inventoryService";
+import { InventoryItem, updateItem, deleteItem } from "../lib/inventoryService";
+import { getItemImageUrls } from "../lib/inventoryService";
 import "./EditItemModal.css";
 
 interface EditItemModalProps {
@@ -20,6 +21,21 @@ interface EditItemModalProps {
   onClose: () => void;
   onUpdate: () => void;
 }
+
+const colorOptions = [
+  { name: "Red", hex: "#FF3B3B" },
+  { name: "Orange", hex: "#FF933B" },
+  { name: "Yellow", hex: "#FFD13B" },
+  { name: "Green", hex: "#59DD00" },
+  { name: "Blue", hex: "#009DFF" },
+  { name: "Purple", hex: "#412FFF" },
+  { name: "Pink", hex: "#F12FFF" },
+  { name: "White", hex: "#FFFFFF", border: "#023E38" },
+  { name: "Gray", hex: "#9B9B9B" },
+  { name: "Black", hex: "#000000" },
+  { name: "Tan", hex: "#DBB778" },
+  { name: "Brown", hex: "#6F4824" },
+];
 
 const EditItemModal: React.FC<EditItemModalProps> = ({
   isOpen,
@@ -39,11 +55,13 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     style: "",
     description: "",
     size: "",
+    sex: "",
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   useEffect(() => {
-    if (isOpen && item) {
+    if (isOpen && item && item.id) {
       setFormData({
         name: item.name || "",
         brand: item.brand || "",
@@ -55,7 +73,24 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         style: item.style || "",
         description: item.description || "",
         size: item.size || "",
+        sex: item.sex || "",
       });
+
+      // Load item image
+      const loadImage = async () => {
+        try {
+          const urls = await getItemImageUrls(item);
+          if (urls.length > 0) {
+            setImageUrl(urls[0]);
+          } else {
+            setImageUrl("");
+          }
+        } catch (error) {
+          console.error("Failed to load image:", error);
+          setImageUrl("");
+        }
+      };
+      loadImage();
     }
   }, [isOpen, item]);
 
@@ -93,6 +128,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         style: formData.style.trim(),
         description: formData.description.trim(),
         size: formData.size.trim(),
+        sex: formData.sex.trim() as "men" | "women" | "unisex" | "",
       };
 
       await updateItem(item.id, updates);
@@ -119,6 +155,55 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     }
   };
 
+  const handleDelete = async () => {
+    if (!item?.id) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this item? This action cannot be undone.",
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteItem(item.id);
+
+      await presentToast({
+        message: "Item deleted successfully!",
+        duration: 2000,
+        color: "success",
+        position: "top",
+      });
+
+      onUpdate();
+      onClose();
+    } catch (error) {
+      console.error("Failed to delete item:", error);
+      await presentToast({
+        message: "Failed to delete item. Please try again.",
+        duration: 3000,
+        color: "danger",
+        position: "top",
+      });
+    }
+  };
+
+  const handleReset = () => {
+    if (item) {
+      setFormData({
+        name: item.name || "",
+        brand: item.brand || "",
+        category: item.category || "",
+        color: item.color || "",
+        condition: item.condition || "",
+        price: item.price?.toString() || "",
+        decade: item.decade || "",
+        style: item.style || "",
+        description: item.description || "",
+        size: item.size || "",
+        sex: item.sex || "",
+      });
+    }
+  };
+
   if (!item) return null;
 
   return (
@@ -135,8 +220,40 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
       </IonHeader>
 
       <IonContent className="edit-modal-content">
+        {/* Header with back button and title - positioned to account for navbar */}
+        <div className="edit-header-section">
+          <IonButton
+            fill="clear"
+            onClick={onClose}
+            className="edit-back-button"
+            data-testid="button-close-edit"
+          >
+            <IonIcon icon={arrowBackOutline} />
+          </IonButton>
+          <h1 className="edit-title">Edit Listing</h1>
+        </div>
+
         <div className="edit-form-container">
           <div className="edit-form-card">
+            {/* Item Image */}
+            <div className="edit-image-container">
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={formData.name}
+                  className="edit-item-image"
+                />
+              ) : (
+                <div className="edit-image-placeholder">No Image</div>
+              )}
+            </div>
+
+            {/* Upload Button */}
+            <button className="upload-button" data-testid="button-upload-photo">
+              Upload New Photo
+            </button>
+
+            {/* Form Fields */}
             {/* Basic Information Section */}
             <div className="form-section">
               <h3 className="section-title">Basic Information</h3>
@@ -314,25 +431,59 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
                 />
               </div>
             </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="edit-form-actions">
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="save-button"
-              data-testid="button-save-edit"
-            >
-              {isSaving ? "Saving..." : "Save Changes"}
-            </button>
-            <button
-              onClick={onClose}
-              className="cancel-button"
-              data-testid="button-cancel-edit"
-            >
-              Cancel
-            </button>
+            {/* Color Selection */}
+            <div className="edit-color-section">
+              <h3 className="section-title">Color:</h3>
+              <div className="edit-colors-grid">
+                {colorOptions.map((color) => (
+                  <button
+                    key={color.name}
+                    className={`edit-color-circle ${
+                      formData.color === color.name ? "edit-color-selected" : ""
+                    }`}
+                    style={{
+                      backgroundColor: color.hex,
+                      border: color.border
+                        ? `1px solid ${color.border}`
+                        : "1px solid transparent",
+                    }}
+                    onClick={() => handleInputChange("color", color.name)}
+                    aria-label={color.name}
+                    data-testid={`color-${color.name.toLowerCase()}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="edit-form-actions">
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="save-button"
+                data-testid="button-save-edit"
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+
+              <div className="edit-secondary-actions">
+                <button
+                  onClick={handleReset}
+                  className="cancel-button"
+                  data-testid="button-reset-edit"
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="delete-button"
+                  data-testid="button-delete-edit"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </IonContent>

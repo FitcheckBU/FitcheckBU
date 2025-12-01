@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import StorageUploadButton from "../components/StorageUploadButton";
 import { PHOTO_STAGES, PhotoRole } from "../constants/photoStages";
-import { usePhotoContext } from "../context/PhotoContext";
+import { usePhotoContext } from "../context/usePhotoContext";
 import "./UploadFlowPage.css";
 
 type SelectedImage = {
