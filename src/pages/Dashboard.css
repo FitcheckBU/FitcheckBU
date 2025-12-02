@@ -32,6 +32,12 @@
 .filter-button {
   --padding-start: 8px;
   --padding-end: 8px;
+  --background: transparent;
+  --background-hover: transparent;
+  --background-activated: transparent;
+  --background-focused: transparent;
+  --box-shadow: none;
+  --border-radius: 0;
   margin: 0;
 }
 
