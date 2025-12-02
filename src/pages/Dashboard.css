@@ -1,4 +1,5 @@
 @import url("https://fonts.cdnfonts.com/css/itc-souvenir"); /*import itc-souvenir*/
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"); /*import dm-sans*/
 
 /* Dashboard page styles */
 .dashboard-container {
@@ -124,4 +125,14 @@ ion-infinite-scroll-content {
   font-size: 16px;
   text-align: center;
   padding: 20px;
+}
+
+.dashboard-container,
+.dashboard-content,
+.empty-state,
+.loading-state,
+.error-state {
+  font-family:
+    "DM Sans",
+    -apple-system;
 }
