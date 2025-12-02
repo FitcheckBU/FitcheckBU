@@ -18,10 +18,10 @@ import "./ScanFlowPage.css";
 // TapToScan component
 const TapToScanBarcode: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <div className="tap-to-scan-container" onClick={onClick}>
+    <img src="/qr_icon.svg" alt="Scan Barcode" className="qr-icon" />
     <IonText color="primary" className="tap-to-scan-text">
       <p>Tap to Scan Barcode</p>
     </IonText>
-    <img src="/qr_icon.svg" alt="Scan Barcode" className="qr-icon" />
   </div>
 );
 

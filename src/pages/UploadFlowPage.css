@@ -41,9 +41,6 @@
   align-items: center;
   gap: 10px;
   padding: 16px;
-  border: 1px dashed var(--ion-color-medium, #92949c);
-  border-radius: 12px;
-  background: var(--ion-color-light, #f4f5f8);
 }
 
 .tap-to-scan-container.actionable {
@@ -52,6 +49,8 @@
 
 .tap-to-scan-text {
   text-align: center;
+  margin-bottom: 24px;
+  font-style: bold italic;
 }
 
 .tap-to-scan-text p {
@@ -96,13 +95,12 @@
 }
 
 .role-card {
-  border: 1px dashed var(--ion-color-medium, #92949c);
-  border-radius: 12px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   min-height: 240px;
   background: #fff;
+  border-radius: 12px;
 }
 
 .role-card-filled {

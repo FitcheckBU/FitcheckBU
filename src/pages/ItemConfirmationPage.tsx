@@ -23,6 +23,7 @@ import {
   getItemImageUrls,
 } from "../lib/inventoryService";
 import "./ItemConfirmationPage.css";
+import { printBarcode } from "../lib/printerService";
 
 interface RouteParams {
   itemId: string;
@@ -224,6 +225,10 @@ const ItemConfirmationPage: React.FC = () => {
         ...formData,
         status: "active",
       });
+
+      const sku = itemId.substring(0, 9).toUpperCase();
+      await printBarcode(sku);
+
       history.push("/home");
     } catch (error) {
       console.error("Error updating item:", error);
