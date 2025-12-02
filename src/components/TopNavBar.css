@@ -21,10 +21,11 @@
 }
 
 .navbar-hamburger {
-  height: 20px;
+  height: 32px;
   margin-right: 16px;
-  filter: invert(1);
+
   /* Ensure icons are white on primary background */
+  color: ion-color-primary-contrast;
   transition: transform 0.2s ease;
 }
 
