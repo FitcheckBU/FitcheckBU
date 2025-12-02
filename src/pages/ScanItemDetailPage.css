@@ -1,114 +1,39 @@
 .item-detail-page {
   min-height: 100vh;
-  background-color: #e8e8e8;
+  background-color: var(--ion-color-secondary);
 }
 
-/* Default Seller View - Blue/Gray with fitcheck.nest */
-/* Navbar - Figma Specs */
-.item-detail-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 70px;
-  background: #023e38;
-  z-index: 1000;
-}
-
-/* Logo positioned at exact Figma specs */
-.item-detail-navbar .logo,
-.item-detail-navbar .logo-buyer {
-  position: absolute;
-  left: 26.9px;
-  top: 17.24px;
-}
-
-/* Body content area - scrollable, starts below navbar */
-.item-detail-body {
-  --background: #ebf0ef;
-  --padding-top: 70px;
-  --padding-start: 0;
-  --padding-end: 0;
-  --padding-bottom: 20px;
-}
-
-/* Header section with back button and title */
-.item-detail-header-section {
-  position: relative;
-  width: 100%;
-  height: 52px;
+.item-detail-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--ion-color-secondary);
 }
 
-/* Back button positioned on LEFT side */
-.item-back-button {
+.back-button {
   --padding-start: 0;
   --padding-end: 0;
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
   margin: 0;
-  width: 40px;
-  height: 40px;
-  z-index: 10;
+  min-width: 40px;
 }
 
-.item-back-button ion-icon {
+.back-button ion-icon {
   font-size: 28px;
-  color: #023e38;
+  color: var(--ion-color-primary);
 }
 
-/* Centered title matching Dashboard style */
 .item-detail-title {
-  font-family: "ITC Souvenir Std", Georgia, serif;
-  font-size: 20px;
+  font-family: "Georgia", serif;
+  font-size: 22px;
   font-weight: 700;
   font-style: italic;
-  color: #023e38;
+  color: var(--ion-color-primary);
   margin: 0;
-  text-align: center;
-  letter-spacing: -0.011em;
-  line-height: 150%;
-}
-
-.contact-seller-button {
-  --background: #1e4d4a;
-  --background-activated: #16403d;
-}
-
-.secondary-action-button {
-  --border-color: #6b8e8d;
-  --color: #6b8e8d;
-}
-
-/* Buyer View Styling */
-.item-detail-page.buyer-view {
-  background-color: #ffeda8;
-}
-
-/* Buyer view uses same navbar background */
-.item-detail-page.buyer-view .item-detail-navbar {
-  background-color: #023e38;
-}
-
-.item-detail-page.buyer-view .contact-seller-button {
-  --background: #023e38;
-  --background-activated: #01332e;
-}
-
-.item-detail-page.buyer-view .secondary-action-button {
-  --border-color: #023e38;
-  --color: #023e38;
 }
 
 .item-detail-content {
   padding: 0 20px 40px;
-  position: relative;
 }
 
 .item-detail-card {
@@ -179,27 +104,12 @@
 
 .barcode-section {
   padding: 16px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
 }
 
 .barcode-svg {
   width: 100%;
   max-width: 280px;
   height: 80px;
-  flex-shrink: 0;
-}
-
-.print-barcode-button {
-  --padding-start: 12px;
-  --padding-end: 12px;
-  --border-radius: 8px;
-  height: 48px;
-  font-size: 1rem;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .more-info-section {
@@ -251,43 +161,6 @@
 .mark-sold-button[disabled] {
   --background: #9ca3af;
   opacity: 0.6;
-}
-
-.contact-seller-button {
-  --background: var(--ion-color-primary);
-  --background-activated: var(--ion-color-primary-shade);
-  --color: #ffffff;
-  --border-radius: 50px;
-  --padding-top: 14px;
-  --padding-bottom: 14px;
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: none;
-  margin: 0;
-}
-
-.buyer-price-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  background-color: #f3f4f6;
-  border-radius: 12px;
-  margin-bottom: 16px;
-}
-
-.price-label {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  color: #023e38;
-}
-
-.price-value {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: #023e38;
 }
 
 .action-buttons-row {
@@ -370,15 +243,15 @@
   font-size: 15px;
   font-weight: 600;
   text-transform: none;
-  --background: var(--ion-color-primary);
-  --color: #fff;
 }
+/* ensure both buttons have the same width */
 
+/* Host: no built-in outline, keep overall height */
 .cancel-button {
   --background: transparent;
   --box-shadow: none;
-  --border-width: 0 !important;
-  height: 48px;
+  --border-width: 0 !important; /* kill Ionic outline on host */
+  height: 48px; /* match Confirm */
   font-size: 15px;
   font-weight: 600;
   text-transform: none;
@@ -405,11 +278,20 @@
   outline: none !important;
 }
 
+/* remove the inner state ring that can look like a second border */
 .cancel-button::part(native)::after {
   border: none !important;
   box-shadow: none !important;
 }
 
+/* optional: no ripple tint that can read as a faint inner shape */
 .cancel-button::part(ripple) {
   display: none !important;
+}
+
+/* keep confirm solid pill */
+.confirm-button {
+  --background: var(--ion-color-primary);
+  --color: #fff;
+  --border-radius: 9999px;
 }
