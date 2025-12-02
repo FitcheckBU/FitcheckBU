@@ -21,7 +21,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
     <div className="top-navbar">
       <IonToolbar color="primary">
         <img
-          src="/logo.svg"
+          src="/FitcheckNest.svg"
           alt="Logo"
           className="navbar-logo"
           onClick={goHome}
