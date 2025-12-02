@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
-import { IonIcon } from "@ionic/react";
-import { searchOutline, locateOutline } from "ionicons/icons";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./ThriftStoreMap.css";
 
 // Fix Leaflet default marker icon issue
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: () => string })._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
@@ -31,7 +29,6 @@ const MapUpdater: React.FC<MapUpdaterProps> = ({ center, zoom }) => {
   const map = useMap();
   useEffect(() => {
     map.setView(center, zoom);
-    // Force map to recalculate size
     setTimeout(() => {
       map.invalidateSize();
     }, 100);
@@ -44,79 +41,15 @@ interface ThriftStoreMapProps {
 }
 
 const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
-  const [address, setAddress] = useState("Boston University, Boston, MA");
-  const [location, setLocation] = useState<[number, number]>([42.3505, -71.1054]); // Boston University default
+  const [location] = useState<[number, number]>([42.3505, -71.1054]); // Boston University default
   const [radius, setRadius] = useState(5000); // 5km default for better coverage
   const [stores, setStores] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [mapKey, setMapKey] = useState(0); // Force map re-render
+  const [mapKey] = useState(0); // Force map re-render
   const [selectedStore, setSelectedStore] = useState<Place | null>(null);
 
-  const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
-
-  // Update radius when proximity filter changes
-  useEffect(() => {
-    if (proximityFilter) {
-      const milesValue = parseInt(proximityFilter.split(' ')[0]);
-      const metersValue = milesValue * 1609.34; // Convert miles to meters
-      setRadius(metersValue);
-    } else {
-      setRadius(5000); // Default 5km
-    }
-  }, [proximityFilter]);
-
-  // Load initial stores on mount
-  useEffect(() => {
-    searchNearbyStores(location[0], location[1]);
-  }, []);
-
-  // Reload stores when radius changes
-  useEffect(() => {
-    if (location) {
-      searchNearbyStores(location[0], location[1]);
-    }
-  }, [radius]);
-
-  // Get address suggestions as user types
-  const handleAddressInput = async (value: string) => {
-    setAddress(value);
-    
-    if (value.length < 3) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(value)}&limit=5&apiKey=${apiKey}`
-      );
-      const data = await response.json();
-      setSuggestions(data.features || []);
-      setShowSuggestions(true);
-    } catch (error) {
-      console.error("Error fetching address suggestions:", error);
-    }
-  };
-
-  // Select an address from suggestions
-  const selectAddress = async (suggestion: any) => {
-    const { lat, lon } = suggestion.properties;
-    const formattedAddress = suggestion.properties.formatted;
-    
-    setAddress(formattedAddress);
-    setLocation([lat, lon]);
-    setShowSuggestions(false);
-    setMapKey(prev => prev + 1); // Force map re-render
-    
-    // Search for stores at this location
-    await searchNearbyStores(lat, lon);
-  };
-
   // Search for thrift stores near location
-  const searchNearbyStores = async (lat: number, lon: number) => {
+  const searchNearbyStores = useCallback((lat: number, lon: number, searchRadius: number) => {
     setLoading(true);
     try {
       // Sample thrift stores in Boston area
@@ -154,42 +87,33 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
       });
 
       // Filter by radius and sort by distance
-      const filtered = places.filter(place => place.distance <= radius);
+      const filtered = places.filter(place => place.distance <= searchRadius);
       filtered.sort((a, b) => a.distance - b.distance);
       
       setStores(filtered);
-    } catch (error: any) {
-      console.error("Error searching for stores:", error.message || error);
+    } catch (error) {
+      console.error("Error searching for stores:", error);
       setStores([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Search at current location
-  const handleSearch = async () => {
-    if (!address) return;
-    
-    setLoading(true);
-    try {
-      // Geocode the address
-      const response = await fetch(
-        `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&limit=1&apiKey=${apiKey}`
-      );
-      const data = await response.json();
-      
-      if (data.features && data.features.length > 0) {
-        const { lat, lon } = data.features[0].properties;
-        setLocation([lat, lon]);
-        setMapKey(prev => prev + 1); // Force map re-render
-        await searchNearbyStores(lat, lon);
-      }
-    } catch (error) {
-      console.error("Error geocoding address:", error);
-    } finally {
-      setLoading(false);
+  // Update radius when proximity filter changes
+  useEffect(() => {
+    if (proximityFilter) {
+      const milesValue = parseInt(proximityFilter.split(' ')[0]);
+      const metersValue = milesValue * 1609.34; // Convert miles to meters
+      setRadius(metersValue);
+    } else {
+      setRadius(5000); // Default 5km
     }
-  };
+  }, [proximityFilter]);
+
+  // Load initial stores on mount and when radius changes
+  useEffect(() => {
+    searchNearbyStores(location[0], location[1], radius);
+  }, [location, radius, searchNearbyStores]);
 
   // Custom marker icon for thrift stores
   const storeIcon = new L.Icon({
@@ -227,7 +151,7 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
             <Popup>
               <strong>Your Location</strong>
               <br />
-              {address || "Boston University"}
+              Boston University
             </Popup>
           </Marker>
 
@@ -326,7 +250,7 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
       )}
 
       {/* No stores message */}
-      {!loading && stores.length === 0 && address && (
+      {!loading && stores.length === 0 && (
         <div className="map-no-stores">
           <div className="no-stores-icon">🏪</div>
           <div className="no-stores-text">No thrift stores found within {radius / 1000} km</div>

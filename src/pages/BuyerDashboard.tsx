@@ -13,6 +13,14 @@ interface AddressSuggestion {
   lon: number;
 }
 
+interface GeoapifyFeature {
+  properties: {
+    formatted: string;
+    lat: number;
+    lon: number;
+  };
+}
+
 const BuyerDashboard: React.FC = () => {
   const history = useHistory();
   const [searchText, setSearchText] = useState("");
@@ -172,7 +180,7 @@ const BuyerDashboard: React.FC = () => {
         const data = await response.json();
         
         if (data.features) {
-          const suggestions: AddressSuggestion[] = data.features.map((feature: any) => ({
+          const suggestions: AddressSuggestion[] = data.features.map((feature: GeoapifyFeature) => ({
             formatted: feature.properties.formatted,
             lat: feature.properties.lat,
             lon: feature.properties.lon,

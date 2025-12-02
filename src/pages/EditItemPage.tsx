@@ -133,17 +133,6 @@ const EditItemPage: React.FC = () => {
     }
   };
 
-  const handleMarkAsSold = async () => {
-    if (!item || !item.id) return;
-
-    try {
-      await updateItem(item.id, { isSold: true });
-      history.push("/home");
-    } catch (error) {
-      console.error("Error marking as sold:", error);
-    }
-  };
-
   if (!item) {
     return (
       <IonPage>
