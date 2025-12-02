@@ -170,8 +170,12 @@ const Dashboard: React.FC = () => {
 
       <div className="dashboard-header">
         <h1 className="dashboard-title">User Dashboard</h1>
-        <IonButton onClick={navigateToFilters} color="secondary">
-          <img src={filterSvg} alt="Filter" />
+        <IonButton
+          onClick={navigateToFilters}
+          color="secondary"
+          className="filter-button"
+        >
+          <img src={filterSvg} alt="Filter" className="filter-icon" />
         </IonButton>
       </div>
 
