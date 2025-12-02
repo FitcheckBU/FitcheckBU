@@ -4,8 +4,10 @@ import { cloudUploadSharp } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { PhotoRole } from "../constants/photoStages";
-import { storage } from "../lib/firebaseClient";
+import { doc } from "firebase/firestore";
+import { storage, db } from "../lib/firebaseClient";
 import { addItem } from "../lib/inventoryService";
+import { useUser } from "../context/UserContext";
 
 type UploadableFile = {
   id: string;
@@ -36,6 +38,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<StatusState>({ message: "", tone: "" });
+  const { user } = useUser();
 
   useEffect(() => {
     if (files.length > 0) {
@@ -52,6 +55,24 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
     if (files.length === 0 || uploading) {
       return;
     }
+
+    if (!user || user.user_type !== "seller") {
+      setStatus({
+        message: "Only sellers can upload inventory right now.",
+        tone: "danger",
+      });
+      return;
+    }
+
+    if (!user.store?.id) {
+      setStatus({
+        message: "Missing store information. Please refresh and try again.",
+        tone: "danger",
+      });
+      return;
+    }
+
+    const storeRef = doc(db, "stores", user.store.id);
 
     setStatus({ message: "", tone: "" });
     setUploadingState(true);
@@ -97,6 +118,7 @@ const StorageUploadButton: React.FC<StorageUploadButtonProps> = ({
         sessionId,
         imageStoragePaths: tempPaths, // Legacy list for backwards compatibility
         images: sessionImages,
+        store_id: storeRef,
       });
 
       // Cloud Function will automatically move images from temp to items/{itemId}
