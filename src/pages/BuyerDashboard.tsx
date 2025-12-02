@@ -21,7 +21,7 @@ const BuyerDashboard: React.FC = () => {
   const [itemImages, setItemImages] = useState<{ [key: string]: string }>({});
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>(["Jeans", "Tees", "Hoodies", "Toes"]);
+  const [recentSearches, setRecentSearches] = useState<string[]>(["Jeans", "Tees", "Hoodies", "Tops"]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [showProximityDropdown, setShowProximityDropdown] = useState(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
