@@ -1,3 +1,5 @@
+@import url("https://fonts.cdnfonts.com/css/itc-souvenir"); /*import itc-souvenir*/
+
 /* Dashboard page styles */
 .dashboard-container {
   height: 100%;
@@ -17,10 +19,11 @@
 }
 
 .dashboard-title {
-  font-family: "Georgia", serif;
+  font-family: "ITC Souvenir", serif;
   font-size: 24px;
   font-weight: 700;
   font-style: italic;
+  font-style: bold;
   color: var(--ion-color-primary);
   margin: 0;
 }
