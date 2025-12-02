@@ -466,6 +466,28 @@ const BuyerDashboard: React.FC = () => {
           {/* Show content only when not searching */}
           {!isSearching && (
             <>
+              {/* Promo Card Section - Exact Figma specs */}
+              <div className="promo-section">
+                <div className="promo-card" data-testid="card-promo">
+                  <div className="promo-image-container">
+                    <img 
+                      src="https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80" 
+                      alt="Featured items"
+                      className="promo-image"
+                    />
+                  </div>
+                  <div className="promo-content">
+                    <div className="promo-title">Shop Local Thrift</div>
+                    <div className="promo-subtitle">Find unique pieces near you</div>
+                  </div>
+                  <div className="promo-dots">
+                    <div className="promo-dot active" />
+                    <div className="promo-dot" />
+                    <div className="promo-dot" />
+                  </div>
+                </div>
+              </div>
+
               {/* Thrift Store Map */}
               <ThriftStoreMap proximityFilter={selectedProximity} />
 

@@ -100,13 +100,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
               <div className="figma-details-left">
                 <div className="figma-detail-text">{shortId}</div>
                 <div className="figma-detail-text">
-                  {extractSize(item.labels) || item.size || "Medium"}
-                </div>
-                <div className="figma-detail-text">
-                  {item.category || "Clothing"}
-                </div>
-                <div className="figma-detail-text">
-                  {item.description?.split(" ")[0] || "Cotton"}
+                  {extractSize(item.labels) || item.size || "Unknown"}
                 </div>
               </div>
               <div className="figma-details-right">
