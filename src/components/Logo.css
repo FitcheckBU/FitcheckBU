@@ -1,0 +1,51 @@
+/* Logo Component - Figma Standardized Specs */
+
+/* Default fitcheck.nest logo */
+.logo {
+  min-width: 95.95px;
+  height: 35.52px;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  font-style: normal;
+  margin: 0;
+  letter-spacing: 0.02em;
+  line-height: 35.52px;
+  display: inline-block;
+  text-transform: lowercase;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.logo-fitcheck {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.logo-nest {
+  color: #7B9996;
+  font-weight: 800;
+}
+
+/* Buyer variant - just "fitcheck" */
+.logo-buyer {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  font-style: normal;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+  display: inline-block;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+}
+
+/* Logo variant for dark backgrounds (EditModal) */
+.edit-modal-logo .logo-fitcheck {
+  color: #023E38;
+}
+
+.edit-modal-logo .logo-nest {
+  color: #6b8e8d;
+}

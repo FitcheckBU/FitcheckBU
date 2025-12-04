@@ -1,9 +1,10 @@
 import { useMemo } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { IonButton, IonIcon } from "@ionic/react";
+import { IonButton, IonIcon, IonPage, IonContent } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import FilterForm from "../components/FilterForm";
 import { FilterState } from "../lib/inventoryService";
+import Logo from "../components/Logo";
 import "./SortFilterPage.css";
 
 type SortFilterRouteState = {
@@ -45,25 +46,38 @@ const SortFilterPage: React.FC = () => {
   };
 
   return (
-    <div className="sort-filter-container">
-      <div className="sort-filter-header">
-        <IonButton
-          fill="clear"
-          onClick={handleBack}
-          className="sort-filter-back-button"
-        >
-          <IonIcon icon={arrowBackOutline} slot="icon-only" />
-        </IonButton>
-        <h2 className="sort-filter-title">Sort & Filter</h2>
+    <IonPage className="sort-filter-page">
+      {/* Navbar matching Dashboard */}
+      <div className="sort-filter-navbar">
+        <Logo variant="default" />
       </div>
-      <div className="sort-filter-card">
-        <FilterForm
-          initialFilters={initialFilters}
-          onApply={handleApply}
-          onReset={handleReset}
-        />
-      </div>
-    </div>
+
+      {/* Scrollable content area */}
+      <IonContent className="sort-filter-body">
+        {/* Back button and title section */}
+        <div className="sort-filter-header-section">
+          <IonButton
+            fill="clear"
+            onClick={handleBack}
+            className="sort-filter-back-button"
+            data-testid="button-back"
+          >
+            <IonIcon icon={arrowBackOutline} slot="icon-only" />
+          </IonButton>
+          <h1 className="sort-filter-title">Sort & Filter</h1>
+        </div>
+
+        <div className="sort-filter-content">
+          <div className="sort-filter-card">
+            <FilterForm
+              initialFilters={initialFilters}
+              onApply={handleApply}
+              onReset={handleReset}
+            />
+          </div>
+        </div>
+      </IonContent>
+    </IonPage>
   );
 };
 

@@ -1,41 +1,123 @@
-/* Edit Item Modal Styles */
+/* Edit Item Modal Styles - Figma Design */
 
-.edit-toolbar {
-  --background: var(--ion-color-secondary);
-  --color: var(--ion-color-primary);
-  --padding-start: 8px;
-  --padding-end: 16px;
-}
-
-.edit-title {
-  font-family: "Georgia", serif;
-  font-size: 20px;
-  font-weight: 700;
-  font-style: italic;
-  color: var(--ion-color-primary);
-  text-align: center;
+/* Modal with transparent backdrop to show parent navbar */
+.edit-item-modal {
+  --height: auto;
+  --backdrop-opacity: 0.5;
 }
 
 .edit-modal-content {
-  --background: var(--ion-color-secondary);
+  --background: transparent;
+  --padding-top: 70px;
   --padding-bottom: 24px;
 }
 
+/* Edit header section - positioned below parent navbar (70px offset) */
+.edit-header-section {
+  position: relative;
+  width: 100%;
+  padding: 25px 31px;
+  background: #EBF0EF;
+}
+
+.edit-back-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  position: absolute;
+  left: 31px;
+  top: 25px;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  z-index: 10;
+}
+
+.edit-back-button ion-icon {
+  font-size: 32px;
+  color: #023E38;
+}
+
+.edit-title {
+  font-family: 'ITC Souvenir Std', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 150%;
+  text-align: center;
+  letter-spacing: -0.011em;
+  color: #023E38;
+  margin: 3px 0 0;
+}
+
 .edit-form-container {
-  max-width: 600px;
+  max-width: 350px;
   margin: 0 auto;
-  padding: 20px 16px 32px;
+  padding: 24px 20px 32px;
 }
 
 .edit-form-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: #FFFFFF;
+  border-radius: 15px;
+  padding: 25px 27px 27px;
+  box-shadow: 0px 4px 4px #7B9996;
 }
 
+/* Item Image Container */
+.edit-image-container {
+  width: 296px;
+  height: 296px;
+  margin: 0 auto 22px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #F3F4F6;
+}
+
+.edit-item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.edit-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7B9996;
+  font-size: 16px;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Upload Button */
+.upload-button {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  width: 100%;
+  max-width: 296px;
+  height: 41px;
+  margin: 0 auto 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #023E38;
+  border-radius: 100px;
+  background: #FFFFFF;
+  color: #023E38;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.011em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-button:active {
+  transform: scale(0.98);
+}
+
+/* Form Sections */
 .form-section {
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
 .form-section:last-child {
@@ -43,16 +125,17 @@
 }
 
 .section-title {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
   font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 16px 0;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #f3f4f6;
+  color: #023E38;
+  margin: 0 0 14px 0;
+  letter-spacing: -0.011em;
+  line-height: 150%;
 }
 
 .form-field {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   flex: 1;
   min-width: 0;
 }
@@ -61,23 +144,8 @@
   margin-bottom: 0;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.form-row:last-child {
-  margin-bottom: 0;
-}
-
 .field-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 8px;
+  display: none;
 }
 
 .required-mark {
@@ -88,115 +156,164 @@
 .field-input,
 .field-select,
 .field-textarea {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   width: 100%;
-  padding: 12px 14px;
-  border: 1.5px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #1f2937;
-  background: #ffffff;
+  height: 41px;
+  padding: 0 20px;
+  border: 1px solid #7B9996;
+  border-radius: 100px;
+  font-size: 14px;
+  color: #023E38;
+  background: #FFFFFF;
   transition: all 0.2s ease;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
 }
 
 .field-input:focus,
 .field-select:focus,
 .field-textarea:focus {
   outline: none;
-  border-color: var(--ion-color-primary);
-  box-shadow: 0 0 0 3px rgba(2, 62, 56, 0.1);
+  border-color: #023E38;
 }
 
 .field-input::placeholder,
 .field-textarea::placeholder {
-  color: #9ca3af;
+  color: #7B9996;
+  font-size: 14px;
 }
 
 .field-select {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-  background-position: right 10px center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%237B9996' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 16px center;
   background-repeat: no-repeat;
-  background-size: 20px;
+  background-size: 18px;
   padding-right: 40px;
 }
 
 .field-textarea {
+  height: 120px;
+  padding: 14px 20px;
+  border-radius: 20px;
   resize: vertical;
-  min-height: 100px;
+  min-height: 80px;
   line-height: 1.5;
 }
 
+/* Color Selection */
+.edit-color-section {
+  margin-bottom: 28px;
+}
+
+.edit-colors-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 296px;
+}
+
+.edit-color-circle {
+  width: 26.74px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.edit-color-circle:active {
+  transform: scale(0.9);
+}
+
+.edit-color-selected {
+  position: relative;
+}
+
+.edit-color-selected::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+}
+
+/* Bottom Action Buttons */
 .edit-form-actions {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 28px;
+  max-width: 296px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.save-button,
-.cancel-button {
+/* Mark as Sold / Save Button */
+.save-button {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   width: 100%;
-  padding: 14px 24px;
-  border-radius: 50px;
+  height: 41px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #023E38;
+  border-radius: 100px;
+  background: #023E38;
+  color: #FFFFFF;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 400;
+  letter-spacing: -0.011em;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 2px solid var(--ion-color-primary);
-}
-
-.save-button {
-  background-color: var(--ion-color-primary);
-  color: #ffffff;
 }
 
 .save-button:active {
   transform: scale(0.98);
-  background-color: #023832;
+  background-color: #01332e;
 }
 
 .save-button:disabled {
-  background-color: #9ca3af;
-  border-color: #9ca3af;
+  background-color: #7B9996;
+  border-color: #7B9996;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.cancel-button {
-  background-color: #ffffff;
-  color: var(--ion-color-primary);
+/* Secondary Action Buttons Row */
+.edit-secondary-actions {
+  display: flex;
+  gap: 12px;
 }
 
-.cancel-button:active {
+.cancel-button,
+.delete-button {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  flex: 1;
+  height: 41px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #023E38;
+  border-radius: 100px;
+  background: #FFFFFF;
+  color: #023E38;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.011em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button:active,
+.delete-button:active {
   transform: scale(0.98);
-  background-color: #f9fafb;
-}
-
-/* Mobile optimization */
-@media (max-width: 480px) {
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-  
-  .edit-form-card {
-    padding: 20px 16px;
-  }
-}
-
-@media (min-width: 768px) {
-  .edit-form-container {
-    padding: 32px 24px;
-  }
-
-  .edit-form-actions {
-    flex-direction: row;
-  }
-
-  .save-button,
-  .cancel-button {
-    flex: 1;
-  }
+  background-color: #F3F4F6;
 }

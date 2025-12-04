@@ -1,5 +1,6 @@
-import { IonToolbar, IonButtons, IonButton } from "@ionic/react";
-import { useHistory } from "react-router-dom";
+import { IonButton, IonIcon } from "@ionic/react";
+import { menuOutline } from "ionicons/icons";
+import Logo from "./Logo";
 import "./TopNavBar.css";
 
 interface TopNavBarProps {
@@ -9,33 +10,18 @@ interface TopNavBarProps {
 
 export const TopNavBar: React.FC<TopNavBarProps> = ({
   onMenuClick,
-  isSidebarOpen,
 }) => {
-  const history = useHistory();
-
-  const goHome = () => {
-    history.push("/home");
-  };
-
   return (
     <div className="top-navbar">
-      <IonToolbar color="primary">
-        <img
-          src="/FitcheckNest.svg"
-          alt="Logo"
-          className="navbar-logo"
-          onClick={goHome}
-        />
-        <IonButtons slot="end">
-          <IonButton onClick={onMenuClick} color="primary">
-            <img
-              src={isSidebarOpen ? "/close.svg" : "/hamburger.svg"}
-              alt={isSidebarOpen ? "Close" : "Menu"}
-              className="navbar-hamburger"
-            />
-          </IonButton>
-        </IonButtons>
-      </IonToolbar>
+      <Logo variant="default" />
+      <IonButton 
+        fill="clear" 
+        className="top-navbar-menu-button"
+        onClick={onMenuClick}
+        data-testid="button-menu"
+      >
+        <IonIcon icon={menuOutline} slot="icon-only" />
+      </IonButton>
     </div>
   );
 };
