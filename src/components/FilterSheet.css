@@ -8,6 +8,7 @@
   --background: transparent;
   --padding-top: 0;
   --padding-bottom: 0;
+  position: relative;
 }
 
 .filter-section {
@@ -104,18 +105,11 @@
 }
 
 .filter-actions-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 20px 27px 27px 27px;
-  background-color: #FFFFFF;
-  border-radius: 0 0 15px 15px;
   display: flex;
   gap: 16px;
-  z-index: 10;
-  width: 100%;
-  box-sizing: border-box;
+  padding-top: 20px;
+  margin-top: 20px;
+  background-color: #FFFFFF;
 }
 
 .filter-reset-button {
