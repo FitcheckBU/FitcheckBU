@@ -5,7 +5,7 @@ ion-item.figma-item-card {
   --padding-start: 0;
   --padding-end: 0;
   --inner-padding-end: 0;
-  margin: 0;
+  margin: 0 auto;
   border-radius: 15px;
   box-shadow: 0px 4px 4px #7B9996;
   overflow: hidden;
@@ -97,10 +97,14 @@ ion-item.figma-item-card {
   letter-spacing: -0.011em;
 }
 
-/* Swipeable action styles */
+/* Swipeable action styles - Center the cards */
 ion-item-sliding {
   margin-bottom: 0;
   overflow: visible;
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  justify-content: center;
 }
 
 .swipe-actions {
