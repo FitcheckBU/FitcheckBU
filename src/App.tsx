@@ -11,8 +11,10 @@ import UploadFlow from "./pages/UploadFlowPage";
 import ScanFlowPage from "./pages/ScanFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
+import EditItemPage from "./pages/EditItemPage";
 import ScanItemDetailPage from "./pages/ScanItemDetailPage";
 import SettingsPage from "./pages/SettingsPage";
+import BuyerDashboard from "./pages/BuyerDashboard";
 import MainLayout from "./components/MainLayout";
 import SortFilterPage from "./pages/SortFilterPage";
 
@@ -54,24 +56,12 @@ const App: React.FC = () => {
       <PhotoProvider>
         <IonReactRouter>
           <IonRouterOutlet id="main">
-            <Route
-              exact
-              path="/home"
-              render={() => (
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
-              path="/sort-filter"
-              render={() => (
-                <MainLayout>
-                  <SortFilterPage />
-                </MainLayout>
-              )}
-            />
+            <Route exact path="/home">
+              <Dashboard />
+            </Route>
+            <Route exact path="/sort-filter">
+              <SortFilterPage />
+            </Route>
             <Route
               exact
               path="/upload"
@@ -117,15 +107,12 @@ const App: React.FC = () => {
                 </MainLayout>
               )}
             />
-            <Route
-              exact
-              path="/item/:itemId"
-              render={() => (
-                <MainLayout>
-                  <ItemDetailPage />
-                </MainLayout>
-              )}
-            />
+            <Route exact path="/item/:itemId">
+              <ItemDetailPage />
+            </Route>
+            <Route exact path="/edit-item/:itemId">
+              <EditItemPage />
+            </Route>
             <Route
               exact
               path="/item-scan/:itemId"
@@ -144,6 +131,9 @@ const App: React.FC = () => {
                 </MainLayout>
               )}
             />
+            <Route exact path="/buyer">
+              <BuyerDashboard />
+            </Route>
             <Route exact path="/camera">
               <CameraPage />
             </Route>

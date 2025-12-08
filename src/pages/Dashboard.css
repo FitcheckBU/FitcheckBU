@@ -1,54 +1,107 @@
-@import url("https://fonts.cdnfonts.com/css/itc-souvenir"); /*import itc-souvenir*/
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"); /*import dm-sans*/
-
-/* Dashboard page styles */
+/* Dashboard page styles - Figma Design */
 .dashboard-container {
-  height: 100%;
-  background-color: var(--ion-color-secondary);
+  --background: #EBF0EF;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
 }
 
-.dashboard-content {
-  --background: var(--ion-color-secondary);
+.dashboard-container::part(scroll) {
+  background-color: #EBF0EF;
 }
 
+/* Override page overlay for dashboard to start from top */
+.dashboard-container .page-overlay {
+  top: 0;
+}
+
+/* Navbar - Figma Specs */
 .dashboard-header {
+  position: relative;
+  width: 100%;
+  height: 70px;
+  background: #023E38;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 16px;
-  background-color: var(--ion-color-secondary);
+  padding: 0;
 }
 
-.dashboard-title {
-  font-family: "ITC Souvenir", serif;
-  font-size: 24px;
+/* Logo positioned at exact Figma specs */
+.dashboard-header .logo {
+  position: absolute;
+  left: 26.9px;
+  top: 17.24px;
+}
+
+/* Hamburger menu positioned at exact Figma specs */
+.menu-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  position: absolute;
+  right: 7.95%;
+  top: 19px;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.menu-button ion-icon {
+  font-size: 32px;
+  color: #FFFFFF;
+}
+
+.dashboard-subheader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  background-color: #EBF0EF;
+  position: relative;
+}
+
+.subheader-title {
+  font-family: 'ITC Souvenir Std', Georgia, serif;
+  font-size: 20px;
   font-weight: 700;
   font-style: italic;
-  font-style: bold;
-  color: var(--ion-color-primary);
+  color: #023E38;
   margin: 0;
+  text-align: center;
+  letter-spacing: -0.011em;
+  line-height: 150%;
+}
+
+.filter-button-sub {
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  right: 20px;
+}
+
+.filter-button-sub ion-icon {
+  font-size: 32px;
+  color: #023E38;
 }
 
 .filter-button {
   --padding-start: 8px;
   --padding-end: 8px;
-  --background: transparent;
-  --background-hover: transparent;
-  --background-activated: transparent;
-  --background-focused: transparent;
-  --box-shadow: none;
-  --border-radius: 0;
   margin: 0;
 }
 
 .filter-icon {
   width: 28px;
   height: 28px;
-  color: var(--ion-color-primary);
+  color: #ffffff;
 }
 
 .filter-active {
-  color: #4ecdc4;
+  color: #1e4d4a;
 }
 
 .dashboard-search-section {
@@ -56,30 +109,35 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 12px 16px 20px;
-  background-color: var(--ion-color-secondary);
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  background-color: #EBF0EF;
   z-index: 10;
+  display: flex;
+  justify-content: center;
 }
 
 .dashboard-searchbar {
   --background: #ffffff;
-  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --border-radius: 12px;
-  --placeholder-color: #9ca3af;
-  --icon-color: #9ca3af;
+  --box-shadow: 0px 4px 4px #7B9996;
+  --border-radius: 100px;
+  --placeholder-color: #7B9996;
+  --icon-color: #7B9996;
+  --padding-start: 20px;
+  --padding-end: 20px;
   padding: 0;
-  flex-grow: 1;
-  /* Allow searchbar to take available space */
-  margin-right: 10px;
-  /* Add some space between searchbar and button */
+  margin: 0;
+  height: 45px;
+  max-width: 350px;
+  width: 100%;
 }
 
 .dashboard-items {
-  padding: 10px 16px 100px 16px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
+  padding: 24px 20px 100px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #EBF0EF;
+  align-items: center;
 }
 
 .items-grid {
@@ -95,12 +153,11 @@
   align-items: center;
   justify-content: center;
   height: 60vh;
-  color: var(--ion-color-primary);
+  color: #023E38;
   opacity: 0.6;
   text-align: center;
   padding: 20px;
   margin-top: 50px;
-  color: var(--ion-color-dark);
 }
 
 .empty-state ion-icon {
@@ -131,14 +188,4 @@ ion-infinite-scroll-content {
   font-size: 16px;
   text-align: center;
   padding: 20px;
-}
-
-.dashboard-container,
-.dashboard-content,
-.empty-state,
-.loading-state,
-.error-state {
-  font-family:
-    "DM Sans",
-    -apple-system;
 }

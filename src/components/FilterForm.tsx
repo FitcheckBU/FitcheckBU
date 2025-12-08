@@ -15,17 +15,18 @@ interface FilterFormProps {
 }
 
 const colorOptions = [
-  { name: "Red", hex: "#EF4444" },
-  { name: "Orange", hex: "#F97316" },
-  { name: "Yellow", hex: "#EAB308" },
-  { name: "Green", hex: "#22C55E" },
-  { name: "Blue", hex: "#3B82F6" },
-  { name: "Purple", hex: "#A855F7" },
-  { name: "Pink", hex: "#EC4899" },
-  { name: "Gray", hex: "#6B7280" },
-  { name: "Black", hex: "#1F2937" },
-  { name: "Tan", hex: "#D4A574" },
-  { name: "Brown", hex: "#92400E" },
+  { name: "Red", hex: "#FF3B3B" },
+  { name: "Orange", hex: "#FF933B" },
+  { name: "Yellow", hex: "#FFD13B" },
+  { name: "Green", hex: "#59DD00" },
+  { name: "Blue", hex: "#009DFF" },
+  { name: "Purple", hex: "#412FFF" },
+  { name: "Pink", hex: "#F12FFF" },
+  { name: "White", hex: "#FFFFFF", border: "#023E38" },
+  { name: "Gray", hex: "#9B9B9B" },
+  { name: "Black", hex: "#000000" },
+  { name: "Tan", hex: "#DBB778" },
+  { name: "Brown", hex: "#6F4824" },
 ];
 
 const categoryOptions = [
@@ -274,6 +275,7 @@ const FilterForm: React.FC<FilterFormProps> = ({
               className={`color-circle ${selectedColors.includes(color.name) ? "color-selected" : ""}`}
               style={{
                 backgroundColor: color.hex,
+                border: color.border ? `1px solid ${color.border}` : '1px solid transparent',
               }}
               onClick={() =>
                 toggleSelection(color.name, selectedColors, setSelectedColors)
