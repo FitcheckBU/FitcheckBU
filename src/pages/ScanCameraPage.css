@@ -1,0 +1,97 @@
+/* src/pages/ScanCameraPage.css */
+
+:root {
+  --camera-padding: 16px;
+}
+
+.camera-content {
+  --background: #000;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.camera-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.camera-video-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barcode-scanning-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.scanning-frame {
+  width: 80%;
+  max-width: 400px;
+  height: 150px;
+  border: 3px solid var(--ion-color-primary);
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    border-color: var(--ion-color-success);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  }
+}
+
+.scanning-instruction {
+  margin-top: 20px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.scanning-instruction p {
+  margin: 0;
+  font-size: 14px;
+}
+
+ion-fab[vertical="top"] {
+  margin-top: var(--camera-padding);
+}
+
+ion-fab[vertical="bottom"] {
+  margin-bottom: var(--camera-padding);
+}
+
+.scan-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  width: 70px;
+  height: 70px;
+}
+
+.close-button-icon {
+  width: 24px;
+  height: 24px;
+}

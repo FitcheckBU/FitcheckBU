@@ -1,187 +1,285 @@
 import {
+  IonPage,
+  IonContent,
   IonSearchbar,
   IonButton,
+  IonIcon,
   IonRefresher,
   IonRefresherContent,
   RefresherEventDetail,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
 } from "@ionic/react";
-import filterSvg from "../../public/filter.svg"; // Import the SVG directly
-import { useState, useEffect } from "react";
-import { getAllItems, InventoryItem } from "../lib/inventoryService";
+import { menuOutline, optionsOutline } from "ionicons/icons";
+import { useState, useEffect, useRef, useMemo } from "react";
+import type { InfiniteScrollCustomEvent } from "@ionic/react";
+import { useHistory, useLocation } from "react-router-dom";
+import {
+  InventoryItem,
+  FilterState,
+  deleteItem,
+} from "../lib/inventoryService";
+import {
+  getFilteredItems,
+  convertFilterStateToParams,
+} from "../lib/filterService";
+import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
-import ItemDetailModal from "../components/ItemDetailModal";
-import FilterSheet from "../components/FilterSheet";
-import EditItemModal from "../components/EditItemModal";
+import Sidebar from "../components/Sidebar";
+import Logo from "../components/Logo";
+import "../components/MainLayout.css";
 import "./Dashboard.css";
 
+const PAGE_SIZE = 30;
+
+type DashboardRouteState =
+  | {
+      appliedFilters: FilterState;
+    }
+  | {
+      resetFilters: true;
+    }
+  | undefined;
+
 const Dashboard: React.FC = () => {
+  const history = useHistory();
+  const location = useLocation<DashboardRouteState>();
   const [items, setItems] = useState<InventoryItem[]>([]);
-  const [filteredItems, setFilteredItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
-  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-  const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Pagination states
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null);
+  const [hasMoreItems, setHasMoreItems] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const initialLoad = useRef(true);
+
+  // Sidebar state
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   // Filter states
-  const [activeFilters, setActiveFilters] = useState({
-    sizes: [] as string[],
-    sexes: [] as string[],
-    colors: [] as string[],
-    materials: [] as string[],
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    categories: [],
+    brands: [],
+    colors: [],
+    sizes: [],
+    conditions: [],
+    priceMin: undefined,
+    priceMax: undefined,
+    decades: [],
+    styles: [],
+    soldStatus: "all",
+    sortBy: { field: "dateAdded", direction: "desc" },
   });
 
-  useEffect(() => {
-    loadItems();
-  }, []);
+  // Frontend search filtering - filters items by name and description
+  const filteredItems = useMemo(() => {
+    if (!searchText || searchText.trim() === "") {
+      return items;
+    }
+
+    const searchLower = searchText.toLowerCase().trim();
+    return items.filter((item) => {
+      const nameMatch = item.name?.toLowerCase().includes(searchLower);
+      const descMatch = item.description?.toLowerCase().includes(searchLower);
+      return nameMatch || descMatch;
+    });
+  }, [items, searchText]);
 
   useEffect(() => {
-    applyFilters();
-  }, [items, searchText, activeFilters]);
+    const state = location.state;
+    if (state && "appliedFilters" in state) {
+      setActiveFilters(state.appliedFilters);
+      history.replace({ ...location, state: undefined });
+    } else if (state && "resetFilters" in state) {
+      setActiveFilters({
+        categories: [],
+        brands: [],
+        colors: [],
+        sizes: [],
+        conditions: [],
+        priceMin: undefined,
+        priceMax: undefined,
+        decades: [],
+        styles: [],
+        soldStatus: "all",
+        sortBy: { field: "dateAdded", direction: "desc" },
+      });
+      history.replace({ ...location, state: undefined });
+    }
+  }, [history, location]);
 
-  const loadItems = async () => {
+  const loadItems = async (reset: boolean = false) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const fetchedItems = await getAllItems();
-      setItems(fetchedItems);
+      const currentLastDoc = reset ? undefined : (lastDoc ?? undefined);
+      const filterParams = convertFilterStateToParams(activeFilters);
+
+      const {
+        items: newItems,
+        lastDoc: newLastDoc,
+        hasMore,
+      } = await getFilteredItems(filterParams, PAGE_SIZE, currentLastDoc);
+
+      setItems((prevItems) => (reset ? newItems : [...prevItems, ...newItems]));
+      setLastDoc(newLastDoc);
+      setHasMoreItems(hasMore);
     } catch (error) {
       console.error("Failed to load items:", error);
+      setError(
+        "Failed to load items: " +
+          (error instanceof Error ? error.message : "Unknown error"),
+      );
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
-  const applyFilters = () => {
-    let filtered = [...items];
+  useEffect(() => {
+    if (initialLoad.current) {
+      loadItems(true);
+      initialLoad.current = false;
+    } else {
+      loadItems(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeFilters]);
 
-    // Apply search filter
-    if (searchText) {
-      const search = searchText.toLowerCase();
-      filtered = filtered.filter(
-        (item) =>
-          item.name?.toLowerCase().includes(search) ||
-          item.brand?.toLowerCase().includes(search) ||
-          item.category?.toLowerCase().includes(search) ||
-          item.color?.toLowerCase().includes(search),
-      );
+  const fetchMoreItems = async (event: InfiniteScrollCustomEvent) => {
+    // Handle the case where there are no more items
+    if (!hasMoreItems) {
+      event.target.complete();
+      event.target.disabled = true;
+      return;
     }
 
-    // Apply size filter
-    if (activeFilters.sizes.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.sizes.some((size) =>
-          item.category?.toLowerCase().includes(size.toLowerCase()),
-        ),
-      );
+    // Handle the case where we're already loading
+    if (loadingMore) {
+      event.target.complete();
+      return;
     }
 
-    // Apply color filter
-    if (activeFilters.colors.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.colors.some((color) =>
-          item.color?.toLowerCase().includes(color.toLowerCase()),
-        ),
-      );
-    }
-
-    // Apply material filter
-    if (activeFilters.materials.length > 0) {
-      filtered = filtered.filter((item) =>
-        activeFilters.materials.some(
-          (material) =>
-            item.description?.toLowerCase().includes(material.toLowerCase()) ||
-            item.labels?.some((label) =>
-              label.toLowerCase().includes(material.toLowerCase()),
-            ),
-        ),
-      );
-    }
-
-    setFilteredItems(filtered);
+    setLoadingMore(true);
+    await loadItems(false);
+    event.target.complete();
   };
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
-    await loadItems();
+    await loadItems(true);
     event.detail.complete();
   };
 
-  const handleFilterApply = (filters: typeof activeFilters) => {
-    setActiveFilters(filters);
-    setShowFilterSheet(false);
+  const navigateToFilters = () => {
+    history.push("/sort-filter", { activeFilters });
   };
 
-  const hasActiveFilters =
-    activeFilters.sizes.length > 0 ||
-    activeFilters.sexes.length > 0 ||
-    activeFilters.colors.length > 0 ||
-    activeFilters.materials.length > 0;
+  const handleEditItem = (item: InventoryItem) => {
+    history.push(`/edit-item/${item.id}`);
+  };
+
+  const handleDeleteItem = async (item: InventoryItem) => {
+    if (!item.id) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${item.name || "this item"}"? This action cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteItem(item.id);
+      // Reload items after deletion
+      await loadItems(true);
+    } catch (error) {
+      console.error("Failed to delete item:", error);
+    }
+  };
 
   return (
-    <>
-      <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-        <IonRefresherContent></IonRefresherContent>
-      </IonRefresher>
+    <IonPage>
+      <IonContent className="dashboard-container">
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
 
-      <div className="dashboard-search-section">
-        <IonSearchbar
-          value={searchText}
-          onIonInput={(e) => setSearchText(e.detail.value!)}
-          placeholder="Search Name, Size, Color, Etc..."
-          className="dashboard-searchbar"
-          data-testid="input-search"
-        ></IonSearchbar>
-        <IonButton onClick={() => setShowFilterSheet(true)} color="secondary">
-          <img
-            src={filterSvg}
-            alt="Filter"
-            className={`header-icon ${hasActiveFilters ? "filter-active" : ""}`}
-          />
-        </IonButton>
-      </div>
+        <div className="dashboard-header">
+          <Logo />
+          <IonButton
+            fill="clear"
+            className="menu-button"
+            onClick={() => setSidebarOpen(!isSidebarOpen)}
+            data-testid="button-menu"
+          >
+            <IonIcon icon={menuOutline} slot="icon-only" />
+          </IonButton>
+        </div>
 
-      <div className="dashboard-items">
-        {filteredItems.length === 0 && !loading ? (
-          <div className="empty-state">
-            <p>No items found</p>
-          </div>
-        ) : (
-          filteredItems.map((item) => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              onClick={() => setSelectedItem(item)}
-              onEdit={() => setEditingItem(item)}
-            />
-          ))
-        )}
-      </div>
+        <div
+          className={`page-overlay ${isSidebarOpen ? "active" : ""}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <ItemDetailModal
-        isOpen={!!selectedItem}
-        item={selectedItem}
-        onClose={() => setSelectedItem(null)}
-        onUpdate={loadItems}
-        onEdit={() => {
-          setEditingItem(selectedItem);
-          setSelectedItem(null);
-        }}
-      />
+        <div className="dashboard-subheader">
+          <h2 className="subheader-title">User Dashboard</h2>
+          <IonButton
+            fill="clear"
+            onClick={navigateToFilters}
+            className="filter-button-sub"
+            data-testid="button-filter"
+          >
+            <IonIcon icon={optionsOutline} slot="icon-only" />
+          </IonButton>
+        </div>
 
-      <EditItemModal
-        isOpen={!!editingItem}
-        item={editingItem}
-        onClose={() => setEditingItem(null)}
-        onUpdate={loadItems}
-      />
+        <div className="dashboard-items">
+          {error ? (
+            <div className="error-state">
+              <p>{error}</p>
+            </div>
+          ) : loading && items.length === 0 ? (
+            <div className="loading-state">Loading items...</div>
+          ) : filteredItems.length === 0 && !loading ? (
+            <div className="empty-state">
+              <p>No items found</p>
+            </div>
+          ) : (
+            <>
+              {filteredItems.map((item) => (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  onClick={() => history.push(`/item/${item.id}`)}
+                  onEdit={() => handleEditItem(item)}
+                  onDelete={() => handleDeleteItem(item)}
+                />
+              ))}
+              <IonInfiniteScroll
+                onIonInfinite={fetchMoreItems}
+                threshold="100px"
+                disabled={false}
+              >
+                <IonInfiniteScrollContent
+                  loadingSpinner="bubbles"
+                  loadingText="Loading more data..."
+                ></IonInfiniteScrollContent>
+              </IonInfiniteScroll>
+            </>
+          )}
+        </div>
 
-      <FilterSheet
-        isOpen={showFilterSheet}
-        onClose={() => setShowFilterSheet(false)}
-        onApply={handleFilterApply}
-        activeFilters={activeFilters}
-        items={items}
-      />
-    </>
+        <div className="dashboard-search-section">
+          <IonSearchbar
+            value={searchText}
+            onIonInput={(e) => setSearchText(e.detail.value!)}
+            placeholder="Search Name, Size, Color, Etc."
+            className="dashboard-searchbar"
+            data-testid="input-search"
+          ></IonSearchbar>
+        </div>
+      </IonContent>
+    </IonPage>
   );
 };
 

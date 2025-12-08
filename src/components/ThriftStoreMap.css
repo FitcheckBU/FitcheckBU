@@ -1,0 +1,237 @@
+/* Thrift Store Map Styles */
+
+.thrift-map-container {
+  position: relative;
+  width: 350px;
+  margin: 32px auto 0;
+  background: #ffffff;
+  box-shadow: 0px 4px 4px #f3b759;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+/* Map Container */
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  background: #e8e8e8;
+}
+
+.leaflet-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Ensure Leaflet container is properly sized */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* Fix for tiles not loading */
+.leaflet-tile-container {
+  will-change: transform;
+}
+
+.leaflet-tile {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Override Leaflet popup styles */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+}
+
+.leaflet-popup-content {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.leaflet-popup-content strong {
+  color: #023e38;
+  font-weight: 700;
+}
+
+.leaflet-popup-content em {
+  color: #7b9996;
+  font-style: normal;
+  font-size: 12px;
+}
+
+/* Near By Section - Clean design matching screenshot */
+.nearby-section {
+  padding: 20px 24px;
+  background: #ffffff;
+  border-top: 1px solid #e8e8e8;
+}
+
+.nearby-header {
+  font-family: "DM Sans", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.nearby-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.nearby-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e8e8e8;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nearby-item:last-child {
+  border-bottom: none;
+}
+
+.nearby-item:active {
+  background: #f5f5f5;
+}
+
+.nearby-pin-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.nearby-item-content {
+  flex: 1;
+}
+
+.nearby-item-name {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.5;
+}
+
+/* No stores message */
+.map-no-stores {
+  padding: 32px 16px;
+  text-align: center;
+  background: #ffffff;
+  border-top: 1px solid #e8e8e8;
+}
+
+.no-stores-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.no-stores-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #023e38;
+  margin-bottom: 8px;
+}
+
+.no-stores-hint {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  color: #7b9996;
+}
+
+/* Store Detail View */
+.store-detail-view {
+  padding: 24px;
+  background: #ffffff;
+  border-top: 1px solid #e8e8e8;
+}
+
+.store-back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #023e38;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  transition: opacity 0.2s;
+}
+
+.store-back-button:hover {
+  opacity: 0.7;
+}
+
+.store-back-button svg {
+  flex-shrink: 0;
+}
+
+.store-detail-name {
+  font-family: "DM Sans", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.store-detail-address {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #7b9996;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.store-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.store-btn {
+  width: 100%;
+  height: 41px;
+  border-radius: 100px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.011em;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #023e38;
+}
+
+.store-btn-primary {
+  background: #023e38;
+  color: #ffffff;
+}
+
+.store-btn-primary:hover {
+  background: #035a52;
+  border-color: #035a52;
+}
+
+.store-btn-secondary {
+  background: #ffffff;
+  color: #023e38;
+}
+
+.store-btn-secondary:hover {
+  background: #f5f5f5;
+}

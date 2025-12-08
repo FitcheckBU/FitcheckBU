@@ -5,7 +5,7 @@ import {
   IonItemOptions,
   IonItemOption,
 } from "@ionic/react";
-import { createOutline, eyeOutline } from "ionicons/icons";
+import { createOutline, closeOutline } from "ionicons/icons";
 import { getImageStoragePaths, InventoryItem } from "../lib/inventoryService";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
@@ -17,12 +17,14 @@ interface ItemCardProps {
   item: InventoryItem;
   onClick?: () => void;
   onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({
   item,
   onClick,
   onEdit,
+  onDelete,
 }) => {
   const [imageUrl, setImageUrl] = useState<string>("");
 
@@ -56,10 +58,15 @@ const ItemCard: React.FC<ItemCardProps> = ({
     onEdit?.();
   };
 
-  const handleView = (e: React.MouseEvent) => {
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onClick?.();
+    onDelete?.();
   };
+
+  // Generate a short ID from the item ID
+  const shortId = item.id
+    ? `${item.id.substring(0, 3).toUpperCase()}-${item.id.substring(3, 7)}`
+    : "NO-ID";
 
   return (
     <IonItemSliding>
@@ -89,44 +96,46 @@ const ItemCard: React.FC<ItemCardProps> = ({
             <div className="figma-item-name">
               {item.name || item.brand || "Unknown Item"}
             </div>
-            <div className="figma-item-details">
-              <div className="figma-detail-row">
-                <span className="figma-detail-label">Size:</span>
-                <span className="figma-detail-value">
-                  {extractSize(item.labels)}
-                </span>
+            <div className="figma-item-details-grid">
+              <div className="figma-details-left">
+                <div className="figma-detail-text">{shortId}</div>
+                <div className="figma-detail-text">
+                  {extractSize(item.labels) || item.size || "Unknown"}
+                </div>
               </div>
-              <div className="figma-detail-row">
-                <span className="figma-detail-label">Condition:</span>
-                <span className="figma-detail-value">
-                  {item.condition || "Unknown"}
-                </span>
-              </div>
-              <div className="figma-detail-row">
-                <span className="figma-detail-label">Color:</span>
-                <span className="figma-detail-value">
-                  {item.color || extractColor(item.labels)}
-                </span>
+              <div className="figma-details-right">
+                <div className="figma-detail-text">
+                  {item.color || extractColor(item.labels) || "Unknown"}
+                </div>
+                <div className="figma-detail-text">
+                  {item.sex === "men"
+                    ? "Men's"
+                    : item.sex === "women"
+                      ? "Women's"
+                      : "Unisex"}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </IonItem>
 
-      <IonItemOptions side="end">
+      <IonItemOptions side="end" className="swipe-actions">
         <IonItemOption
-          color="primary"
-          onClick={handleView}
-          data-testid={`button-view-${item.id}`}
-        >
-          <IonIcon icon={eyeOutline} slot="icon-only" />
-        </IonItemOption>
-        <IonItemOption
-          color="warning"
+          color="secondary"
           onClick={handleEdit}
           data-testid={`button-edit-${item.id}`}
+          className="swipe-edit"
         >
           <IonIcon icon={createOutline} slot="icon-only" />
+        </IonItemOption>
+        <IonItemOption
+          color="secondary"
+          onClick={handleDelete}
+          data-testid={`button-delete-${item.id}`}
+          className="swipe-delete"
+        >
+          <IonIcon icon={closeOutline} slot="icon-only" />
         </IonItemOption>
       </IonItemOptions>
     </IonItemSliding>

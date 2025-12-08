@@ -1,57 +1,143 @@
-/* Dashboard page styles */
+/* Dashboard page styles - Figma Design */
 .dashboard-container {
-  height: 100%;
-  background-color: var(--ion-color-secondary);
+  --background: #ebf0ef;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
 }
 
-.header-title {
-  color: var(--ion-color-secondary);
-  font-size: 18px;
-  font-weight: 600;
+.dashboard-container::part(scroll) {
+  background-color: #ebf0ef;
+}
+
+/* Override page overlay for dashboard to start from top */
+.dashboard-container .page-overlay {
+  top: 0;
+}
+
+/* Navbar - Figma Specs */
+.dashboard-header {
+  position: relative;
+  width: 100%;
+  height: 70px;
+  background: #023e38;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+}
+
+/* Logo positioned at exact Figma specs */
+.dashboard-header .logo {
+  position: absolute;
+  left: 26.9px;
+  top: 17.24px;
+}
+
+/* Hamburger menu positioned at exact Figma specs */
+.menu-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  position: absolute;
+  right: 7.95%;
+  top: 19px;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.menu-button ion-icon {
+  font-size: 32px;
+  color: #ffffff;
+}
+
+.dashboard-subheader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  background-color: #ebf0ef;
+  position: relative;
+}
+
+.subheader-title {
+  font-family: "ITC Souvenir Std", Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  font-style: italic;
+  color: #023e38;
+  margin: 0;
   text-align: center;
+  letter-spacing: -0.011em;
+  line-height: 150%;
 }
 
-.header-icon {
-  /* color: var(--ion-color-secondary); */
-  font-size: 24px;
+.filter-button-sub {
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  right: 20px;
+}
+
+.filter-button-sub ion-icon {
+  font-size: 32px;
+  color: #023e38;
+}
+
+.filter-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  margin: 0;
+}
+
+.filter-icon {
+  width: 28px;
+  height: 28px;
+  color: #ffffff;
 }
 
 .filter-active {
-  color: #4ecdc4;
-}
-
-.dashboard-content {
-  --background: var(--ion-color-secondary);
+  color: #1e4d4a;
 }
 
 .dashboard-search-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background-color: #ebf0ef;
+  z-index: 10;
   display: flex;
-  align-items: center;
-  /* Vertically center items */
-  justify-content: space-between;
-  /* Space out searchbar and button */
-  padding: 10px;
+  justify-content: center;
 }
 
 .dashboard-searchbar {
   --background: #ffffff;
-  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --border-radius: 12px;
-  --placeholder-color: #9ca3af;
-  --icon-color: #9ca3af;
+  --box-shadow: 0px 4px 4px #7b9996;
+  --border-radius: 100px;
+  --placeholder-color: #7b9996;
+  --icon-color: #7b9996;
+  --padding-start: 20px;
+  --padding-end: 20px;
   padding: 0;
-  flex-grow: 1;
-  /* Allow searchbar to take available space */
-  margin-right: 10px;
-  /* Add some space between searchbar and button */
+  margin: 0;
+  height: 45px;
+  max-width: 350px;
+  width: 100%;
 }
 
 .dashboard-items {
-  padding: 10px;
-  display: grid;
-  grid-template-columns: 1fr;
-  /* Each item takes its own row */
-  gap: 10px;
+  padding: 24px 20px 100px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #ebf0ef;
+  align-items: center;
 }
 
 .items-grid {
@@ -67,12 +153,11 @@
   align-items: center;
   justify-content: center;
   height: 60vh;
-  color: var(--ion-color-primary);
+  color: #023e38;
   opacity: 0.6;
   text-align: center;
   padding: 20px;
   margin-top: 50px;
-  color: var(--ion-color-dark);
 }
 
 .empty-state ion-icon {
@@ -85,4 +170,22 @@
   justify-content: center;
   align-items: center;
   height: 60vh;
+  color: var(--ion-color-medium);
+  font-size: 16px;
+}
+
+ion-infinite-scroll-content {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.error-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  color: var(--ion-color-danger);
+  font-size: 16px;
+  text-align: center;
+  padding: 20px;
 }

@@ -2,12 +2,21 @@ import { Redirect, Route } from "react-router-dom";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import CameraPage from "./pages/CameraPage";
+import ScanCameraPage from "./pages/ScanCameraPage";
 import { PhotoProvider } from "./context/PhotoContext";
 import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
+import Scan from "./pages/Scan";
 import UploadFlow from "./pages/UploadFlowPage";
+import ScanFlowPage from "./pages/ScanFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
+import ItemDetailPage from "./pages/ItemDetailPage";
+import EditItemPage from "./pages/EditItemPage";
+import ScanItemDetailPage from "./pages/ScanItemDetailPage";
+import SettingsPage from "./pages/SettingsPage";
+import BuyerDashboard from "./pages/BuyerDashboard";
 import MainLayout from "./components/MainLayout";
+import SortFilterPage from "./pages/SortFilterPage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -47,15 +56,12 @@ const App: React.FC = () => {
       <PhotoProvider>
         <IonReactRouter>
           <IonRouterOutlet id="main">
-            <Route
-              exact
-              path="/home"
-              render={() => (
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              )}
-            />
+            <Route exact path="/home">
+              <Dashboard />
+            </Route>
+            <Route exact path="/sort-filter">
+              <SortFilterPage />
+            </Route>
             <Route
               exact
               path="/upload"
@@ -76,6 +82,24 @@ const App: React.FC = () => {
             />
             <Route
               exact
+              path="/scan"
+              render={() => (
+                <MainLayout>
+                  <Scan />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/scan-flow"
+              render={() => (
+                <MainLayout>
+                  <ScanFlowPage />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
               path="/item-confirmation/:itemId"
               render={() => (
                 <MainLayout>
@@ -83,8 +107,38 @@ const App: React.FC = () => {
                 </MainLayout>
               )}
             />
+            <Route exact path="/item/:itemId">
+              <ItemDetailPage />
+            </Route>
+            <Route exact path="/edit-item/:itemId">
+              <EditItemPage />
+            </Route>
+            <Route
+              exact
+              path="/item-scan/:itemId"
+              render={() => (
+                <MainLayout>
+                  <ScanItemDetailPage />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/settings"
+              render={() => (
+                <MainLayout>
+                  <SettingsPage />
+                </MainLayout>
+              )}
+            />
+            <Route exact path="/buyer">
+              <BuyerDashboard />
+            </Route>
             <Route exact path="/camera">
               <CameraPage />
+            </Route>
+            <Route exact path="/scan-camera">
+              <ScanCameraPage />
             </Route>
             <Route exact path="/">
               <Redirect to="/home" />

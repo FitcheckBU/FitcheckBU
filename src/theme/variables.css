@@ -1,5 +1,20 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+/* Font Imports */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.cdnfonts.com/css/itc-souvenir");
+
+/* Global Font Settings */
+body,
+ion-app {
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
 
 :root {
   --top-navbar-height: 60px;
@@ -10,14 +25,14 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-primary-shade: #023731;
   --ion-color-primary-tint: #1b514c;
 
-  --ion-color-secondary: #ffeda8;
+  --ion-color-secondary: #ebf0ee;
   --ion-color-secondary-rgb: 255, 237, 168;
   --ion-color-secondary-contrast: #000000;
   --ion-color-secondary-contrast-rgb: 0, 0, 0;
   --ion-color-secondary-shade: #e0d194;
   --ion-color-secondary-tint: #ffefb1;
 
-  --ion-color-tertiary: #43b7b4;
+  --ion-color-tertiary: #7a9996;
   --ion-color-tertiary-rgb: 67, 183, 180;
   --ion-color-tertiary-contrast: #000000;
   --ion-color-tertiary-contrast-rgb: 0, 0, 0;
@@ -65,4 +80,6 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-dark-contrast-rgb: 255, 255, 255;
   --ion-color-dark-shade: #292929;
   --ion-color-dark-tint: #444444;
+
+  --item-card-drop-shadow-color: #87b0ac;
 }
