@@ -1,7 +1,7 @@
 /* Filter Sheet Styles - Figma Design */
 .filter-toolbar {
-  --background: #023E38;
-  --color: #FFFFFF;
+  --background: #023e38;
+  --color: #ffffff;
 }
 
 .filter-sheet-content {
@@ -17,10 +17,15 @@
 }
 
 .filter-section-title {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   font-size: 16px;
   font-weight: 700;
-  color: #023E38;
+  color: #023e38;
   margin: 0 0 14px 0;
   letter-spacing: -0.011em;
   line-height: 150%;
@@ -39,17 +44,22 @@
 }
 
 .filter-chip {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   width: 85px;
   height: 44px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #023E38;
+  border: 1px solid #023e38;
   border-radius: 100px;
-  background-color: #FFFFFF;
-  color: #023E38;
+  background-color: #ffffff;
+  color: #023e38;
   font-size: 12px;
   font-weight: 400;
   letter-spacing: -0.011em;
@@ -62,9 +72,9 @@
 }
 
 .chip-selected {
-  background-color: #023E38;
-  color: #FFFFFF;
-  border-color: #023E38;
+  background-color: #023e38;
+  color: #ffffff;
+  border-color: #023e38;
 }
 
 .filter-colors-grid {
@@ -93,7 +103,7 @@
 }
 
 .color-selected::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -101,7 +111,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .filter-actions-footer {
@@ -109,13 +119,18 @@
   gap: 16px;
   padding-top: 20px;
   margin-top: 20px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .filter-reset-button {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --color: #023E38;
-  --border-color: #023E38;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  --color: #023e38;
+  --border-color: #023e38;
   --border-radius: 100px;
   --border-width: 1px;
   --padding-top: 12px;
@@ -128,10 +143,15 @@
 }
 
 .filter-apply-button {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --background: #023E38;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  --background: #023e38;
   --background-activated: #01332e;
-  --color: #FFFFFF;
+  --color: #ffffff;
   --border-radius: 100px;
   --padding-top: 12px;
   --padding-bottom: 12px;

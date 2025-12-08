@@ -6,7 +6,7 @@
   right: 0;
   width: 100%;
   height: 70px;
-  background: #023E38;
+  background: #023e38;
   z-index: 1000;
 }
 
@@ -31,5 +31,5 @@
 
 .top-navbar-menu-button ion-icon {
   font-size: 32px;
-  color: #FFFFFF;
+  color: #ffffff;
 }

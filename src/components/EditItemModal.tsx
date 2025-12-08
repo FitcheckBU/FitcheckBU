@@ -71,7 +71,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         size: item.size || "",
         sex: item.sex || "",
       });
-      
+
       // Load item image
       const loadImage = async () => {
         try {
@@ -155,7 +155,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     if (!item?.id) return;
 
     const confirmed = window.confirm(
-      "Are you sure you want to delete this item? This action cannot be undone."
+      "Are you sure you want to delete this item? This action cannot be undone.",
     );
     if (!confirmed) return;
 
@@ -203,7 +203,11 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
   if (!item) return null;
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose} className="edit-item-modal">
+    <IonModal
+      isOpen={isOpen}
+      onDidDismiss={onClose}
+      className="edit-item-modal"
+    >
       <IonContent className="edit-modal-content">
         {/* Header with back button and title - positioned to account for navbar */}
         <div className="edit-header-section">

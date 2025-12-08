@@ -1,15 +1,26 @@
 import { useState, useEffect, useCallback } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./ThriftStoreMap.css";
 
 // Fix Leaflet default marker icon issue
-delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: () => string })._getIconUrl;
+delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: () => string })
+  ._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
 interface Place {
@@ -49,60 +60,105 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
   const [selectedStore, setSelectedStore] = useState<Place | null>(null);
 
   // Search for thrift stores near location
-  const searchNearbyStores = useCallback((lat: number, lon: number, searchRadius: number) => {
-    setLoading(true);
-    try {
-      // Sample thrift stores in Boston area
-      const bostonThriftStores = [
-        { name: "Thrifty Threads", lat: 42.3505, lon: -71.0900, address: "123 Commonwealth Ave, Boston, MA" },
-        { name: "2nd Street Coolidge Corner", lat: 42.3424, lon: -71.1255, address: "1348 Beacon St, Brookline, MA" },
-        { name: "Buffalo Exchange", lat: 42.3480, lon: -71.0812, address: "238 Newbury St, Boston, MA" },
-        { name: "Groovy Thrifty", lat: 42.3398, lon: -71.0892, address: "678 Centre St, Jamaica Plain, MA" },
-        { name: "DIVERSITY Men's and Women's", lat: 42.3141, lon: -71.0650, address: "80 South St, Boston, MA" },
-        { name: "Boomerangs", lat: 42.3434, lon: -71.0934, address: "716 Centre St, Jamaica Plain, MA" },
-        { name: "Garment District", lat: 42.3643, lon: -71.0851, address: "200 Broadway, Cambridge, MA" },
-        { name: "Urban Renewals", lat: 42.3656, lon: -71.1040, address: "122 Brighton Ave, Allston, MA" },
-      ];
+  const searchNearbyStores = useCallback(
+    (lat: number, lon: number, searchRadius: number) => {
+      setLoading(true);
+      try {
+        // Sample thrift stores in Boston area
+        const bostonThriftStores = [
+          {
+            name: "Thrifty Threads",
+            lat: 42.3505,
+            lon: -71.09,
+            address: "123 Commonwealth Ave, Boston, MA",
+          },
+          {
+            name: "2nd Street Coolidge Corner",
+            lat: 42.3424,
+            lon: -71.1255,
+            address: "1348 Beacon St, Brookline, MA",
+          },
+          {
+            name: "Buffalo Exchange",
+            lat: 42.348,
+            lon: -71.0812,
+            address: "238 Newbury St, Boston, MA",
+          },
+          {
+            name: "Groovy Thrifty",
+            lat: 42.3398,
+            lon: -71.0892,
+            address: "678 Centre St, Jamaica Plain, MA",
+          },
+          {
+            name: "DIVERSITY Men's and Women's",
+            lat: 42.3141,
+            lon: -71.065,
+            address: "80 South St, Boston, MA",
+          },
+          {
+            name: "Boomerangs",
+            lat: 42.3434,
+            lon: -71.0934,
+            address: "716 Centre St, Jamaica Plain, MA",
+          },
+          {
+            name: "Garment District",
+            lat: 42.3643,
+            lon: -71.0851,
+            address: "200 Broadway, Cambridge, MA",
+          },
+          {
+            name: "Urban Renewals",
+            lat: 42.3656,
+            lon: -71.104,
+            address: "122 Brighton Ave, Allston, MA",
+          },
+        ];
 
-      // Calculate distance for each store
-      const places: Place[] = bostonThriftStores.map((store) => {
-        const R = 6371e3; // Earth's radius in meters
-        const φ1 = lat * Math.PI/180;
-        const φ2 = store.lat * Math.PI/180;
-        const Δφ = (store.lat - lat) * Math.PI/180;
-        const Δλ = (store.lon - lon) * Math.PI/180;
-        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                  Math.cos(φ1) * Math.cos(φ2) *
-                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        const distance = R * c;
+        // Calculate distance for each store
+        const places: Place[] = bostonThriftStores.map((store) => {
+          const R = 6371e3; // Earth's radius in meters
+          const φ1 = (lat * Math.PI) / 180;
+          const φ2 = (store.lat * Math.PI) / 180;
+          const Δφ = ((store.lat - lat) * Math.PI) / 180;
+          const Δλ = ((store.lon - lon) * Math.PI) / 180;
+          const a =
+            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const distance = R * c;
 
-        return {
-          lat: store.lat,
-          lon: store.lon,
-          name: store.name,
-          address: store.address,
-          distance: distance,
-        };
-      });
+          return {
+            lat: store.lat,
+            lon: store.lon,
+            name: store.name,
+            address: store.address,
+            distance: distance,
+          };
+        });
 
-      // Filter by radius and sort by distance
-      const filtered = places.filter(place => place.distance <= searchRadius);
-      filtered.sort((a, b) => a.distance - b.distance);
-      
-      setStores(filtered);
-    } catch (error) {
-      console.error("Error searching for stores:", error);
-      setStores([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        // Filter by radius and sort by distance
+        const filtered = places.filter(
+          (place) => place.distance <= searchRadius,
+        );
+        filtered.sort((a, b) => a.distance - b.distance);
+
+        setStores(filtered);
+      } catch (error) {
+        console.error("Error searching for stores:", error);
+        setStores([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
   // Update radius when proximity filter changes
   useEffect(() => {
     if (proximityFilter) {
-      const milesValue = parseInt(proximityFilter.split(' ')[0]);
+      const milesValue = parseInt(proximityFilter.split(" ")[0]);
       const metersValue = milesValue * 1609.34; // Convert miles to meters
       setRadius(metersValue);
     } else {
@@ -117,8 +173,10 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
 
   // Custom marker icon for thrift stores
   const storeIcon = new L.Icon({
-    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    iconUrl:
+      "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+    shadowUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -131,21 +189,25 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
       <div className="map-wrapper">
         <MapContainer
           key={mapKey}
-          center={selectedStore ? [selectedStore.lat, selectedStore.lon] : location}
+          center={
+            selectedStore ? [selectedStore.lat, selectedStore.lon] : location
+          }
           zoom={selectedStore ? 15 : 14}
           className="leaflet-map"
           scrollWheelZoom={true}
           zoomControl={true}
         >
-          <MapUpdater 
-            center={selectedStore ? [selectedStore.lat, selectedStore.lon] : location} 
-            zoom={selectedStore ? 15 : 14} 
+          <MapUpdater
+            center={
+              selectedStore ? [selectedStore.lat, selectedStore.lon] : location
+            }
+            zoom={selectedStore ? 15 : 14}
           />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          
+
           {/* User location marker */}
           <Marker position={location}>
             <Popup>
@@ -191,21 +253,21 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
           <div className="nearby-header">Near By:</div>
           <div className="nearby-list">
             {stores.slice(0, 8).map((store, index) => (
-              <div 
-                key={index} 
-                className="nearby-item" 
+              <div
+                key={index}
+                className="nearby-item"
                 onClick={() => setSelectedStore(store)}
                 data-testid={`store-item-${index}`}
               >
-                <svg 
-                  className="nearby-pin-icon" 
-                  width="24" 
-                  height="24" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  className="nearby-pin-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
                   fill="none"
                 >
-                  <path 
-                    d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" 
+                  <path
+                    d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z"
                     fill="#023E38"
                   />
                 </svg>
@@ -221,28 +283,43 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
       {/* Store Detail View */}
       {selectedStore && (
         <div className="store-detail-view">
-          <button 
+          <button
             className="store-back-button"
             onClick={() => setSelectedStore(null)}
             data-testid="button-back"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M15 18L9 12L15 6" stroke="#023E38" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M15 18L9 12L15 6"
+                stroke="#023E38"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             Back
           </button>
 
           <div className="store-detail-name">{selectedStore.name}</div>
           <div className="store-detail-address">{selectedStore.address}</div>
-          
+
           <div className="store-action-buttons">
-            <button className="store-btn store-btn-primary" data-testid="button-directions">
+            <button
+              className="store-btn store-btn-primary"
+              data-testid="button-directions"
+            >
               Directions
             </button>
-            <button className="store-btn store-btn-secondary" data-testid="button-call">
+            <button
+              className="store-btn store-btn-secondary"
+              data-testid="button-call"
+            >
               Call
             </button>
-            <button className="store-btn store-btn-secondary" data-testid="button-website">
+            <button
+              className="store-btn store-btn-secondary"
+              data-testid="button-website"
+            >
               Website
             </button>
           </div>
@@ -253,8 +330,12 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
       {!loading && stores.length === 0 && (
         <div className="map-no-stores">
           <div className="no-stores-icon">🏪</div>
-          <div className="no-stores-text">No thrift stores found within {radius / 1000} km</div>
-          <div className="no-stores-hint">Try increasing the search radius or searching a different area</div>
+          <div className="no-stores-text">
+            No thrift stores found within {radius / 1000} km
+          </div>
+          <div className="no-stores-hint">
+            Try increasing the search radius or searching a different area
+          </div>
         </div>
       )}
     </div>

@@ -275,7 +275,9 @@ const FilterForm: React.FC<FilterFormProps> = ({
               className={`color-circle ${selectedColors.includes(color.name) ? "color-selected" : ""}`}
               style={{
                 backgroundColor: color.hex,
-                border: color.border ? `1px solid ${color.border}` : '1px solid transparent',
+                border: color.border
+                  ? `1px solid ${color.border}`
+                  : "1px solid transparent",
               }}
               onClick={() =>
                 toggleSelection(color.name, selectedColors, setSelectedColors)

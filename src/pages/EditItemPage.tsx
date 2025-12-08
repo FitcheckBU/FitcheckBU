@@ -1,4 +1,10 @@
-import { IonButton, IonIcon, IonPage, IonContent, IonInput } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonPage,
+  IonContent,
+  IonInput,
+} from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
@@ -20,7 +26,7 @@ const EditItemPage: React.FC = () => {
   const history = useHistory();
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
-  
+
   // Form state
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
@@ -55,7 +61,7 @@ const EditItemPage: React.FC = () => {
           ...snapshot.data(),
         } as InventoryItem;
         setItem(itemData);
-        
+
         // Initialize form fields
         setName(itemData.name || "");
         setBrand(itemData.brand || "");
@@ -122,7 +128,7 @@ const EditItemPage: React.FC = () => {
 
   const handleDelete = async () => {
     if (!item || !item.id) return;
-    
+
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
         await deleteItem(item.id);
@@ -168,7 +174,11 @@ const EditItemPage: React.FC = () => {
             {/* Image */}
             <div className="edit-image-section">
               {imageUrl ? (
-                <img src={imageUrl} alt={item.name} className="edit-item-image" />
+                <img
+                  src={imageUrl}
+                  alt={item.name}
+                  className="edit-item-image"
+                />
               ) : (
                 <div className="edit-item-image-placeholder">No Image</div>
               )}

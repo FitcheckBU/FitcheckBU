@@ -65,8 +65,8 @@
 
 /* Centered title matching Dashboard style */
 .item-detail-title {
-  font-family: "ITC Souvenir Std", Georgia, serif;
-  font-size: 20px;
+  font-family: "ITC Souvenir", serif;
+  font-size: 22px;
   font-weight: 700;
   font-style: italic;
   color: #023e38;
@@ -150,6 +150,7 @@
 }
 
 .item-name {
+  font-family: "DM Sans", sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: #1f2937;
@@ -164,6 +165,7 @@
 
 .item-status,
 .item-sku {
+  font-family: "DM Sans", sans-serif;
   font-size: 14px;
   color: #1f2937;
   margin: 0;
@@ -178,11 +180,11 @@
 }
 
 .barcode-section {
-  padding: 16px 0;
+  margin-top: 0rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 0rem; /* Adds space between barcode and button */
 }
 
 .barcode-svg {
@@ -195,20 +197,21 @@
 .print-barcode-button {
   --padding-start: 12px;
   --padding-end: 12px;
-  --border-radius: 8px;
+  --border-radius: 50px; /* Match other buttons */
   height: 48px;
-  font-size: 1rem;
-  white-space: nowrap;
-  flex-shrink: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none; /* ← This should already be "none" */
+  white-space: nowrap; /* Prevents text from wrapping */
+  /*flex-shrink: 0;*/
+  margin: 0;
 }
 
 .more-info-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 0px solid var(--ion-color-step-200, #e0e0e0);
 }
 
 .info-row {
@@ -218,12 +221,14 @@
 }
 
 .info-label {
+  font-family: "DM Sans", sans-serif;
   font-weight: 700;
   color: #1f2937;
   min-width: 80px;
 }
 
 .info-value {
+  font-family: "DM Sans", sans-serif;
   font-weight: 400;
   color: #4b5563;
 }
@@ -242,6 +247,7 @@
   --border-radius: 50px;
   --padding-top: 14px;
   --padding-bottom: 14px;
+  font-family: "DM Sans", sans-serif;
   font-size: 16px;
   font-weight: 600;
   text-transform: none;
@@ -303,6 +309,7 @@
   --color: var(--ion-color-primary);
   --padding-top: 12px;
   --padding-bottom: 12px;
+  font-family: "DM Sans", sans-serif;
   font-size: 15px;
   font-weight: 600;
   text-transform: none;
@@ -340,10 +347,13 @@
   max-width: 400px;
   width: 100%;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  justify-content: center;
+  align-items: center;
 }
 
 .confirmation-text {
   font-size: 16px;
+  font-family: "DM Sans", sans-serif;
   color: #1f2937;
   margin: 0 0 24px 0;
   text-align: center;
@@ -357,59 +367,51 @@
 
 .confirmation-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  justify-content: center;
   gap: 12px;
+  align-items: center;
+  justify-items: center;
 }
 
 .confirm-button {
-  margin: 0;
   --border-radius: 50px;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
+  --background: var(--ion-color-primary);
+  --color: #fff;
   height: 48px;
+  font-family: "DM Sans", sans-serif;
   font-size: 15px;
   font-weight: 600;
   text-transform: none;
-  --background: var(--ion-color-primary);
-  --color: #fff;
+  width: 138px;
+  margin: 0;
 }
 
 .cancel-button {
   --background: transparent;
   --box-shadow: none;
-  --border-width: 0 !important;
+  --border-color: var(--ion-color-primary);
+  --border-width: 2px; /* Change from 9px to 2px */
+  --border-style: solid; /* ADD THIS LINE */
+  --border-radius: 50px; /* ADD THIS LINE */
   height: 48px;
+  font-family: "DM Sans", sans-serif;
   font-size: 15px;
   font-weight: 600;
   text-transform: none;
-  border: none !important;
-  width: 190px;
-}
-
-.cancel-button::part(container) {
-  border: none !important;
-  box-shadow: none !important;
+  width: 138px;
+  margin: 0;
 }
 
 .cancel-button::part(native) {
-  background: transparent !important;
-  border: 2px solid var(--ion-color-primary) !important;
-  border-radius: 9999px !important;
-  height: 48px !important;
-  min-height: 48px !important;
-  padding: 12px 24px !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: none !important;
+  border: none !important;
   outline: none !important;
 }
 
 .cancel-button::part(native)::after {
+  display: none !important;
   border: none !important;
-  box-shadow: none !important;
 }
 
-.cancel-button::part(ripple) {
-  display: none !important;
+.cancel-button::part(container) {
+  border: none !important;
 }

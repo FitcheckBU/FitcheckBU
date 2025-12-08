@@ -17,7 +17,7 @@
   position: relative;
   width: 100%;
   padding: 25px 31px;
-  background: #EBF0EF;
+  background: #ebf0ef;
 }
 
 .edit-back-button {
@@ -34,18 +34,18 @@
 
 .edit-back-button ion-icon {
   font-size: 32px;
-  color: #023E38;
+  color: #023e38;
 }
 
 .edit-title {
-  font-family: 'ITC Souvenir Std', Georgia, serif;
+  font-family: "ITC Souvenir Std", Georgia, serif;
   font-style: italic;
   font-weight: 700;
   font-size: 20px;
   line-height: 150%;
   text-align: center;
   letter-spacing: -0.011em;
-  color: #023E38;
+  color: #023e38;
   margin: 3px 0 0;
 }
 
@@ -56,10 +56,10 @@
 }
 
 .edit-form-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 15px;
   padding: 25px 27px 27px;
-  box-shadow: 0px 4px 4px #7B9996;
+  box-shadow: 0px 4px 4px #7b9996;
 }
 
 /* Item Image Container */
@@ -69,7 +69,7 @@
   margin: 0 auto 22px;
   border-radius: 10px;
   overflow: hidden;
-  background: #F3F4F6;
+  background: #f3f4f6;
 }
 
 .edit-item-image {
@@ -85,14 +85,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7B9996;
+  color: #7b9996;
   font-size: 16px;
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 /* Upload Button */
 .upload-button {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   width: 100%;
   max-width: 296px;
   height: 41px;
@@ -100,10 +110,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #023E38;
+  border: 1px solid #023e38;
   border-radius: 100px;
-  background: #FFFFFF;
-  color: #023E38;
+  background: #ffffff;
+  color: #023e38;
   font-size: 16px;
   font-weight: 400;
   letter-spacing: -0.011em;
@@ -125,10 +135,15 @@
 }
 
 .section-title {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   font-size: 16px;
   font-weight: 700;
-  color: #023E38;
+  color: #023e38;
   margin: 0 0 14px 0;
   letter-spacing: -0.011em;
   line-height: 150%;
@@ -156,15 +171,20 @@
 .field-input,
 .field-select,
 .field-textarea {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   width: 100%;
   height: 41px;
   padding: 0 20px;
-  border: 1px solid #7B9996;
+  border: 1px solid #7b9996;
   border-radius: 100px;
   font-size: 14px;
-  color: #023E38;
-  background: #FFFFFF;
+  color: #023e38;
+  background: #ffffff;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
@@ -173,12 +193,12 @@
 .field-select:focus,
 .field-textarea:focus {
   outline: none;
-  border-color: #023E38;
+  border-color: #023e38;
 }
 
 .field-input::placeholder,
 .field-textarea::placeholder {
-  color: #7B9996;
+  color: #7b9996;
   font-size: 14px;
 }
 
@@ -232,7 +252,7 @@
 }
 
 .edit-color-selected::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -240,7 +260,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 /* Bottom Action Buttons */
@@ -256,17 +276,22 @@
 
 /* Mark as Sold / Save Button */
 .save-button {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   width: 100%;
   height: 41px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #023E38;
+  border: 1px solid #023e38;
   border-radius: 100px;
-  background: #023E38;
-  color: #FFFFFF;
+  background: #023e38;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 400;
   letter-spacing: -0.011em;
@@ -280,8 +305,8 @@
 }
 
 .save-button:disabled {
-  background-color: #7B9996;
-  border-color: #7B9996;
+  background-color: #7b9996;
+  border-color: #7b9996;
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -294,17 +319,22 @@
 
 .cancel-button,
 .delete-button {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   flex: 1;
   height: 41px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #023E38;
+  border: 1px solid #023e38;
   border-radius: 100px;
-  background: #FFFFFF;
-  color: #023E38;
+  background: #ffffff;
+  color: #023e38;
   font-size: 16px;
   font-weight: 400;
   letter-spacing: -0.011em;
@@ -315,5 +345,5 @@
 .cancel-button:active,
 .delete-button:active {
   transform: scale(0.98);
-  background-color: #F3F4F6;
+  background-color: #f3f4f6;
 }
