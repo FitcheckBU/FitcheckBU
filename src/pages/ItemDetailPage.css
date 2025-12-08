@@ -370,20 +370,20 @@
   justify-content: center;
   gap: 12px;
   align-items: center;
+  justify-items: center;
 }
 
 .confirm-button {
-  margin: 0;
   --border-radius: 50px;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
+  --background: var(--ion-color-primary);
+  --color: #fff;
   height: 48px;
   font-family: "DM Sans", sans-serif;
   font-size: 15px;
   font-weight: 600;
   text-transform: none;
-  --background: var(--ion-color-primary);
-  --color: #fff;
+  width: 138px;
+  margin: 0;
 }
 
 .cancel-button {
@@ -414,12 +414,4 @@
 
 .cancel-button::part(container) {
   border: none !important;
-}
-
-/* keep confirm solid pill */
-.confirm-button {
-  --background: var(--ion-color-primary);
-  --color: #fff;
-  --border-radius: 9999px;
-  width: 138px;
 }

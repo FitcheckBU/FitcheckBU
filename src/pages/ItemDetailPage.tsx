@@ -206,16 +206,6 @@ const ItemDetailPage: React.FC = () => {
                   <rect x="256" y="0" width="4" height="80" fill="#000" />
                   <rect x="264" y="0" width="12" height="80" fill="#000" />
                 </svg>
-                {!isBuyerView && (
-                  <IonButton
-                    color="primary"
-                    className="print-barcode-button"
-                    onClick={handlePrintBarcode}
-                    disabled={isPrinting}
-                  >
-                    {isPrinting ? <IonSpinner name="crescent" /> : "Print"}
-                  </IonButton>
-                )}
               </div>
 
               {showMoreInfo && (
@@ -264,16 +254,7 @@ const ItemDetailPage: React.FC = () => {
                     "Print Barcode"
                   )}
                 </IonButton>
-                <IonButton
-                  expand="block"
-                  color="primary"
-                  className="mark-sold-button"
-                  onClick={handleMarkAsSoldClick}
-                  disabled={item.isSold}
-                  data-testid="button-mark-sold"
-                >
-                  {item.isSold ? "Marked as Sold" : "Mark as Sold"}
-                </IonButton>
+
                 {isBuyerView ? (
                   <>
                     {/* Buyer View - Show Price and Contact */}
