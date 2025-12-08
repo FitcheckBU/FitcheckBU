@@ -14,11 +14,7 @@ import { menuOutline, optionsOutline } from "ionicons/icons";
 import { useState, useEffect, useRef, useMemo } from "react";
 import type { InfiniteScrollCustomEvent } from "@ionic/react";
 import { useHistory, useLocation } from "react-router-dom";
-import {
-  InventoryItem,
-  FilterState,
-  deleteItem,
-} from "../lib/inventoryService";
+import { InventoryItem, FilterState } from "../lib/inventoryService";
 import {
   getFilteredItems,
   convertFilterStateToParams,
@@ -54,7 +50,7 @@ const Dashboard: React.FC = () => {
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const initialLoad = useRef(true);
-
+  
   // Sidebar state
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -179,23 +175,6 @@ const Dashboard: React.FC = () => {
     history.push(`/edit-item/${item.id}`);
   };
 
-  const handleDeleteItem = async (item: InventoryItem) => {
-    if (!item.id) return;
-
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${item.name || "this item"}"? This action cannot be undone.`,
-    );
-    if (!confirmed) return;
-
-    try {
-      await deleteItem(item.id);
-      // Reload items after deletion
-      await loadItems(true);
-    } catch (error) {
-      console.error("Failed to delete item:", error);
-    }
-  };
-
   return (
     <IonPage>
       <IonContent className="dashboard-container">
@@ -205,8 +184,8 @@ const Dashboard: React.FC = () => {
 
         <div className="dashboard-header">
           <Logo />
-          <IonButton
-            fill="clear"
+          <IonButton 
+            fill="clear" 
             className="menu-button"
             onClick={() => setSidebarOpen(!isSidebarOpen)}
             data-testid="button-menu"
@@ -214,7 +193,7 @@ const Dashboard: React.FC = () => {
             <IonIcon icon={menuOutline} slot="icon-only" />
           </IonButton>
         </div>
-
+        
         <div
           className={`page-overlay ${isSidebarOpen ? "active" : ""}`}
           onClick={() => setSidebarOpen(false)}
@@ -223,8 +202,8 @@ const Dashboard: React.FC = () => {
 
         <div className="dashboard-subheader">
           <h2 className="subheader-title">User Dashboard</h2>
-          <IonButton
-            fill="clear"
+          <IonButton 
+            fill="clear" 
             onClick={navigateToFilters}
             className="filter-button-sub"
             data-testid="button-filter"
@@ -252,7 +231,6 @@ const Dashboard: React.FC = () => {
                   item={item}
                   onClick={() => history.push(`/item/${item.id}`)}
                   onEdit={() => handleEditItem(item)}
-                  onDelete={() => handleDeleteItem(item)}
                 />
               ))}
               <IonInfiniteScroll

@@ -1,6 +1,6 @@
 /* Dashboard page styles - Figma Design */
 .dashboard-container {
-  --background: #ebf0ef;
+  --background: #EBF0EF;
   --padding-start: 0;
   --padding-end: 0;
   --padding-top: 0;
@@ -8,7 +8,7 @@
 }
 
 .dashboard-container::part(scroll) {
-  background-color: #ebf0ef;
+  background-color: #EBF0EF;
 }
 
 /* Override page overlay for dashboard to start from top */
@@ -21,7 +21,7 @@
   position: relative;
   width: 100%;
   height: 70px;
-  background: #023e38;
+  background: #023E38;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -49,7 +49,7 @@
 
 .menu-button ion-icon {
   font-size: 32px;
-  color: #ffffff;
+  color: #FFFFFF;
 }
 
 .dashboard-subheader {
@@ -57,16 +57,16 @@
   align-items: center;
   justify-content: center;
   padding: 24px 20px;
-  background-color: #ebf0ef;
+  background-color: #EBF0EF;
   position: relative;
 }
 
 .subheader-title {
-  font-family: "ITC Souvenir Std", Georgia, serif;
+  font-family: 'ITC Souvenir Std', Georgia, serif;
   font-size: 20px;
   font-weight: 700;
   font-style: italic;
-  color: #023e38;
+  color: #023E38;
   margin: 0;
   text-align: center;
   letter-spacing: -0.011em;
@@ -85,7 +85,7 @@
 
 .filter-button-sub ion-icon {
   font-size: 32px;
-  color: #023e38;
+  color: #023E38;
 }
 
 .filter-button {
@@ -110,7 +110,7 @@
   left: 0;
   right: 0;
   padding: 20px;
-  background-color: #ebf0ef;
+  background-color: #EBF0EF;
   z-index: 10;
   display: flex;
   justify-content: center;
@@ -118,10 +118,10 @@
 
 .dashboard-searchbar {
   --background: #ffffff;
-  --box-shadow: 0px 4px 4px #7b9996;
+  --box-shadow: 0px 4px 4px #7B9996;
   --border-radius: 100px;
-  --placeholder-color: #7b9996;
-  --icon-color: #7b9996;
+  --placeholder-color: #7B9996;
+  --icon-color: #7B9996;
   --padding-start: 20px;
   --padding-end: 20px;
   padding: 0;
@@ -136,7 +136,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  background-color: #ebf0ef;
+  background-color: #EBF0EF;
   align-items: center;
 }
 
@@ -153,7 +153,7 @@
   align-items: center;
   justify-content: center;
   height: 60vh;
-  color: #023e38;
+  color: #023E38;
   opacity: 0.6;
   text-align: center;
   padding: 20px;
