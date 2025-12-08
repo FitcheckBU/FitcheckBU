@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
   IonModal,
+  IonButton,
+  IonContent,
+  IonIcon,
+  useIonToast,
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { InventoryItem, updateItem, deleteItem } from "../lib/inventoryService";
@@ -67,8 +71,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         size: item.size || "",
         sex: item.sex || "",
       });
-      
-      // Load item image
+
       const loadImage = async () => {
         try {
           const urls = await getItemImageUrls(item);
@@ -151,7 +154,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     if (!item?.id) return;
 
     const confirmed = window.confirm(
-      "Are you sure you want to delete this item? This action cannot be undone."
+      "Are you sure you want to delete this item? This action cannot be undone.",
     );
     if (!confirmed) return;
 
@@ -182,6 +185,36 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     if (item) {
       setFormData({
         name: item.name || "",
+        brand: item.brand || "",
+        category: item.category || "",
+        color: item.color || "",
+        condition: item.condition || "",
+        price: item.price?.toString() || "",
+        decade: item.decade || "",
+        style: item.style || "",
+        description: item.description || "",
+        size: item.size || "",
+        sex: item.sex || "",
+      });
+    }
+  };
+
+  if (!item) return null;
+
+  return (
+    <IonModal
+      isOpen={isOpen}
+      onDidDismiss={onClose}
+      className="edit-item-modal"
+    >
+      <IonContent className="edit-modal-content">
+        <div className="edit-header-section">
+          <IonButton
+            fill="clear"
+            className="edit-back-button"
+            onClick={onClose}
+            data-testid="button-close-edit"
+          >
             <IonIcon icon={arrowBackOutline} />
           </IonButton>
           <h1 className="edit-title">Edit Listing</h1>
@@ -189,7 +222,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
 
         <div className="edit-form-container">
           <div className="edit-form-card">
-            {/* Item Image */}
             <div className="edit-image-container">
               {imageUrl ? (
                 <img
@@ -202,12 +234,10 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
               )}
             </div>
 
-            {/* Upload Button */}
             <button className="upload-button" data-testid="button-upload-photo">
               Upload New Photo
             </button>
 
-            {/* Form Fields */}
             <div className="form-section">
               <div className="form-field">
                 <input
@@ -348,16 +378,13 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
               </div>
             </div>
 
-            {/* Color Selection */}
             <div className="edit-color-section">
               <h3 className="section-title">Color:</h3>
               <div className="edit-colors-grid">
                 {colorOptions.map((color) => (
                   <button
                     key={color.name}
-                    className={`edit-color-circle ${
-                      formData.color === color.name ? "edit-color-selected" : ""
-                    }`}
+                    className={`edit-color-circle ${formData.color === color.name ? "edit-color-selected" : ""}`}
                     style={{
                       backgroundColor: color.hex,
                       border: color.border
@@ -372,7 +399,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="edit-form-actions">
               <button
                 onClick={handleSave}
