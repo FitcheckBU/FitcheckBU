@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
   IonButton,
   IonContent,
   IonIcon,
@@ -179,34 +175,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
       console.error("Failed to delete item:", error);
       await presentToast({
         message: "Failed to delete item. Please try again.",
-        duration: 3000,
-        color: "danger",
-        position: "top",
-      });
-    }
-  };
-
-  const handleMarkAsSold = async () => {
-    if (!item?.id) return;
-
-    try {
-      await updateItem(item.id, { isSold: !item.isSold });
-
-      await presentToast({
-        message: item.isSold
-          ? "Item marked as available"
-          : "Item marked as sold",
-        duration: 2000,
-        color: "success",
-        position: "top",
-      });
-
-      onUpdate();
-      onClose();
-    } catch (error) {
-      console.error("Failed to update item:", error);
-      await presentToast({
-        message: "Failed to update item. Please try again.",
         duration: 3000,
         color: "danger",
         position: "top",
