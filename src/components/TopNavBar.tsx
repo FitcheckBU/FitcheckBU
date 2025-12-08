@@ -1,5 +1,6 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { menuOutline } from "ionicons/icons";
+import Logo from "./Logo";
 import "./TopNavBar.css";
 
 interface TopNavBarProps {
@@ -11,6 +12,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   onMenuClick,
 }) => {
   return (
+    <div className="top-navbar">
       <Logo variant="default" />
       <IonButton 
         fill="clear" 
