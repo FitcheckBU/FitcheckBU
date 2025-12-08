@@ -1,4 +1,10 @@
-import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonPage,
+  IonContent,
+  IonSpinner,
+} from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
@@ -12,12 +18,13 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
+import Logo from "../components/Logo";
 import "./ItemDetailPage.css";
 import { printBarcode } from "../lib/printerService";
 
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
-  const history = useHistory();
+  const history = useHistory<{ fromBuyer?: boolean }>();
   const [item, setItem] = useState<InventoryItem | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [showEditModal, setShowEditModal] = useState(false);
@@ -25,6 +32,9 @@ const ItemDetailPage: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+
+  // Check if this is a buyer view
+  const isBuyerView = history.location.state?.fromBuyer === true;
 
   useEffect(() => {
     if (!itemId) return;
@@ -115,18 +125,25 @@ const ItemDetailPage: React.FC = () => {
   }
 
   return (
-    <>
-      <div className="item-detail-page">
-        <div className="item-detail-header">
+    <IonPage className={`item-detail-page ${isBuyerView ? "buyer-view" : ""}`}>
+      {/* Navbar with logo only */}
+      <div className="item-detail-navbar">
+        <Logo variant={isBuyerView ? "buyer" : "default"} />
+      </div>
+
+      {/* Scrollable content area */}
+      <IonContent className="item-detail-body">
+        {/* Back button and title section */}
+        <div className="item-detail-header-section">
           <IonButton
             fill="clear"
             onClick={handleBack}
-            className="back-button"
+            className="item-back-button"
             data-testid="button-back"
           >
             <IonIcon icon={arrowBackOutline} slot="icon-only" />
           </IonButton>
-          <h1 className="item-detail-title">User Dashboard</h1>
+          <h1 className="item-detail-title">View</h1>
         </div>
 
         <div className="item-detail-content">
@@ -144,45 +161,40 @@ const ItemDetailPage: React.FC = () => {
             </div>
 
             <div className="item-info-section">
-              <h2 className="item-name">{item.name || "Unnamed Item"}</h2>
-
+              <h2 className="item-name">{item.name || "Unknown Item"}</h2>
               <div className="item-meta">
                 <p className="item-status">
-                  <span className="meta-label">Status: </span>
+                  <span className="meta-label">Status:</span>{" "}
                   <span className="meta-value">
-                    {item.isSold ? "Sold" : "Available"}
+                    {item.isSold ? "Sold" : "Listed"}
                   </span>
                 </p>
                 <p className="item-sku">
-                  <span className="meta-label">SKU: </span>
+                  <span className="meta-label">SKU:</span>{" "}
                   <span className="meta-value">
-                    {item.id?.substring(0, 9).toUpperCase() || "N/A"}
+                    {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
                   </span>
                 </p>
               </div>
 
               <div className="barcode-section">
-                <svg
-                  className="barcode-svg"
-                  viewBox="0 0 280 80"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect x="0" y="0" width="4" height="80" fill="#000" />
-                  <rect x="8" y="0" width="8" height="80" fill="#000" />
-                  <rect x="20" y="0" width="4" height="80" fill="#000" />
-                  <rect x="28" y="0" width="12" height="80" fill="#000" />
-                  <rect x="44" y="0" width="4" height="80" fill="#000" />
-                  <rect x="52" y="0" width="8" height="80" fill="#000" />
-                  <rect x="64" y="0" width="4" height="80" fill="#000" />
-                  <rect x="72" y="0" width="12" height="80" fill="#000" />
-                  <rect x="88" y="0" width="4" height="80" fill="#000" />
-                  <rect x="96" y="0" width="8" height="80" fill="#000" />
-                  <rect x="108" y="0" width="4" height="80" fill="#000" />
-                  <rect x="116" y="0" width="12" height="80" fill="#000" />
-                  <rect x="132" y="0" width="4" height="80" fill="#000" />
-                  <rect x="140" y="0" width="8" height="80" fill="#000" />
-                  <rect x="152" y="0" width="4" height="80" fill="#000" />
-                  <rect x="160" y="0" width="12" height="80" fill="#000" />
+                <svg className="barcode-svg" viewBox="0 0 280 80">
+                  {/* Simple barcode pattern */}
+                  <rect x="0" y="0" width="8" height="80" fill="#000" />
+                  <rect x="12" y="0" width="4" height="80" fill="#000" />
+                  <rect x="20" y="0" width="8" height="80" fill="#000" />
+                  <rect x="32" y="0" width="4" height="80" fill="#000" />
+                  <rect x="40" y="0" width="12" height="80" fill="#000" />
+                  <rect x="56" y="0" width="4" height="80" fill="#000" />
+                  <rect x="64" y="0" width="8" height="80" fill="#000" />
+                  <rect x="76" y="0" width="4" height="80" fill="#000" />
+                  <rect x="84" y="0" width="12" height="80" fill="#000" />
+                  <rect x="100" y="0" width="4" height="80" fill="#000" />
+                  <rect x="108" y="0" width="8" height="80" fill="#000" />
+                  <rect x="120" y="0" width="4" height="80" fill="#000" />
+                  <rect x="128" y="0" width="12" height="80" fill="#000" />
+                  <rect x="144" y="0" width="8" height="80" fill="#000" />
+                  <rect x="156" y="0" width="4" height="80" fill="#000" />
                   <rect x="164" y="0" width="8" height="80" fill="#000" />
                   <rect x="176" y="0" width="12" height="80" fill="#000" />
                   <rect x="192" y="0" width="4" height="80" fill="#000" />
@@ -194,6 +206,16 @@ const ItemDetailPage: React.FC = () => {
                   <rect x="256" y="0" width="4" height="80" fill="#000" />
                   <rect x="264" y="0" width="12" height="80" fill="#000" />
                 </svg>
+                {!isBuyerView && (
+                  <IonButton
+                    color="primary"
+                    className="print-barcode-button"
+                    onClick={handlePrintBarcode}
+                    disabled={isPrinting}
+                  >
+                    {isPrinting ? <IonSpinner name="crescent" /> : "Print"}
+                  </IonButton>
+                )}
               </div>
 
               {showMoreInfo && (
@@ -252,26 +274,71 @@ const ItemDetailPage: React.FC = () => {
                 >
                   {item.isSold ? "Marked as Sold" : "Mark as Sold"}
                 </IonButton>
+                {isBuyerView ? (
+                  <>
+                    {/* Buyer View - Show Price and Contact */}
+                    <div className="buyer-price-section">
+                      <span className="price-label">Price:</span>
+                      <span className="price-value">
+                        ${item.price?.toFixed(2) || "0.00"}
+                      </span>
+                    </div>
+                    <IonButton
+                      expand="block"
+                      color="primary"
+                      className="contact-seller-button"
+                      data-testid="button-contact-seller"
+                    >
+                      Contact Seller
+                    </IonButton>
+                    <div className="action-buttons-row">
+                      <IonButton
+                        fill="outline"
+                        color="primary"
+                        className="secondary-action-button"
+                        onClick={() => setShowMoreInfo(!showMoreInfo)}
+                        data-testid="button-more-info"
+                      >
+                        {showMoreInfo ? "Less Info" : "More Info"}
+                      </IonButton>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Seller View - Show Mark as Sold and Edit */}
+                    <IonButton
+                      expand="block"
+                      color="primary"
+                      className="mark-sold-button"
+                      onClick={handleMarkAsSoldClick}
+                      disabled={item.isSold}
+                      data-testid="button-mark-sold"
+                    >
+                      {item.isSold ? "Marked as Sold" : "Mark as Sold"}
+                    </IonButton>
 
-                <div className="action-buttons-row">
-                  <IonButton
-                    expand="block"
-                    fill="outline"
-                    className="secondary-action-button"
-                    onClick={() => setShowMoreInfo(!showMoreInfo)}
-                  >
-                    {showMoreInfo ? "Less Info" : "More Info"}
-                  </IonButton>
-                  <IonButton
-                    expand="block"
-                    fill="outline"
-                    className="secondary-action-button"
-                    onClick={() => setShowEditModal(true)}
-                    data-testid="button-edit"
-                  >
-                    Edit
-                  </IonButton>
-                </div>
+                    <div className="action-buttons-row">
+                      <IonButton
+                        fill="outline"
+                        color="primary"
+                        className="secondary-action-button"
+                        onClick={() => history.push(`/edit-item/${item.id}`)}
+                        data-testid="button-edit"
+                      >
+                        Edit
+                      </IonButton>
+                      <IonButton
+                        fill="outline"
+                        color="primary"
+                        className="secondary-action-button"
+                        onClick={() => setShowMoreInfo(!showMoreInfo)}
+                        data-testid="button-more-info"
+                      >
+                        {showMoreInfo ? "Less Info" : "More Info"}
+                      </IonButton>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -308,7 +375,7 @@ const ItemDetailPage: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+      </IonContent>
 
       <EditItemModal
         isOpen={showEditModal}
@@ -318,7 +385,7 @@ const ItemDetailPage: React.FC = () => {
           setShowEditModal(false);
         }}
       />
-    </>
+    </IonPage>
   );
 };
 

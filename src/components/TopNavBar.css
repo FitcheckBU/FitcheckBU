@@ -1,34 +1,35 @@
+/* Top Navbar - Seller Side Styling matching Dashboard */
 .top-navbar {
-  height: var(--top-navbar-height);
   position: fixed;
   top: 0;
   left: 0;
+  right: 0;
   width: 100%;
-  z-index: 10;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--ion-color-primary);
-  /* Using primary color from variables.css */
-  padding: 10px 15px;
-  color: white;
+  height: 70px;
+  background: #023E38;
+  z-index: 1000;
 }
 
-.navbar-logo {
-  height: 30px;
-  cursor: pointer;
-  margin-left: 16px;
+/* Logo positioned at exact Figma specs */
+.top-navbar .logo {
+  position: absolute;
+  left: 26.9px;
+  top: 17.24px;
 }
 
-.navbar-hamburger {
+/* Hamburger menu positioned at exact Figma specs */
+.top-navbar-menu-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  position: absolute;
+  right: 7.95%;
+  top: 19px;
+  margin: 0;
+  width: 32px;
   height: 32px;
-  margin-right: 16px;
-
-  /* Ensure icons are white on primary background */
-  color: ion-color-primary-contrast;
-  transition: transform 0.2s ease;
 }
 
-.navbar-hamburger:hover {
-  transform: scale(1.1);
+.top-navbar-menu-button ion-icon {
+  font-size: 32px;
+  color: #FFFFFF;
 }

@@ -7,24 +7,28 @@ ion-item.figma-item-card {
   --padding-start: 0;
   --padding-end: 0;
   --inner-padding-end: 0;
-  margin: 0;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px 0 var(--item-card-drop-shadow-color);
+  margin: 0 auto;
+  border-radius: 15px;
+  box-shadow: 0px 4px 4px #7B9996;
   overflow: hidden;
+  width: 100%;
+  max-width: 350px;
+  height: 133px;
 }
 
 .figma-card-content {
   display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 14px 16px;
+  gap: 19px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  height: 100%;
 }
 
 .figma-image-container {
   flex-shrink: 0;
-  width: 90px;
-  height: 90px;
-  border-radius: 12px;
+  width: 94px;
+  height: 94px;
+  border-radius: 10px;
   overflow: hidden;
   background: #f3f4f6;
 }
@@ -51,75 +55,71 @@ ion-item.figma-item-card {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-family:
-    "DM Sans",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  gap: 3px;
 }
 
 .figma-item-name {
-  font-size: 16px;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
   font-weight: 700;
-  color: #1f2937;
+  color: #023E38;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: -0.011em;
+  line-height: 150%;
   margin-bottom: 2px;
-  font-family:
-    "DM Sans",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
 }
 
 .figma-item-details-grid {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 12px;
+  gap: 10px;
 }
 
 .figma-details-left {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0px;
 }
 
 .figma-details-right {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  text-align: right;
+  gap: 0px;
+  text-align: left;
 }
 
 .figma-detail-text {
-  font-size: 13px;
-  color: #4b5563;
-  line-height: 1.5;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #023E38;
+  line-height: 150%;
+  letter-spacing: -0.011em;
 }
 
-/* Swipeable action styles */
+/* Swipeable action styles - Center the cards */
 ion-item-sliding {
-  margin-bottom: 12px;
+  margin-bottom: 0;
   overflow: visible;
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  justify-content: center;
 }
 
 .swipe-actions {
-  background-color: #e8a76a !important;
-  border-radius: 0 16px 16px 0;
+  background-color: #7B9996 !important;
+  border-radius: 0 15px 15px 0;
   overflow: hidden;
 }
 
 ion-item-option.swipe-edit,
 ion-item-option.swipe-delete {
-  --background: #e8a76a !important;
-  background: #e8a76a !important;
-  background-color: #e8a76a !important;
+  --background: #7B9996 !important;
+  background: #7B9996 !important;
+  background-color: #7B9996 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,6 +129,6 @@ ion-item-option.swipe-delete {
 
 ion-item-option.swipe-edit ion-icon,
 ion-item-option.swipe-delete ion-icon {
-  font-size: 30px;
-  color: var(--ion-color-primary);
+  font-size: 32px;
+  color: #023E38;
 }
