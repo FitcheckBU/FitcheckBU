@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   IonModal,
-  IonButton,
-  IonContent,
-  IonIcon,
-  useIonToast,
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { InventoryItem, updateItem, deleteItem } from "../lib/inventoryService";
@@ -186,33 +182,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     if (item) {
       setFormData({
         name: item.name || "",
-        brand: item.brand || "",
-        category: item.category || "",
-        color: item.color || "",
-        condition: item.condition || "",
-        price: item.price?.toString() || "",
-        decade: item.decade || "",
-        style: item.style || "",
-        description: item.description || "",
-        size: item.size || "",
-        sex: item.sex || "",
-      });
-    }
-  };
-
-  if (!item) return null;
-
-  return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose} className="edit-item-modal">
-      <IonContent className="edit-modal-content">
-        {/* Header with back button and title - positioned to account for navbar */}
-        <div className="edit-header-section">
-          <IonButton
-            fill="clear"
-            onClick={onClose}
-            className="edit-back-button"
-            data-testid="button-close-edit"
-          >
             <IonIcon icon={arrowBackOutline} />
           </IonButton>
           <h1 className="edit-title">Edit Listing</h1>
