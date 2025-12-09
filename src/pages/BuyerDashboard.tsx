@@ -170,6 +170,11 @@ const BuyerDashboard: React.FC = () => {
     setRecentSearches([]);
   };
 
+  const handleSearch = () => {
+    setShowSearchDropdown(false);
+    setIsSearching(true);
+  };
+
   const handleItemClick = (itemId: string) => {
     history.push(`/item/${itemId}`, { fromBuyer: true });
   };
@@ -491,6 +496,13 @@ const BuyerDashboard: React.FC = () => {
                         data-testid="button-clear-recents"
                       >
                         Clear Recents
+                      </button>
+                      <button
+                        className="search-execute-button"
+                        onClick={handleSearch}
+                        data-testid="button-execute-search"
+                      >
+                        Search
                       </button>
                     </>
                   )}

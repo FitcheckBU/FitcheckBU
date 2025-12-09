@@ -8,9 +8,11 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ variant = "default", className = "" }) => {
   if (variant === "buyer") {
     return (
-      <h1 className={`logo-buyer ${className}`} data-testid="logo-buyer">
-        fitcheck
-      </h1>
+      <img
+        src="/logo.svg"
+        alt="fitcheck"
+        className={`logo-buyer-image ${className}`}
+      />
     );
   }
 
