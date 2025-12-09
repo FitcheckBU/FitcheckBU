@@ -14,7 +14,7 @@ import {
 } from "../lib/inventoryService";
 import ThriftStoreMap from "../components/ThriftStoreMap";
 import Logo from "../components/Logo";
-import "./BuyerDashboard.css";
+import "../styles/pages/BuyerDashboard.css";
 
 interface AddressSuggestion {
   formatted: string;

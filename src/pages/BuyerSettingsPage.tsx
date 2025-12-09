@@ -1,7 +1,7 @@
 import { IonPage, IonContent, IonIcon } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
-import "./BuyerSettingsPage.css";
+import "../styles/pages/BuyerSettingsPage.css";
 
 const BuyerSettingsPage: React.FC = () => {
   const history = useHistory();

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Sidebar.css";
+import "../styles/components/Sidebar.css";
 
 interface SidebarProps {
   isOpen: boolean;

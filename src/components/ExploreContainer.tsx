@@ -1,4 +1,4 @@
-import "./ExploreContainer.css";
+import "../styles/components/ExploreContainer.css";
 
 type ContainerProps = Record<string, unknown>;
 

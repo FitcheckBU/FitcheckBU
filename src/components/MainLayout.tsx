@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IonPage, IonContent } from "@ionic/react";
 import TopNavBar from "./TopNavBar";
 import Sidebar from "./Sidebar";
-import "./MainLayout.css";
+import "../styles/components/MainLayout.css";
 
 interface MainLayoutProps {
   children: React.ReactNode;

@@ -23,8 +23,8 @@ import { QueryDocumentSnapshot } from "firebase/firestore";
 import ItemCard from "../components/ItemCard";
 import Sidebar from "../components/Sidebar";
 import Logo from "../components/Logo";
-import "../components/MainLayout.css";
-import "./Dashboard.css";
+import "../styles/components/MainLayout.css";
+import "../styles/pages/Dashboard.css";
 
 const PAGE_SIZE = 30;
 
@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const initialLoad = useRef(true);
-  
+
   // Sidebar state
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -184,8 +184,8 @@ const Dashboard: React.FC = () => {
 
         <div className="dashboard-header">
           <Logo />
-          <IonButton 
-            fill="clear" 
+          <IonButton
+            fill="clear"
             className="menu-button"
             onClick={() => setSidebarOpen(!isSidebarOpen)}
             data-testid="button-menu"
@@ -193,7 +193,7 @@ const Dashboard: React.FC = () => {
             <IonIcon icon={menuOutline} slot="icon-only" />
           </IonButton>
         </div>
-        
+
         <div
           className={`page-overlay ${isSidebarOpen ? "active" : ""}`}
           onClick={() => setSidebarOpen(false)}
@@ -202,8 +202,8 @@ const Dashboard: React.FC = () => {
 
         <div className="dashboard-subheader">
           <h2 className="subheader-title">User Dashboard</h2>
-          <IonButton 
-            fill="clear" 
+          <IonButton
+            fill="clear"
             onClick={navigateToFilters}
             className="filter-button-sub"
             data-testid="button-filter"

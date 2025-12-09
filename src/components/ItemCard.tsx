@@ -11,7 +11,7 @@ import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
 import { useEffect, useState } from "react";
 import { extractSize, extractColor } from "../lib/metadataParser";
-import "./ItemCard.css";
+import "../styles/components/ItemCard.css";
 
 interface ItemCardProps {
   item: InventoryItem;
@@ -64,7 +64,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   };
 
   // Generate a short ID from the item ID
-  const shortId = item.id 
+  const shortId = item.id
     ? `${item.id.substring(0, 3).toUpperCase()}-${item.id.substring(3, 7)}`
     : "NO-ID";
 
@@ -114,7 +114,11 @@ const ItemCard: React.FC<ItemCardProps> = ({
                   {item.color || extractColor(item.labels) || "Unknown"}
                 </div>
                 <div className="figma-detail-text">
-                  {item.sex === "men" ? "Men's" : item.sex === "women" ? "Women's" : "Unisex"}
+                  {item.sex === "men"
+                    ? "Men's"
+                    : item.sex === "women"
+                      ? "Women's"
+                      : "Unisex"}
                 </div>
               </div>
             </div>

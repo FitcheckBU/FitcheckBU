@@ -5,7 +5,7 @@ import { arrowBackOutline } from "ionicons/icons";
 import FilterForm from "../components/FilterForm";
 import { FilterState } from "../lib/inventoryService";
 import Logo from "../components/Logo";
-import "./SortFilterPage.css";
+import "../styles/pages/SortFilterPage.css";
 
 type SortFilterRouteState = {
   activeFilters?: FilterState;

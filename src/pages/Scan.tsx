@@ -1,6 +1,6 @@
 import { IonButton } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import "./Scan.css";
+import "../styles/pages/Scan.css";
 
 const Scan: React.FC = () => {
   const history = useHistory();
