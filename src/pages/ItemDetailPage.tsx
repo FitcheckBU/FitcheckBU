@@ -212,7 +212,7 @@ const ItemDetailPage: React.FC = () => {
                 <div className="more-info-section">
                   <div className="info-row">
                     <span className="info-label">Sex:</span>
-                    <span className="info-value">{item.style || "Unisex"}</span>
+                    <span className="info-value">{item.sex || "Unisex"}</span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Size:</span>

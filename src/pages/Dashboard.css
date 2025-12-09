@@ -18,7 +18,8 @@
 
 /* Navbar - Figma Specs */
 .dashboard-header {
-  position: relative;
+  position: sticky;
+  top: 0;
   width: 100%;
   height: 70px;
   background: #023E38;
@@ -26,6 +27,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0;
+  z-index: 1000;
 }
 
 /* Logo positioned at exact Figma specs */
