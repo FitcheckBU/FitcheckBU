@@ -46,7 +46,7 @@ const BuyerSettingsPage: React.FC = () => {
             onClick={handleBack}
             data-testid="button-back"
           />
-          <h1 className="buyer-settings-title">Settings</h1>
+          <h1 className="buyer-settings-title">Profile</h1>
         </div>
 
         <div className="buyer-settings-container">
@@ -54,7 +54,7 @@ const BuyerSettingsPage: React.FC = () => {
             {/* Profile Section */}
             <div className="buyer-profile-section">
               <img
-                src="https://via.placeholder.com/80/C8B4A0/C8B4A0"
+                src="public/profileplaceholder.png"
                 alt="Profile"
                 className="buyer-profile-image"
                 data-testid="img-profile"

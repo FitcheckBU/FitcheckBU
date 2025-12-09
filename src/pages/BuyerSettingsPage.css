@@ -1,3 +1,6 @@
+/* Importing ITC Souvenir font from CDN */
+@import url("https://fonts.cdnfonts.com/css/itc-souvenir");
+
 /* Buyer Settings Page - Yellow Buyer Theme */
 .buyer-settings-page {
   --background: #ffeda8;
@@ -43,8 +46,8 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-family: "DM Sans", sans-serif;
-  font-style: normal;
+  font-family: "ITC Souvenir Std", Georgia, serif;
+  font-style: italic;
   font-weight: 800;
   font-size: 20px;
   color: #ffffff;
