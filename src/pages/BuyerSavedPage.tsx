@@ -2,7 +2,7 @@ import { IonPage, IonContent, IonIcon } from "@ionic/react";
 import { arrowBackOutline, heartOutline, heart } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
-import "./BuyerSavedPage.css";
+import "../styles/pages/BuyerSavedPage.css";
 
 // Define the SavedItem type
 interface SavedItem {

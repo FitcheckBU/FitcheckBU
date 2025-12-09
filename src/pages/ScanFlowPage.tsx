@@ -13,7 +13,7 @@ import {
   findItemByBarcode,
   //InventoryItem,
 } from "../lib/inventoryService";
-import "./ScanFlowPage.css";
+import "../styles/pages/ScanFlowPage.css";
 
 // TapToScan component
 const TapToScanBarcode: React.FC<{ onClick: () => void }> = ({ onClick }) => (

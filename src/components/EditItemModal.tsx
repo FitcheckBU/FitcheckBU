@@ -9,7 +9,7 @@ import {
 import { arrowBackOutline } from "ionicons/icons";
 import { InventoryItem, updateItem, deleteItem } from "../lib/inventoryService";
 import { getItemImageUrls } from "../lib/inventoryService";
-import "./EditItemModal.css";
+import "../styles/components/EditItemModal.css";
 
 interface EditItemModalProps {
   isOpen: boolean;

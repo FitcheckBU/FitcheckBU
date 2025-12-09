@@ -1,6 +1,6 @@
 import { IonButton, IonRange, IonSelect, IonSelectOption } from "@ionic/react";
 import { useEffect, useState } from "react";
-import "./FilterSheet.css";
+import "../styles/components/FilterSheet.css";
 import { FilterState } from "../lib/inventoryService";
 import {
   getUniqueBrands,

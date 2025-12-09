@@ -4,7 +4,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import StorageUploadButton from "../components/StorageUploadButton";
 import { PHOTO_STAGES, PhotoRole } from "../constants/photoStages";
 import { usePhotoContext } from "../context/PhotoContext";
-import "./UploadFlowPage.css";
+import "../styles/pages/UploadFlowPage.css";
 
 type SelectedImage = {
   id: string;

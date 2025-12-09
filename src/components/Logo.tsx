@@ -1,4 +1,4 @@
-import "./Logo.css";
+import "../styles/components/Logo.css";
 
 interface LogoProps {
   variant?: "default" | "buyer";

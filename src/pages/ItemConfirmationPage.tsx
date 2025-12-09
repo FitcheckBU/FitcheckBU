@@ -22,7 +22,7 @@ import {
   updateItem,
   getItemImageUrls,
 } from "../lib/inventoryService";
-import "./ItemConfirmationPage.css";
+import "../styles/pages/ItemConfirmationPage.css";
 import { printBarcode } from "../lib/printerService";
 
 interface RouteParams {

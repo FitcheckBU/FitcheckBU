@@ -23,7 +23,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
 import Logo from "../components/Logo";
-import "./ItemDetailPage.css";
+import "../styles/pages/ItemDetailPage.css";
 import { printBarcode } from "../lib/printerService";
 
 const ItemDetailPage: React.FC = () => {
