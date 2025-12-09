@@ -1,0 +1,292 @@
+/* Buyer Saved Page - Yellow Buyer Theme */
+.buyer-saved-page {
+  --background: #ffeda8;
+}
+
+.buyer-saved-content {
+  --background: #ffeda8;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 40px;
+}
+
+/* Green Header matching BuyerDashboard - Exact Figma specs */
+.buyer-saved-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height: 70px;
+  background: #023e38;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-bottom: none;
+}
+
+/* Back arrow icon - positioned like bookmark icon in buyer dashboard */
+.buyer-saved-back-icon {
+  position: absolute;
+  left: 28.52px;
+  top: 19px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.buyer-saved-back-icon:hover {
+  opacity: 0.8;
+}
+
+/* Saved Items title - centered like buyer dashboard */
+.buyer-saved-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "ITC Souvenir Std", Georgia, serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 20px;
+  color: #ffffff;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+/* Yellow Body */
+.buyer-saved-body {
+  position: relative;
+  width: 100%;
+  background: #ffeda8;
+  min-height: calc(100vh - 70px);
+  padding: 20px;
+}
+
+/* Loading State */
+.saved-loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  color: #023e38;
+}
+
+/* Empty State */
+.saved-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 40px;
+  margin-top: 60px;
+}
+
+.empty-state-icon {
+  font-size: 80px;
+  color: #7b9996;
+  margin-bottom: 24px;
+}
+
+.empty-state-title {
+  font-family: "ITC Souvenir Std", Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  font-style: italic;
+  color: #023e38;
+  margin: 0 0 12px 0;
+}
+
+.empty-state-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #4b5563;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+.empty-state-button {
+  background: #023e38;
+  color: #ffffff;
+  border: none;
+  border-radius: 100px;
+  padding: 14px 32px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state-button:hover {
+  background: #01322e;
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.empty-state-button:active {
+  transform: translateY(0);
+}
+
+/* Saved Items Container */
+.saved-items-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.saved-items-header {
+  margin-bottom: 20px;
+}
+
+.saved-items-count {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #023e38;
+  margin: 0;
+}
+
+/* Saved Items Grid */
+.saved-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  padding-bottom: 20px;
+}
+
+@media (min-width: 480px) {
+  .saved-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+}
+
+/* Saved Item Card */
+.saved-item-card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 4px 4px #f3b759;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.saved-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 6px 8px #f3b759;
+}
+
+.saved-item-image-container {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* 1:1 Aspect Ratio */
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.saved-item-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Heart/Unsave Button */
+.saved-item-heart-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.saved-item-heart-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+.saved-item-heart-button:active {
+  transform: scale(0.95);
+}
+
+.heart-icon-filled {
+  font-size: 20px;
+  color: #e74c3c;
+}
+
+/* Item Details */
+.saved-item-details {
+  padding: 12px;
+}
+
+.saved-item-name {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #023e38;
+  margin: 0 0 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-item-category {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #7b9996;
+  margin: 0 0 8px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-item-price {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #023e38;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 375px) {
+  .saved-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .buyer-saved-body {
+    padding: 16px;
+  }
+
+  .empty-state-icon {
+    font-size: 60px;
+  }
+
+  .empty-state-title {
+    font-size: 20px;
+  }
+}

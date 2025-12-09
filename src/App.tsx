@@ -17,6 +17,7 @@ import BuyerDashboard from "./pages/BuyerDashboard";
 import MainLayout from "./components/MainLayout";
 import SortFilterPage from "./pages/SortFilterPage";
 import BuyerSettingsPage from "./pages/BuyerSettingsPage";
+import BuyerSavedPage from "./pages/BuyerSavedPage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -127,6 +128,9 @@ const App: React.FC = () => {
             </Route>
             <Route exact path="/buyer-settings">
               <BuyerSettingsPage />
+            </Route>
+            <Route exact path="/buyer-saved">
+              <BuyerSavedPage />
             </Route>
             <Route exact path="/camera">
               <CameraPage />

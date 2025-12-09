@@ -234,6 +234,8 @@ const BuyerDashboard: React.FC = () => {
             icon={bookmarkOutline}
             className="buyer-header-icon-left"
             data-testid="icon-bookmark"
+            onClick={() => history.push("/buyer-saved")}
+            style={{ cursor: "pointer" }}
           />
           <Logo variant="buyer" className="buyer-title" />
           <IonIcon
