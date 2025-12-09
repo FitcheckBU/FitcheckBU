@@ -240,6 +240,8 @@ const BuyerDashboard: React.FC = () => {
             icon={personOutline}
             className="buyer-header-icon-right"
             data-testid="icon-profile"
+            onClick={() => history.push("/buyer-settings")}
+            style={{ cursor: "pointer" }}
           />
         </div>
 

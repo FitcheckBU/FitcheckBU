@@ -1,0 +1,170 @@
+/* Importing ITC Souvenir font from CDN */
+@import url("https://fonts.cdnfonts.com/css/itc-souvenir");
+
+/* Buyer Settings Page - Yellow Buyer Theme */
+.buyer-settings-page {
+  --background: #ffeda8;
+}
+
+.buyer-settings-content {
+  --background: #ffeda8;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 40px;
+}
+
+/* Green Header matching BuyerDashboard - Exact Figma specs */
+.buyer-settings-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height: 70px;
+  background: #023e38;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-bottom: none;
+}
+
+/* Back arrow icon - positioned like bookmark icon in buyer dashboard */
+.buyer-settings-back-icon {
+  position: absolute;
+  left: 28.52px;
+  top: 19px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Settings title - centered like buyer dashboard */
+.buyer-settings-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "ITC Souvenir Std", Georgia, serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 20px;
+  color: #ffffff;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+/* Container */
+.buyer-settings-container {
+  max-width: 400px;
+  margin: 20px auto 0;
+  padding: 0 20px;
+}
+
+/* Card */
+.buyer-settings-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0px 4px 4px #f3b759;
+}
+
+/* Profile Section */
+.buyer-profile-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.buyer-profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.buyer-profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.buyer-profile-name {
+  font-family: "DM Sans", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #023e38;
+  margin: 0 0 4px 0;
+}
+
+.buyer-profile-detail {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Action Buttons */
+.buyer-settings-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.buyer-settings-button {
+  width: 100%;
+  padding: 14px 24px;
+  border: 2px solid #023e38;
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: #023e38;
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buyer-settings-button:hover {
+  background-color: #f9fafb;
+}
+
+.buyer-settings-button:active {
+  transform: scale(0.98);
+  background-color: #f3f4f6;
+}
+
+/* Footer */
+.buyer-settings-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.buyer-settings-edit-button {
+  padding: 14px 48px;
+  border: 2px solid #023e38;
+  border-radius: 50px;
+  background-color: #023e38;
+  color: #ffffff;
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buyer-settings-edit-button:hover {
+  background-color: #1e4d4a;
+  border-color: #1e4d4a;
+}
+
+.buyer-settings-edit-button:active {
+  transform: scale(0.98);
+}
