@@ -72,7 +72,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
         sex: item.sex || "",
       });
 
-      // Load item image
       const loadImage = async () => {
         try {
           const urls = await getItemImageUrls(item);
@@ -209,12 +208,11 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
       className="edit-item-modal"
     >
       <IonContent className="edit-modal-content">
-        {/* Header with back button and title - positioned to account for navbar */}
         <div className="edit-header-section">
           <IonButton
             fill="clear"
-            onClick={onClose}
             className="edit-back-button"
+            onClick={onClose}
             data-testid="button-close-edit"
           >
             <IonIcon icon={arrowBackOutline} />
@@ -224,7 +222,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
 
         <div className="edit-form-container">
           <div className="edit-form-card">
-            {/* Item Image */}
             <div className="edit-image-container">
               {imageUrl ? (
                 <img
@@ -237,12 +234,10 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
               )}
             </div>
 
-            {/* Upload Button */}
             <button className="upload-button" data-testid="button-upload-photo">
               Upload New Photo
             </button>
 
-            {/* Form Fields */}
             <div className="form-section">
               <div className="form-field">
                 <input
@@ -383,16 +378,13 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
               </div>
             </div>
 
-            {/* Color Selection */}
             <div className="edit-color-section">
               <h3 className="section-title">Color:</h3>
               <div className="edit-colors-grid">
                 {colorOptions.map((color) => (
                   <button
                     key={color.name}
-                    className={`edit-color-circle ${
-                      formData.color === color.name ? "edit-color-selected" : ""
-                    }`}
+                    className={`edit-color-circle ${formData.color === color.name ? "edit-color-selected" : ""}`}
                     style={{
                       backgroundColor: color.hex,
                       border: color.border
@@ -407,7 +399,6 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="edit-form-actions">
               <button
                 onClick={handleSave}

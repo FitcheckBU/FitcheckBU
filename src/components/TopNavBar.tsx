@@ -8,12 +8,14 @@ interface TopNavBarProps {
   isSidebarOpen: boolean;
 }
 
-export const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuClick }) => {
+export const TopNavBar: React.FC<TopNavBarProps> = ({
+  onMenuClick,
+}) => {
   return (
     <div className="top-navbar">
       <Logo variant="default" />
-      <IonButton
-        fill="clear"
+      <IonButton 
+        fill="clear" 
         className="top-navbar-menu-button"
         onClick={onMenuClick}
         data-testid="button-menu"

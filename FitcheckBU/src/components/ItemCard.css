@@ -1,0 +1,113 @@
+/* Item Card Styles - Matching Figma */
+
+.figma-item-card {
+  margin: 0 0 12px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: #FFFFFF;
+  --background: #FFFFFF;
+  padding: 0;
+}
+
+.figma-card-content {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.figma-image-container {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #F3F4F6;
+}
+
+.figma-item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.figma-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #E5E7EB;
+  color: #9CA3AF;
+  font-size: 11px;
+}
+
+.figma-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.figma-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1F2937;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.figma-item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.figma-detail-row {
+  display: flex;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.figma-detail-label {
+  color: #6B7280;
+  min-width: 70px;
+}
+
+.figma-detail-value {
+  color: #1F2937;
+  font-weight: 500;
+}
+
+.figma-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.figma-action-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #D1D5DB;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.figma-action-button:active {
+  background: #F3F4F6;
+  transform: scale(0.95);
+}
+
+.figma-action-button ion-icon {
+  font-size: 20px;
+  color: #1F2937;
+}
