@@ -33,6 +33,11 @@
   --padding-bottom: 20px;
 }
 
+/* Buyer View - Yellow/Green with fitcheck */
+.item-detail-page.buyer-view .item-detail-body {
+  --background: #ffeda8;
+}
+
 /* Header section with back button and title */
 .item-detail-header-section {
   position: relative;
@@ -94,6 +99,53 @@
 /* Buyer view uses same navbar background */
 .item-detail-page.buyer-view .item-detail-navbar {
   background-color: #023e38;
+}
+
+/* ============================================
+   BUYER VIEW NAVBAR - EXACT COPY FROM BUYERDASHBOARD
+   ============================================ */
+
+/* Navbar container for buyer view */
+.item-detail-page.buyer-view .item-detail-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+}
+
+/* Bookmark icon - left side - EXACT Figma specs */
+.item-detail-page.buyer-view .buyer-navbar-icon-left {
+  position: absolute;
+  left: 28.52px;
+  top: 19px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Logo - centered - EXACT Figma specs */
+.item-detail-page.buyer-view .buyer-navbar-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 21px;
+  width: 105px;
+  margin: 0;
+  object-fit: contain;
+}
+
+/* Profile icon - right side - EXACT Figma specs */
+.item-detail-page.buyer-view .buyer-navbar-icon-right {
+  position: absolute;
+  right: 28px;
+  top: 20.27px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #ffffff;
+  cursor: pointer;
 }
 
 .item-detail-page.buyer-view .contact-seller-button {
