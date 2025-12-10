@@ -427,13 +427,22 @@ const ItemDetailPage: React.FC = () => {
                       </IonButton>
                       <IonButton
                         fill="solid"
-                        color="primary"
-                        className={`save-button ${isSaved ? "saved" : ""}`}
+                        className="save-button"
                         onClick={handleSave}
                         disabled={savingItem}
                         data-testid="button-save"
+                        style={
+                          {
+                            "--background": "#023e38",
+                            "--background-activated": "#01332e",
+                          } as React.CSSProperties
+                        }
                       >
-                        {isSaved ? "Saved" : "Save"}
+                        <span
+                          style={{ color: isSaved ? "#ffeda8" : "#ffffff" }}
+                        >
+                          {isSaved ? "Saved" : "Save"}
+                        </span>
                       </IonButton>
                     </div>
                   </>
