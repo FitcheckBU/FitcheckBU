@@ -229,34 +229,30 @@ const ItemDetailPage: React.FC = () => {
               {isBuyerView ? (
                 // NEW: Buyer info grid showing size, color, distance, price, store
                 <div className="buyer-info-grid">
-                  <div className="buyer-info-row">
-                    <span className="buyer-meta-label">
-                      {extractSize(item.labels) || item.size || "Medium"}
-                    </span>
-                    <span className="buyer-meta-value">
-                      ${item.price?.toFixed(2) || "11.99"}
-                    </span>
-                  </div>
-                  <div className="buyer-info-row">
-                    <span className="buyer-meta-label">
-                      {item.color || "Blue"}
-                    </span>
-                    <span className="buyer-meta-value">
-                      {calculateDistance()}
-                    </span>
-                  </div>
-                  <div className="buyer-info-row">
-                    <span className="buyer-meta-label">
-                      {item.sex === "men"
-                        ? "Men's"
-                        : item.sex === "women"
-                          ? "Women's"
-                          : "Unisex"}
-                    </span>
-                    <span className="buyer-meta-value">
-                      {getStoreName() || "Goodwill"}
-                    </span>
-                  </div>
+                  <span className="buyer-info-left">
+                    {extractSize(item.labels) || item.size || "Medium"}
+                  </span>
+                  <span className="buyer-info-right">
+                    ${item.price?.toFixed(2) || "11.99"}
+                  </span>
+
+                  <span className="buyer-info-left">
+                    {item.color || "Blue"}
+                  </span>
+                  <span className="buyer-info-right">
+                    {calculateDistance()}
+                  </span>
+
+                  <span className="buyer-info-left">
+                    {item.sex === "men"
+                      ? "Men's"
+                      : item.sex === "women"
+                        ? "Women's"
+                        : "Unisex"}
+                  </span>
+                  <span className="buyer-info-right">
+                    {getStoreName() || "Goodwill"}
+                  </span>
                 </div>
               ) : (
                 // EXISTING: Seller view shows Status and SKU (unchanged)
