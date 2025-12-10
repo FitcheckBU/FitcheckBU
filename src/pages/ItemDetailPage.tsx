@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
+import { saveItem, unsaveItem, isItemSaved } from "../lib/savedItemsService";
 import {
   getImageStoragePaths,
   InventoryItem,
@@ -37,6 +38,8 @@ const ItemDetailPage: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [savingItem, setSavingItem] = useState(false);
 
   // Check if this is a buyer view
   const isBuyerView = history.location.state?.fromBuyer === true;
@@ -67,9 +70,67 @@ const ItemDetailPage: React.FC = () => {
     );
   };
 
-  // Handler for Save button
+  // handler to check if item is saved
+  // Check if item is saved when component mounts or item changes
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      if (!item?.id) return;
+
+      try {
+        const userId = getGuestUserId();
+        const saved = await isItemSaved(userId, item.id);
+        setIsSaved(saved);
+      } catch (error) {
+        console.error("Error checking if item is saved:", error);
+      }
+    };
+
+    checkIfSaved();
+  }, [item?.id]);
+
+  //handler for guest ID
+  // Helper to get or create a guest user ID for saved items (until auth is implemented)
+  const getGuestUserId = (): string => {
+    const GUEST_USER_KEY = "fitcheck_guest_user_id";
+    let guestId = localStorage.getItem(GUEST_USER_KEY);
+
+    if (!guestId) {
+      // Generate a unique guest ID
+      guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      localStorage.setItem(GUEST_USER_KEY, guestId);
+    }
+
+    return guestId;
+  };
+
+  // Handler for Save/Unsave button
   const handleSave = async () => {
-    // Add to saved items (need to implement))
+    if (!item?.id) {
+      console.error("No item ID");
+      return;
+    }
+
+    const userId = getGuestUserId();
+
+    setSavingItem(true);
+    try {
+      if (isSaved) {
+        // Unsave the item
+        await unsaveItem(userId, item.id);
+        setIsSaved(false);
+        console.log("Item unsaved");
+      } else {
+        // Save the item
+        await saveItem(userId, item.id);
+        setIsSaved(true);
+        console.log("Item saved");
+      }
+    } catch (error) {
+      console.error("Error saving/unsaving item:", error);
+      alert("Failed to save item. Please try again.");
+    } finally {
+      setSavingItem(false);
+    }
   };
 
   useEffect(() => {
@@ -369,9 +430,10 @@ const ItemDetailPage: React.FC = () => {
                         color="primary"
                         className="save-button"
                         onClick={handleSave}
+                        disabled={savingItem}
                         data-testid="button-save"
                       >
-                        Save
+                        {isSaved ? "Saved" : "Save"}
                       </IonButton>
                     </div>
                   </>
