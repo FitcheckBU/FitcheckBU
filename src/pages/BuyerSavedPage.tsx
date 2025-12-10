@@ -2,6 +2,10 @@ import { IonPage, IonContent, IonIcon } from "@ionic/react";
 import { arrowBackOutline, heartOutline, heart } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { getSavedItems, unsaveItem } from "../lib/savedItemsService";
+import { getItemById, getImageStoragePaths } from "../lib/inventoryService";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../lib/firebaseClient";
 import "../styles/pages/BuyerSavedPage.css";
 
 // Define the SavedItem type
@@ -26,46 +30,59 @@ const BuyerSavedPage: React.FC = () => {
     fetchSavedItems();
   }, []);
 
+  // helper to get guest ID
+  // Helper to get guest user ID
+  const getGuestUserId = (): string => {
+    const GUEST_USER_KEY = "fitcheck_guest_user_id";
+    let guestId = localStorage.getItem(GUEST_USER_KEY);
+
+    if (!guestId) {
+      guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      localStorage.setItem(GUEST_USER_KEY, guestId);
+    }
+
+    return guestId;
+  };
+
   const fetchSavedItems = async () => {
     try {
       setLoading(true);
 
-      // TODO: Replace with actual Firebase query
-      // Example structure:
-      // const userId = auth.currentUser?.uid;
-      // const savedItemsRef = collection(db, 'savedItems');
-      // const q = query(savedItemsRef, where('userId', '==', userId));
-      // const querySnapshot = await getDocs(q);
-      // const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const userId = getGuestUserId();
+      const savedItemIds = await getSavedItems(userId);
 
-      // Placeholder data for development
-      const mockData: SavedItem[] = [
-        {
-          id: "1",
-          itemId: "item-123",
-          imageUrl:
-            "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&q=80",
-          name: "Nike Air Jordan 1",
-          price: 150,
-          category: "Sneakers",
+      // Fetch full item details for each saved item
+      const itemPromises = savedItemIds.map(async (itemId) => {
+        const item = await getItemById(itemId);
+        if (!item) return null;
+
+        // Get image URL
+        const storagePaths = getImageStoragePaths(item);
+        let imageUrl = "";
+        if (storagePaths.length > 0) {
+          try {
+            const storagePathRef = ref(storage, storagePaths[0]);
+            imageUrl = await getDownloadURL(storagePathRef);
+          } catch (error) {
+            console.error("Failed to load image:", error);
+          }
+        }
+
+        return {
+          id: itemId,
+          itemId: item.id || "",
+          imageUrl,
+          name: item.name,
+          price: item.price,
+          category: item.category,
           savedAt: new Date(),
-        },
-        {
-          id: "2",
-          itemId: "item-456",
-          imageUrl:
-            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80",
-          name: "Vintage Denim Jacket",
-          price: 75,
-          category: "Jackets",
-          savedAt: new Date(),
-        },
-      ];
+        };
+      });
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      setSavedItems(mockData);
+      const items = (await Promise.all(itemPromises)).filter(
+        (item) => item !== null,
+      ) as SavedItem[];
+      setSavedItems(items);
     } catch (error) {
       console.error("Error fetching saved items:", error);
     } finally {
@@ -73,15 +90,13 @@ const BuyerSavedPage: React.FC = () => {
     }
   };
 
-  const handleRemoveSaved = async (itemId: string) => {
+  const handleRemoveSaved = async (savedItemId: string) => {
     try {
-      // TODO: Remove from Firebase/Firestore
-      // Example:
-      // const savedItemRef = doc(db, 'savedItems', itemId);
-      // await deleteDoc(savedItemRef);
+      const userId = getGuestUserId();
+      await unsaveItem(userId, savedItemId);
 
       // Update local state
-      setSavedItems(savedItems.filter((item) => item.id !== itemId));
+      setSavedItems(savedItems.filter((item) => item.itemId !== savedItemId));
     } catch (error) {
       console.error("Error removing saved item:", error);
     }

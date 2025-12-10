@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
+import { saveItem, unsaveItem, isItemSaved } from "../lib/savedItemsService";
 import {
   getImageStoragePaths,
   InventoryItem,
@@ -23,6 +24,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
 import Logo from "../components/Logo";
+import { extractSize } from "../lib/metadataParser";
 import "../styles/pages/ItemDetailPage.css";
 import { printBarcode } from "../lib/printerService";
 
@@ -36,9 +38,100 @@ const ItemDetailPage: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [savingItem, setSavingItem] = useState(false);
 
   // Check if this is a buyer view
   const isBuyerView = history.location.state?.fromBuyer === true;
+
+  // Helpers for buyer view (dummy implementations)
+  // Helper to get store name from store_id
+  const getStoreName = (): string => {
+    // You'll need to implement store lookup logic
+    // For now, return a default
+    return "Demo Day Thrift Store";
+  };
+
+  // Helper to calculate distance to store
+  const calculateDistance = (): string => {
+    // You'll need to implement distance calculation
+    // based on user location and store location
+    return "0 mi";
+  };
+
+  // Handler for Directions button
+  const handleDirections = () => {
+    // Open maps app with BU Center for Computing and Data Sciences
+    // 665 Commonwealth Avenue, Boston, MA 02215
+    const storeLat = 42.3505;
+    const storeLon = -71.1054;
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${storeLat},${storeLon}`,
+    );
+  };
+
+  // handler to check if item is saved
+  // Check if item is saved when component mounts or item changes
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      if (!item?.id) return;
+
+      try {
+        const userId = getGuestUserId();
+        const saved = await isItemSaved(userId, item.id);
+        setIsSaved(saved);
+      } catch (error) {
+        console.error("Error checking if item is saved:", error);
+      }
+    };
+
+    checkIfSaved();
+  }, [item?.id]);
+
+  //handler for guest ID
+  // Helper to get or create a guest user ID for saved items (until auth is implemented)
+  const getGuestUserId = (): string => {
+    const GUEST_USER_KEY = "fitcheck_guest_user_id";
+    let guestId = localStorage.getItem(GUEST_USER_KEY);
+
+    if (!guestId) {
+      // Generate a unique guest ID
+      guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      localStorage.setItem(GUEST_USER_KEY, guestId);
+    }
+
+    return guestId;
+  };
+
+  // Handler for Save/Unsave button
+  const handleSave = async () => {
+    if (!item?.id) {
+      console.error("No item ID");
+      return;
+    }
+
+    const userId = getGuestUserId();
+
+    setSavingItem(true);
+    try {
+      if (isSaved) {
+        // Unsave the item
+        await unsaveItem(userId, item.id);
+        setIsSaved(false);
+        console.log("Item unsaved");
+      } else {
+        // Save the item
+        await saveItem(userId, item.id);
+        setIsSaved(true);
+        console.log("Item saved");
+      }
+    } catch (error) {
+      console.error("Error saving/unsaving item:", error);
+      alert("Failed to save item. Please try again.");
+    } finally {
+      setSavingItem(false);
+    }
+  };
 
   useEffect(() => {
     if (!itemId) return;
@@ -193,20 +286,52 @@ const ItemDetailPage: React.FC = () => {
 
             <div className="item-info-section">
               <h2 className="item-name">{item.name || "Unknown Item"}</h2>
-              <div className="item-meta">
-                <p className="item-status">
-                  <span className="meta-label">Status:</span>{" "}
-                  <span className="meta-value">
-                    {item.isSold ? "Sold" : "Listed"}
+
+              {isBuyerView ? (
+                // NEW: Buyer info grid showing size, color, distance, price, store
+                <div className="buyer-info-grid">
+                  <span className="buyer-info-left">
+                    {extractSize(item.labels) || item.size || "Medium"}
                   </span>
-                </p>
-                <p className="item-sku">
-                  <span className="meta-label">SKU:</span>{" "}
-                  <span className="meta-value">
-                    {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
+                  <span className="buyer-info-right">
+                    ${item.price?.toFixed(2) || "11.99"}
                   </span>
-                </p>
-              </div>
+
+                  <span className="buyer-info-left">
+                    {item.color || "Blue"}
+                  </span>
+                  <span className="buyer-info-right">
+                    {calculateDistance()}
+                  </span>
+
+                  <span className="buyer-info-left">
+                    {item.sex === "men"
+                      ? "Men's"
+                      : item.sex === "women"
+                        ? "Women's"
+                        : "Unisex"}
+                  </span>
+                  <span className="buyer-info-right">
+                    {getStoreName() || "Goodwill"}
+                  </span>
+                </div>
+              ) : (
+                // EXISTING: Seller view shows Status and SKU (unchanged)
+                <div className="item-meta">
+                  <p className="item-status">
+                    <span className="meta-label">Status:</span>{" "}
+                    <span className="meta-value">
+                      {item.isSold ? "Sold" : "Listed"}
+                    </span>
+                  </p>
+                  <p className="item-sku">
+                    <span className="meta-label">SKU:</span>{" "}
+                    <span className="meta-value">
+                      {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
+                    </span>
+                  </p>
+                </div>
+              )}
               {!isBuyerView && (
                 <div className="barcode-section">
                   <svg className="barcode-svg" viewBox="0 0 280 80">
@@ -290,30 +415,34 @@ const ItemDetailPage: React.FC = () => {
 
                 {isBuyerView ? (
                   <>
-                    {/* Buyer View - Show Price and Contact */}
-                    <div className="buyer-price-section">
-                      <span className="price-label">Price:</span>
-                      <span className="price-value">
-                        ${item.price?.toFixed(2) || "0.00"}
-                      </span>
-                    </div>
-                    <IonButton
-                      expand="block"
-                      color="primary"
-                      className="contact-seller-button"
-                      data-testid="button-contact-seller"
-                    >
-                      Contact Seller
-                    </IonButton>
                     <div className="action-buttons-row">
                       <IonButton
                         fill="outline"
                         color="primary"
-                        className="secondary-action-button"
-                        onClick={() => setShowMoreInfo(!showMoreInfo)}
-                        data-testid="button-more-info"
+                        className="directions-button"
+                        onClick={handleDirections}
+                        data-testid="button-directions"
                       >
-                        {showMoreInfo ? "Less Info" : "More Info"}
+                        Directions
+                      </IonButton>
+                      <IonButton
+                        fill="solid"
+                        className="save-button"
+                        onClick={handleSave}
+                        disabled={savingItem}
+                        data-testid="button-save"
+                        style={
+                          {
+                            "--background": "#023e38",
+                            "--background-activated": "#01332e",
+                          } as React.CSSProperties
+                        }
+                      >
+                        <span
+                          style={{ color: isSaved ? "#ffeda8" : "#ffffff" }}
+                        >
+                          {isSaved ? "Saved" : "Save"}
+                        </span>
                       </IonButton>
                     </div>
                   </>
