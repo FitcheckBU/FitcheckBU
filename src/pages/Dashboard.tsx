@@ -183,7 +183,7 @@ const Dashboard: React.FC = () => {
         </IonRefresher>
 
         <div className="dashboard-header">
-          <Logo />
+          <Logo onClick={() => history.push("/home")} />
           <IonButton
             fill="clear"
             className="menu-button"

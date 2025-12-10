@@ -157,7 +157,7 @@ const ItemDetailPage: React.FC = () => {
         ) : (
           <>
             {/* Seller Navbar - just logo */}
-            <Logo variant="default" />
+            <Logo variant="default" onClick={() => history.push("/home")} />
           </>
         )}
       </div>
