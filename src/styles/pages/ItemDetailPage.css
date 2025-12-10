@@ -472,3 +472,62 @@
 .cancel-button::part(container) {
   border: none !important;
 }
+
+/*Updates for buyer side item card*/
+
+/* Buyer Info Grid - matching Figma layout */
+.buyer-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+  font-family: "DM Sans", sans-serif;
+}
+
+.buyer-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buyer-meta-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #023e38;
+}
+
+.buyer-meta-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #023e38;
+}
+
+/* Update buttons for Directions and Save */
+.item-detail-page.buyer-view .action-buttons-row {
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.directions-button {
+  --border-color: #023e38;
+  --border-width: 2px;
+  --border-radius: 50px;
+  --color: #023e38;
+  --background: transparent;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.save-button {
+  --background: #023e38;
+  --background-activated: #01332e;
+  --border-radius: 50px;
+  --color: #ffffff;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+}

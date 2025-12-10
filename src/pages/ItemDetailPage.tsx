@@ -23,6 +23,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
 import Logo from "../components/Logo";
+import { extractSize } from "../lib/metadataParser";
 import "../styles/pages/ItemDetailPage.css";
 import { printBarcode } from "../lib/printerService";
 
@@ -39,6 +40,37 @@ const ItemDetailPage: React.FC = () => {
 
   // Check if this is a buyer view
   const isBuyerView = history.location.state?.fromBuyer === true;
+
+  // Helpers for buyer view (dummy implementations)
+  // Helper to get store name from store_id
+  const getStoreName = (): string => {
+    // You'll need to implement store lookup logic
+    // For now, return a default
+    return "Demo Day Thrift Store";
+  };
+
+  // Helper to calculate distance to store
+  const calculateDistance = (): string => {
+    // You'll need to implement distance calculation
+    // based on user location and store location
+    return "0 mi";
+  };
+
+  // Handler for Directions button
+  const handleDirections = () => {
+    // Open maps app with BU Center for Computing and Data Sciences
+    // 665 Commonwealth Avenue, Boston, MA 02215
+    const storeLat = 42.3505;
+    const storeLon = -71.1054;
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${storeLat},${storeLon}`,
+    );
+  };
+
+  // Handler for Save button
+  const handleSave = async () => {
+    // Add to saved items (need to implement))
+  };
 
   useEffect(() => {
     if (!itemId) return;
@@ -193,20 +225,56 @@ const ItemDetailPage: React.FC = () => {
 
             <div className="item-info-section">
               <h2 className="item-name">{item.name || "Unknown Item"}</h2>
-              <div className="item-meta">
-                <p className="item-status">
-                  <span className="meta-label">Status:</span>{" "}
-                  <span className="meta-value">
-                    {item.isSold ? "Sold" : "Listed"}
-                  </span>
-                </p>
-                <p className="item-sku">
-                  <span className="meta-label">SKU:</span>{" "}
-                  <span className="meta-value">
-                    {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
-                  </span>
-                </p>
-              </div>
+
+              {isBuyerView ? (
+                // NEW: Buyer info grid showing size, color, distance, price, store
+                <div className="buyer-info-grid">
+                  <div className="buyer-info-row">
+                    <span className="buyer-meta-label">
+                      {extractSize(item.labels) || item.size || "Medium"}
+                    </span>
+                    <span className="buyer-meta-value">
+                      ${item.price?.toFixed(2) || "11.99"}
+                    </span>
+                  </div>
+                  <div className="buyer-info-row">
+                    <span className="buyer-meta-label">
+                      {item.color || "Blue"}
+                    </span>
+                    <span className="buyer-meta-value">
+                      {calculateDistance()}
+                    </span>
+                  </div>
+                  <div className="buyer-info-row">
+                    <span className="buyer-meta-label">
+                      {item.sex === "men"
+                        ? "Men's"
+                        : item.sex === "women"
+                          ? "Women's"
+                          : "Unisex"}
+                    </span>
+                    <span className="buyer-meta-value">
+                      {getStoreName() || "Goodwill"}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                // EXISTING: Seller view shows Status and SKU (unchanged)
+                <div className="item-meta">
+                  <p className="item-status">
+                    <span className="meta-label">Status:</span>{" "}
+                    <span className="meta-value">
+                      {item.isSold ? "Sold" : "Listed"}
+                    </span>
+                  </p>
+                  <p className="item-sku">
+                    <span className="meta-label">SKU:</span>{" "}
+                    <span className="meta-value">
+                      {item.id ? item.id.substring(0, 8).toUpperCase() : "N/A"}
+                    </span>
+                  </p>
+                </div>
+              )}
               {!isBuyerView && (
                 <div className="barcode-section">
                   <svg className="barcode-svg" viewBox="0 0 280 80">
@@ -290,30 +358,24 @@ const ItemDetailPage: React.FC = () => {
 
                 {isBuyerView ? (
                   <>
-                    {/* Buyer View - Show Price and Contact */}
-                    <div className="buyer-price-section">
-                      <span className="price-label">Price:</span>
-                      <span className="price-value">
-                        ${item.price?.toFixed(2) || "0.00"}
-                      </span>
-                    </div>
-                    <IonButton
-                      expand="block"
-                      color="primary"
-                      className="contact-seller-button"
-                      data-testid="button-contact-seller"
-                    >
-                      Contact Seller
-                    </IonButton>
                     <div className="action-buttons-row">
                       <IonButton
                         fill="outline"
                         color="primary"
-                        className="secondary-action-button"
-                        onClick={() => setShowMoreInfo(!showMoreInfo)}
-                        data-testid="button-more-info"
+                        className="directions-button"
+                        onClick={handleDirections}
+                        data-testid="button-directions"
                       >
-                        {showMoreInfo ? "Less Info" : "More Info"}
+                        Directions
+                      </IonButton>
+                      <IonButton
+                        fill="solid"
+                        color="primary"
+                        className="save-button"
+                        onClick={handleSave}
+                        data-testid="button-save"
+                      >
+                        Save
                       </IonButton>
                     </div>
                   </>
