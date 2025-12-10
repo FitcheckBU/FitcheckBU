@@ -428,7 +428,7 @@ const ItemDetailPage: React.FC = () => {
                       <IonButton
                         fill="solid"
                         color="primary"
-                        className="save-button"
+                        className={`save-button ${isSaved ? "saved" : ""}`}
                         onClick={handleSave}
                         disabled={savingItem}
                         data-testid="button-save"
