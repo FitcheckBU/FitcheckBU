@@ -1,5 +1,6 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { menuOutline } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 import Logo from "./Logo";
 import "../styles/components/TopNavBar.css";
 
@@ -9,9 +10,11 @@ interface TopNavBarProps {
 }
 
 export const TopNavBar: React.FC<TopNavBarProps> = ({ onMenuClick }) => {
+  const history = useHistory();
+
   return (
     <div className="top-navbar">
-      <Logo variant="default" />
+      <Logo variant="default" onClick={() => history.push("/home")} />
       <IonButton
         fill="clear"
         className="top-navbar-menu-button"

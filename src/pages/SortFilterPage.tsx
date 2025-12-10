@@ -49,7 +49,7 @@ const SortFilterPage: React.FC = () => {
     <IonPage className="sort-filter-page">
       {/* Navbar matching Dashboard */}
       <div className="sort-filter-navbar">
-        <Logo variant="default" />
+        <Logo variant="default" onClick={() => history.push("/home")} />
       </div>
 
       {/* Scrollable content area */}
