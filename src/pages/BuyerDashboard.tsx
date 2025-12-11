@@ -38,6 +38,9 @@ interface ThriftStore {
 
 const BuyerDashboard: React.FC = () => {
   const history = useHistory();
+  const [showSplash, setShowSplash] = useState(() => {
+    return !sessionStorage.getItem("splashShown");
+  });
   const [searchText, setSearchText] = useState("");
   const [allItems, setAllItems] = useState<InventoryItem[]>([]);
   const [searchResults, setSearchResults] = useState<InventoryItem[]>([]);
@@ -109,6 +112,16 @@ const BuyerDashboard: React.FC = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (showSplash) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+        sessionStorage.setItem("splashShown", "true");
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -326,6 +339,44 @@ const BuyerDashboard: React.FC = () => {
     setShowAddressSuggestions(false);
   };
 
+  if (showSplash) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "#ffefb2",
+          zIndex: 9999,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <video
+          autoPlay
+          muted
+          playsInline
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            maxWidth: "500px", // Limit max width for desktop
+            maxHeight: "90vh", // Ensure it doesn't overflow height
+          }}
+          onEnded={() => {
+            setShowSplash(false);
+            sessionStorage.setItem("splashShown", "true");
+          }}
+        >
+          <source src="/splash.mp4" type="video/mp4" />
+        </video>
+      </div>
+    );
+  }
+
   return (
     <IonPage>
       <IonContent className="buyer-dashboard">
@@ -338,7 +389,17 @@ const BuyerDashboard: React.FC = () => {
             onClick={() => history.push("/buyer-saved")}
             style={{ cursor: "pointer" }}
           />
-          <Logo variant="buyer" className="buyer-title" />
+          <Logo
+            variant="buyer"
+            className="buyer-title"
+            onClick={() => {
+              if (history.location.pathname === "/buyer") {
+                window.location.reload();
+              } else {
+                history.push("/buyer");
+              }
+            }}
+          />
           <IonIcon
             icon={personOutline}
             className="buyer-header-icon-right"
