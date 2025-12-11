@@ -13,6 +13,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
 import "../styles/pages/ScanItemDetailPage.css";
+import Barcode from "react-barcode";
 
 const ScanItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -149,40 +150,21 @@ const ScanItemDetailPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="barcode-section">
-                <svg
-                  className="barcode-svg"
-                  viewBox="0 0 280 80"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect x="0" y="0" width="4" height="80" fill="#000" />
-                  <rect x="8" y="0" width="8" height="80" fill="#000" />
-                  <rect x="20" y="0" width="4" height="80" fill="#000" />
-                  <rect x="28" y="0" width="12" height="80" fill="#000" />
-                  <rect x="44" y="0" width="4" height="80" fill="#000" />
-                  <rect x="52" y="0" width="8" height="80" fill="#000" />
-                  <rect x="64" y="0" width="4" height="80" fill="#000" />
-                  <rect x="72" y="0" width="12" height="80" fill="#000" />
-                  <rect x="88" y="0" width="4" height="80" fill="#000" />
-                  <rect x="96" y="0" width="8" height="80" fill="#000" />
-                  <rect x="108" y="0" width="4" height="80" fill="#000" />
-                  <rect x="116" y="0" width="12" height="80" fill="#000" />
-                  <rect x="132" y="0" width="4" height="80" fill="#000" />
-                  <rect x="140" y="0" width="8" height="80" fill="#000" />
-                  <rect x="152" y="0" width="4" height="80" fill="#000" />
-                  <rect x="160" y="0" width="12" height="80" fill="#000" />
-                  <rect x="164" y="0" width="8" height="80" fill="#000" />
-                  <rect x="176" y="0" width="12" height="80" fill="#000" />
-                  <rect x="192" y="0" width="4" height="80" fill="#000" />
-                  <rect x="200" y="0" width="8" height="80" fill="#000" />
-                  <rect x="212" y="0" width="4" height="80" fill="#000" />
-                  <rect x="220" y="0" width="12" height="80" fill="#000" />
-                  <rect x="236" y="0" width="4" height="80" fill="#000" />
-                  <rect x="244" y="0" width="8" height="80" fill="#000" />
-                  <rect x="256" y="0" width="4" height="80" fill="#000" />
-                  <rect x="264" y="0" width="12" height="80" fill="#000" />
-                </svg>
-              </div>
+              {item?.id && (
+                <div className="barcode-section">
+                  <Barcode
+                    value={item.id.substring(0, 9).toUpperCase()}
+                    format="CODE128"
+                    width={2}
+                    height={60}
+                    displayValue={true}
+                    fontSize={14}
+                    margin={10}
+                    background="#ffffff"
+                    lineColor="#000000"
+                  />
+                </div>
+              )}
 
               {showMoreInfo && (
                 <div className="more-info-section">

@@ -32,6 +32,7 @@
     "leaflet": "^1.9.4",
     "lottie-react": "^2.4.1",
     "react": "19.0.0",
+    "react-barcode": "^1.6.1",
     "react-dom": "19.0.0",
     "react-leaflet": "^5.0.0",
     "react-router": "^5.3.4",
