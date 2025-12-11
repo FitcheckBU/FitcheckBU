@@ -65,23 +65,23 @@ const BuyerDashboard: React.FC = () => {
   
   // Carousel state
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [thriftStores, setThriftStores] = useState<ThriftStore[]>([
+  const thriftStores: ThriftStore[] = [
     {
       name: "Shop Local Thrift",
       address: "Find unique pieces near you",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
-    },
-    {
-      name: "Vintage Finds",
-      address: "Curated vintage clothing",
       imageUrl: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&q=80"
     },
     {
-      name: "Sustainable Style",
-      address: "Eco-friendly fashion",
-      imageUrl: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80"
+      name: "Goodwill",
+      address: "965 Commonwealth Ave, Boston",
+      imageUrl: "/goodwill-commave.png"
+    },
+    {
+      name: "Boomerangs",
+      address: "716 Centre St, Jamaica Plain",
+      imageUrl: "/boomerangs-jp.png"
     }
-  ]);
+  ];
 
   // Handle click outside to close dropdown
   useEffect(() => {
