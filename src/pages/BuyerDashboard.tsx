@@ -321,7 +321,6 @@ const BuyerDashboard: React.FC = () => {
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                onFocus={() => setShowSearchDropdown(true)}
                 placeholder="Search Name, Size, Color, Etc."
                 className="buyer-search-input"
                 data-testid="input-search"
