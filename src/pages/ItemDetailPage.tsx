@@ -27,6 +27,7 @@ import Logo from "../components/Logo";
 import { extractSize } from "../lib/metadataParser";
 import "../styles/pages/ItemDetailPage.css";
 import { printBarcode } from "../lib/printerService";
+import Barcode from "react-barcode";
 
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -332,36 +333,19 @@ const ItemDetailPage: React.FC = () => {
                   </p>
                 </div>
               )}
-              {!isBuyerView && (
+              {!isBuyerView && item?.id && (
                 <div className="barcode-section">
-                  <svg className="barcode-svg" viewBox="0 0 280 80">
-                    {/* Simple barcode pattern */}
-                    <rect x="0" y="0" width="8" height="80" fill="#000" />
-                    <rect x="12" y="0" width="4" height="80" fill="#000" />
-                    <rect x="20" y="0" width="8" height="80" fill="#000" />
-                    <rect x="32" y="0" width="4" height="80" fill="#000" />
-                    <rect x="40" y="0" width="12" height="80" fill="#000" />
-                    <rect x="56" y="0" width="4" height="80" fill="#000" />
-                    <rect x="64" y="0" width="8" height="80" fill="#000" />
-                    <rect x="76" y="0" width="4" height="80" fill="#000" />
-                    <rect x="84" y="0" width="12" height="80" fill="#000" />
-                    <rect x="100" y="0" width="4" height="80" fill="#000" />
-                    <rect x="108" y="0" width="8" height="80" fill="#000" />
-                    <rect x="120" y="0" width="4" height="80" fill="#000" />
-                    <rect x="128" y="0" width="12" height="80" fill="#000" />
-                    <rect x="144" y="0" width="8" height="80" fill="#000" />
-                    <rect x="156" y="0" width="4" height="80" fill="#000" />
-                    <rect x="164" y="0" width="8" height="80" fill="#000" />
-                    <rect x="176" y="0" width="12" height="80" fill="#000" />
-                    <rect x="192" y="0" width="4" height="80" fill="#000" />
-                    <rect x="200" y="0" width="8" height="80" fill="#000" />
-                    <rect x="212" y="0" width="4" height="80" fill="#000" />
-                    <rect x="220" y="0" width="12" height="80" fill="#000" />
-                    <rect x="236" y="0" width="4" height="80" fill="#000" />
-                    <rect x="244" y="0" width="8" height="80" fill="#000" />
-                    <rect x="256" y="0" width="4" height="80" fill="#000" />
-                    <rect x="264" y="0" width="12" height="80" fill="#000" />
-                  </svg>
+                  <Barcode
+                    value={item.id.substring(0, 9).toUpperCase()}
+                    format="CODE128"
+                    width={2}
+                    height={60}
+                    displayValue={true}
+                    fontSize={14}
+                    margin={10}
+                    background="#ffffff"
+                    lineColor="#000000"
+                  />
                 </div>
               )}
               {showMoreInfo && (
