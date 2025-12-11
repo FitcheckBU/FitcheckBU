@@ -54,7 +54,7 @@ const BuyerSettingsPage: React.FC = () => {
             {/* Profile Section */}
             <div className="buyer-profile-section">
               <img
-                src="public/profileplaceholder.png"
+                src="profileplaceholder.png"
                 alt="Profile"
                 className="buyer-profile-image"
                 data-testid="img-profile"
