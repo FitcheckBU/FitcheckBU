@@ -64,8 +64,6 @@ const BuyerDashboard: React.FC = () => {
   >([]);
   const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
   
-  // Carousel state
-  const [currentSlide, setCurrentSlide] = useState(0);
   const thriftStores: ThriftStore[] = [
     {
       name: "Shop Local Thrift",
