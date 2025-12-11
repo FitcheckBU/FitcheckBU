@@ -11,14 +11,23 @@ const Logo: React.FC<LogoProps> = ({
   className = "",
   onClick,
 }) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      window.location.reload();
+    }
+  };
+
   if (variant === "buyer") {
     return (
       <img
         src="/logo.svg"
         alt="fitcheck"
         className={`logo-buyer-image ${className}`}
-        onClick={onClick}
-        style={{ cursor: onClick ? "pointer" : "default" }}
+        onClick={handleClick}
+        style={{ cursor: "pointer" }}
+        data-testid="logo-buyer"
       />
     );
   }
@@ -27,8 +36,8 @@ const Logo: React.FC<LogoProps> = ({
     <h1
       className={`logo ${className}`}
       data-testid="logo"
-      onClick={onClick}
-      style={{ cursor: onClick ? "pointer" : "default" }}
+      onClick={handleClick}
+      style={{ cursor: "pointer" }}
     >
       <span className="logo-fitcheck">fitcheck</span>
       <span className="logo-nest">.nest</span>
