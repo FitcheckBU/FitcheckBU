@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Scan from "./pages/Scan";
 import UploadFlow from "./pages/UploadFlowPage";
 import ScanFlowPage from "./pages/ScanFlowPage";
+import ScanItemDetailPage from "./pages/ScanItemDetailPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 import EditItemPage from "./pages/EditItemPage";
@@ -96,6 +97,15 @@ const App: React.FC = () => {
               render={() => (
                 <MainLayout>
                   <ScanFlowPage />
+                </MainLayout>
+              )}
+            />
+            <Route
+              exact
+              path="/item-scan/:itemId"
+              render={() => (
+                <MainLayout>
+                  <ScanItemDetailPage />
                 </MainLayout>
               )}
             />
