@@ -257,12 +257,28 @@ export const findItemByBarcode = async (
   const snapshot = await getDocs(itemsRef);
 
   // Normalize the barcode (remove spaces, uppercase)
-  const normalizedBarcode = barcode.replace(/\s/g, "").toUpperCase();
+  const cleanBarcode = barcode.replace(/\s/g, "").toUpperCase();
 
-  // Find item where document ID starts with the barcode
-  const matchingDoc = snapshot.docs.find((doc) =>
-    doc.id.toUpperCase().startsWith(normalizedBarcode),
+  // ATTEMPT 1: Try exact match with O's as-is
+  let matchingDoc = snapshot.docs.find((doc) =>
+    doc.id.toUpperCase().startsWith(cleanBarcode),
   );
+
+  // ATTEMPT 2: If no match, try converting O → 0
+  if (!matchingDoc) {
+    const barcodeWithZeros = cleanBarcode.replace(/O/g, "0");
+    matchingDoc = snapshot.docs.find((doc) =>
+      doc.id.toUpperCase().replace(/O/g, "0").startsWith(barcodeWithZeros),
+    );
+  }
+
+  // ATTEMPT 3: If still no match, try converting 0 → O
+  if (!matchingDoc) {
+    const barcodeWithOs = cleanBarcode.replace(/0/g, "O");
+    matchingDoc = snapshot.docs.find((doc) =>
+      doc.id.toUpperCase().replace(/0/g, "O").startsWith(barcodeWithOs),
+    );
+  }
 
   if (matchingDoc) {
     return {
