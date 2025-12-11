@@ -51,6 +51,7 @@ const BuyerDashboard: React.FC = () => {
     "Tops",
   ]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [showProximityDropdown, setShowProximityDropdown] = useState(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [selectedProximity, setSelectedProximity] = useState<string | null>(
@@ -82,6 +83,34 @@ const BuyerDashboard: React.FC = () => {
       imageUrl: "/boomerangs-jp.png"
     }
   ];
+
+  const carouselSlides = [
+    {
+      image: "public/groovythriftystore.jpg",
+      title: "Groovy Thrifty",
+      subtitle: "Explore their niche, upcycled styles",
+    },
+    {
+      image: "public/garment_district.jpg",
+      title: "The Garment District",
+      subtitle:
+        "See the latest arrivals from one of the largest vintage stores in Cambridge",
+    },
+    {
+      image: "public/spark_logo.png",
+      title: "BU Demo Day Thrift",
+      subtitle: "One-of-a-kind pieces waiting for you",
+    },
+  ];
+
+  // Auto-advance carousel every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -215,8 +244,18 @@ const BuyerDashboard: React.FC = () => {
     setIsSearching(false);
   };
 
+  const categoryMap: { [key: string]: string } = {
+    Shirts: "shirt",
+    Tees: "graphic",
+    Jeans: "jean",
+    "Sweat pants": "sweat pant",
+    Sneakers: "sneaker",
+    Heels: "heel",
+  };
+
   const handleCategoryClick = (category: string) => {
-    setSearchText(category);
+    const searchTerm = categoryMap[category] || category;
+    setSearchText(searchTerm);
     setShowSearchDropdown(false);
   };
 
