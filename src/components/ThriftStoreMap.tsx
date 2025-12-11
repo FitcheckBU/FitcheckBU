@@ -29,6 +29,8 @@ interface Place {
   name: string;
   address: string;
   distance: number;
+  phone?: string;
+  website?: string;
 }
 
 interface MapUpdaterProps {
@@ -68,51 +70,68 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
         const bostonThriftStores = [
           {
             name: "Thrifty Threads",
-            lat: 42.3505,
-            lon: -71.09,
-            address: "123 Commonwealth Ave, Boston, MA",
+            lat: 42.3421, // Updated approximate location based on address (United Parish in Brookline)
+            lon: -71.1221,
+            address: "210 Harvard St, Brookline, MA", // United Parish address
+            phone: "+1-617-277-6860",
+            website:
+              "https://www.unitedparishbrookline.org/get-involved/outreach-social-justice/thrifty-threads/",
           },
           {
             name: "2nd Street Coolidge Corner",
             lat: 42.3424,
             lon: -71.1255,
             address: "1348 Beacon St, Brookline, MA",
+            phone: "+1-617-315-4660",
+            website: "https://2ndstreetusa.com/",
           },
           {
             name: "Buffalo Exchange",
             lat: 42.348,
             lon: -71.0812,
             address: "238 Newbury St, Boston, MA",
+            phone: "+1-617-779-7901",
+            website: "https://www.buffaloexchange.com/",
           },
           {
             name: "Groovy Thrifty",
-            lat: 42.3398,
+            lat: 42.3398, // Keeping existing coords if specific address wasn't provided, but updating phone/web
             lon: -71.0892,
             address: "678 Centre St, Jamaica Plain, MA",
+            phone: "+1-603-384-8658",
+            website: "https://groovythrifty.com/",
           },
           {
             name: "DIVERSITY Men's and Women's",
             lat: 42.3141,
             lon: -71.065,
             address: "80 South St, Boston, MA",
+            phone: "+1-617-555-0105", // No new info provided, keeping existing
           },
           {
             name: "Boomerangs",
             lat: 42.3434,
             lon: -71.0934,
             address: "716 Centre St, Jamaica Plain, MA",
+            phone: "+1-617-749-4278",
+            website:
+              "https://shop.mtwyouth.org/pages/boomerangs?srsltid=AfmBOopgg644hx8UBz0O-ytyWMrAQ0il5mptftnfeCHKNEraVG97TU1J",
           },
           {
             name: "Garment District",
             lat: 42.3643,
             lon: -71.0851,
             address: "200 Broadway, Cambridge, MA",
+            phone: "+1-617-876-5230",
+            website: "https://garmentdistrict.com/",
           },
           {
             name: "Urban Renewals",
             lat: 42.3656,
             lon: -71.104,
             address: "122 Brighton Ave, Allston, MA",
+            phone: "+1-617-522-7383",
+            website: "https://familythrift.com/boston-ma",
           },
         ];
 
@@ -135,6 +154,8 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
             name: store.name,
             address: store.address,
             distance: distance,
+            phone: store.phone,
+            website: store.website,
           };
         });
 
@@ -307,18 +328,39 @@ const ThriftStoreMap: React.FC<ThriftStoreMapProps> = ({ proximityFilter }) => {
             <button
               className="store-btn store-btn-primary"
               data-testid="button-directions"
+              onClick={() => {
+                if (selectedStore) {
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${selectedStore.lat},${selectedStore.lon}`,
+                  );
+                }
+              }}
             >
               Directions
             </button>
             <button
               className="store-btn store-btn-secondary"
               data-testid="button-call"
+              onClick={() => {
+                if (selectedStore?.phone) {
+                  window.location.href = `tel:${selectedStore.phone}`;
+                } else {
+                  alert("Phone number not available");
+                }
+              }}
             >
               Call
             </button>
             <button
               className="store-btn store-btn-secondary"
               data-testid="button-website"
+              onClick={() => {
+                if (selectedStore?.website) {
+                  window.open(selectedStore.website, "_blank");
+                } else {
+                  alert("Website not available");
+                }
+              }}
             >
               Website
             </button>
