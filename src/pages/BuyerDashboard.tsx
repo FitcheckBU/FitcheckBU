@@ -38,7 +38,9 @@ interface ThriftStore {
 
 const BuyerDashboard: React.FC = () => {
   const history = useHistory();
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    return !sessionStorage.getItem("splashShown");
+  });
   const [searchText, setSearchText] = useState("");
   const [allItems, setAllItems] = useState<InventoryItem[]>([]);
   const [searchResults, setSearchResults] = useState<InventoryItem[]>([]);
@@ -112,9 +114,14 @@ const BuyerDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 3500);
-    return () => clearTimeout(timer);
-  }, []);
+    if (showSplash) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+        sessionStorage.setItem("splashShown", "true");
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -341,7 +348,7 @@ const BuyerDashboard: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: "#ffeda8",
+          backgroundColor: "#ffefb2",
           zIndex: 9999,
           display: "flex",
           alignItems: "center",
@@ -359,7 +366,10 @@ const BuyerDashboard: React.FC = () => {
             maxWidth: "500px", // Limit max width for desktop
             maxHeight: "90vh", // Ensure it doesn't overflow height
           }}
-          onEnded={() => setShowSplash(false)}
+          onEnded={() => {
+            setShowSplash(false);
+            sessionStorage.setItem("splashShown", "true");
+          }}
         >
           <source src="/splash.mp4" type="video/mp4" />
         </video>
@@ -379,7 +389,17 @@ const BuyerDashboard: React.FC = () => {
             onClick={() => history.push("/buyer-saved")}
             style={{ cursor: "pointer" }}
           />
-          <Logo variant="buyer" className="buyer-title" />
+          <Logo
+            variant="buyer"
+            className="buyer-title"
+            onClick={() => {
+              if (history.location.pathname === "/buyer") {
+                window.location.reload();
+              } else {
+                history.push("/buyer");
+              }
+            }}
+          />
           <IonIcon
             icon={personOutline}
             className="buyer-header-icon-right"
