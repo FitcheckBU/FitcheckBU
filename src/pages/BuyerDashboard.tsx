@@ -341,6 +341,8 @@ const BuyerDashboard: React.FC = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 data-testid="icon-filter"
+                onClick={() => setShowSearchDropdown(!showSearchDropdown)}
+                style={{ cursor: "pointer" }}
               >
                 <path
                   d="M3 7H9M9 7C9 8.65685 10.3431 10 12 10C13.6569 10 15 8.65685 15 7M9 7C9 5.34315 10.3431 4 12 4C13.6569 4 15 5.34315 15 7M15 7H21M3 17H9M9 17C9 18.6569 10.3431 20 12 20C13.6569 20 15 18.6569 15 17M9 17C9 15.3431 10.3431 14 12 14C13.6569 14 15 15.3431 15 17M15 17H21"
