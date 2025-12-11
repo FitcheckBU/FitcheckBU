@@ -32,6 +32,7 @@ interface GeoapifyFeature {
 
 const BuyerDashboard: React.FC = () => {
   const history = useHistory();
+  const [showSplash, setShowSplash] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [allItems, setAllItems] = useState<InventoryItem[]>([]);
   const [searchResults, setSearchResults] = useState<InventoryItem[]>([]);
@@ -56,6 +57,11 @@ const BuyerDashboard: React.FC = () => {
     AddressSuggestion[]
   >([]);
   const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 3500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -229,6 +235,41 @@ const BuyerDashboard: React.FC = () => {
     setLocationText(suggestion.formatted);
     setShowAddressSuggestions(false);
   };
+
+  if (showSplash) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "#ffeda8",
+          zIndex: 9999,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <video
+          autoPlay
+          muted
+          playsInline
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            maxWidth: "500px", // Limit max width for desktop
+            maxHeight: "90vh", // Ensure it doesn't overflow height
+          }}
+          onEnded={() => setShowSplash(false)}
+        >
+          <source src="/splash.mp4" type="video/mp4" />
+        </video>
+      </div>
+    );
+  }
 
   return (
     <IonPage>
