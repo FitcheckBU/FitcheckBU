@@ -30,6 +30,12 @@ interface GeoapifyFeature {
   };
 }
 
+interface ThriftStore {
+  name: string;
+  address: string;
+  imageUrl: string;
+}
+
 const BuyerDashboard: React.FC = () => {
   const history = useHistory();
   const [searchText, setSearchText] = useState("");
@@ -56,6 +62,26 @@ const BuyerDashboard: React.FC = () => {
     AddressSuggestion[]
   >([]);
   const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  
+  // Carousel state
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [thriftStores, setThriftStores] = useState<ThriftStore[]>([
+    {
+      name: "Shop Local Thrift",
+      address: "Find unique pieces near you",
+      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80"
+    },
+    {
+      name: "Vintage Finds",
+      address: "Curated vintage clothing",
+      imageUrl: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&q=80"
+    },
+    {
+      name: "Sustainable Style",
+      address: "Eco-friendly fashion",
+      imageUrl: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80"
+    }
+  ]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -78,6 +104,14 @@ const BuyerDashboard: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSearchDropdown]);
+
+  // Carousel auto-advance
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % thriftStores.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [thriftStores.length]);
 
   // Load all items on mount
   useEffect(() => {
@@ -552,26 +586,40 @@ const BuyerDashboard: React.FC = () => {
           {/* Show content only when not searching */}
           {!isSearching && (
             <>
-              {/* Promo Card Section - Exact Figma specs */}
+              {/* Promo Card Section - Carousel */}
               <div className="promo-section">
                 <div className="promo-card" data-testid="card-promo">
-                  <div className="promo-image-container">
-                    <img
-                      src="https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80"
-                      alt="Featured items"
-                      className="promo-image"
-                    />
-                  </div>
-                  <div className="promo-content">
-                    <div className="promo-title">Shop Local Thrift</div>
-                    <div className="promo-subtitle">
-                      Find unique pieces near you
+                  <div className="promo-carousel">
+                    <div 
+                      className="promo-slides"
+                      style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                    >
+                      {thriftStores.map((store, index) => (
+                        <div key={index} className="promo-slide">
+                          <div className="promo-image-container">
+                            <img
+                              src={store.imageUrl}
+                              alt={store.name}
+                              className="promo-image"
+                            />
+                          </div>
+                          <div className="promo-content">
+                            <div className="promo-title">{store.name}</div>
+                            <div className="promo-subtitle">{store.address}</div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                   <div className="promo-dots">
-                    <div className="promo-dot active" />
-                    <div className="promo-dot" />
-                    <div className="promo-dot" />
+                    {thriftStores.map((_, index) => (
+                      <div 
+                        key={index}
+                        className={`promo-dot ${currentSlide === index ? 'active' : ''}`}
+                        onClick={() => setCurrentSlide(index)}
+                        data-testid={`carousel-dot-${index}`}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
