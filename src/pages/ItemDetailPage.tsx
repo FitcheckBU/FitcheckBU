@@ -24,7 +24,6 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
 import Logo from "../components/Logo";
-import { extractSize } from "../lib/metadataParser";
 import "../styles/pages/ItemDetailPage.css";
 import { printBarcode } from "../lib/printerService";
 import Barcode from "react-barcode";
@@ -292,28 +291,34 @@ const ItemDetailPage: React.FC = () => {
                 // NEW: Buyer info grid showing size, color, distance, price, store
                 <div className="buyer-info-grid">
                   <span className="buyer-info-left">
-                    <span className="info-label">Brand:</span> {item.brand || "Unknown"}
+                    <span className="info-label">Brand:</span>{" "}
+                    {item.brand || "Unknown"}
                   </span>
                   <span className="buyer-info-right">
-                    <span className="info-label">Price:</span> ${item.price?.toFixed(2) || "10.00"}
+                    <span className="info-label">Price:</span> $
+                    {item.price?.toFixed(2) || "10.00"}
                   </span>
 
                   <span className="buyer-info-left">
-                    <span className="info-label">Color:</span> {item.color || "Black"}
+                    <span className="info-label">Color:</span>{" "}
+                    {item.color || "Black"}
                   </span>
                   <span className="buyer-info-right">
-                    <span className="info-label">Distance:</span> {calculateDistance()}
+                    <span className="info-label">Distance:</span>{" "}
+                    {calculateDistance()}
                   </span>
 
                   <span className="buyer-info-left">
-                    <span className="info-label">Sex:</span> {item.sex === "men"
+                    <span className="info-label">Sex:</span>{" "}
+                    {item.sex === "men"
                       ? "Men's"
                       : item.sex === "women"
                         ? "Women's"
                         : "Unisex"}
                   </span>
                   <span className="buyer-info-right">
-                    <span className="info-label">Location:</span> {getStoreName()}
+                    <span className="info-label">Location:</span>{" "}
+                    {getStoreName()}
                   </span>
                 </div>
               ) : (
