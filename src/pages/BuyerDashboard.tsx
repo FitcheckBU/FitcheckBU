@@ -135,15 +135,40 @@ const BuyerDashboard: React.FC = () => {
     }
 
     const searchLower = searchText.toLowerCase();
+    
+    // Map display categories to actual categories
+    const categoryMap: { [key: string]: string[] } = {
+      'shirts': ['tops', 'shirt'],
+      'tees': ['tops', 'tee', 't-shirt'],
+      'jeans': ['bottoms', 'jean', 'denim'],
+      'sweat pants': ['bottoms', 'sweatpants', 'jogger'],
+      'sweatpants': ['bottoms', 'sweatpants', 'jogger'],
+      'sneakers': ['shoes', 'sneaker'],
+      'heels': ['shoes', 'heel', 'pump'],
+    };
+    
+    const mappedTerms = categoryMap[searchLower] || [searchLower];
+    
     let filtered = allItems.filter((item) => {
-      return (
+      // Check if any mapped term matches
+      const matchesMappedTerm = mappedTerms.some(term => 
+        item.name?.toLowerCase().includes(term) ||
+        item.category?.toLowerCase().includes(term) ||
+        item.style?.toLowerCase().includes(term) ||
+        item.description?.toLowerCase().includes(term)
+      );
+      
+      // Also do regular search
+      const matchesSearch = 
         item.name?.toLowerCase().includes(searchLower) ||
         item.brand?.toLowerCase().includes(searchLower) ||
         item.category?.toLowerCase().includes(searchLower) ||
         item.color?.toLowerCase().includes(searchLower) ||
         item.size?.toLowerCase().includes(searchLower) ||
-        item.description?.toLowerCase().includes(searchLower)
-      );
+        item.style?.toLowerCase().includes(searchLower) ||
+        item.description?.toLowerCase().includes(searchLower);
+      
+      return matchesMappedTerm || matchesSearch;
     });
 
     // Apply price filter if selected
