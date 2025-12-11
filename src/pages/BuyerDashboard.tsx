@@ -14,7 +14,7 @@ import {
 } from "../lib/inventoryService";
 import ThriftStoreMap from "../components/ThriftStoreMap";
 import Logo from "../components/Logo";
-import "./BuyerDashboard.css";
+import "../styles/pages/BuyerDashboard.css";
 
 interface AddressSuggestion {
   formatted: string;
@@ -170,6 +170,11 @@ const BuyerDashboard: React.FC = () => {
     setRecentSearches([]);
   };
 
+  const handleSearch = () => {
+    setShowSearchDropdown(false);
+    setIsSearching(true);
+  };
+
   const handleItemClick = (itemId: string) => {
     history.push(`/item/${itemId}`, { fromBuyer: true });
   };
@@ -234,12 +239,16 @@ const BuyerDashboard: React.FC = () => {
             icon={bookmarkOutline}
             className="buyer-header-icon-left"
             data-testid="icon-bookmark"
+            onClick={() => history.push("/buyer-saved")}
+            style={{ cursor: "pointer" }}
           />
           <Logo variant="buyer" className="buyer-title" />
           <IonIcon
             icon={personOutline}
             className="buyer-header-icon-right"
             data-testid="icon-profile"
+            onClick={() => history.push("/buyer-settings")}
+            style={{ cursor: "pointer" }}
           />
         </div>
 
@@ -487,6 +496,13 @@ const BuyerDashboard: React.FC = () => {
                         data-testid="button-clear-recents"
                       >
                         Clear Recents
+                      </button>
+                      <button
+                        className="search-execute-button"
+                        onClick={handleSearch}
+                        data-testid="button-execute-search"
+                      >
+                        Search
                       </button>
                     </>
                   )}

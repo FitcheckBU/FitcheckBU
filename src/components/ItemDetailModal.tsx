@@ -22,7 +22,7 @@ import {
   extractColor,
   extractMaterial,
 } from "../lib/metadataParser";
-import "./ItemDetailModal.css";
+import "../styles/components/ItemDetailModal.css";
 
 interface ItemDetailModalProps {
   isOpen: boolean;

@@ -12,7 +12,7 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import EditItemModal from "../components/EditItemModal";
-import "./ScanItemDetailPage.css";
+import "../styles/pages/ScanItemDetailPage.css";
 
 const ScanItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();

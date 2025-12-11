@@ -11,7 +11,7 @@ import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../lib/firebaseClient";
 import { useEffect, useState } from "react";
 import { extractSize, extractColor } from "../lib/metadataParser";
-import "./ItemCard.css";
+import "../styles/components/ItemCard.css";
 
 interface ItemCardProps {
   item: InventoryItem;
@@ -100,7 +100,13 @@ const ItemCard: React.FC<ItemCardProps> = ({
               <div className="figma-details-left">
                 <div className="figma-detail-text">{shortId}</div>
                 <div className="figma-detail-text">
-                  {extractSize(item.labels) || item.size || "Unknown"}
+                  {extractSize(item.labels) || item.size || "Medium"}
+                </div>
+                <div className="figma-detail-text">
+                  {item.category || "Clothing"}
+                </div>
+                <div className="figma-detail-text">
+                  {item.description?.split(" ")[0] || "Cotton"}
                 </div>
               </div>
               <div className="figma-details-right">

@@ -109,6 +109,15 @@
         { "fieldPath": "labels", "arrayConfig": "CONTAINS" },
         { "fieldPath": "isSold", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "savedItems",
+      "queryScope": "COLLECTION",
+      "databaseId": "fitcheck-db",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "savedAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

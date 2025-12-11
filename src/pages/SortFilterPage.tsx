@@ -5,7 +5,7 @@ import { arrowBackOutline } from "ionicons/icons";
 import FilterForm from "../components/FilterForm";
 import { FilterState } from "../lib/inventoryService";
 import Logo from "../components/Logo";
-import "./SortFilterPage.css";
+import "../styles/pages/SortFilterPage.css";
 
 type SortFilterRouteState = {
   activeFilters?: FilterState;
@@ -49,7 +49,7 @@ const SortFilterPage: React.FC = () => {
     <IonPage className="sort-filter-page">
       {/* Navbar matching Dashboard */}
       <div className="sort-filter-navbar">
-        <Logo variant="default" />
+        <Logo variant="default" onClick={() => history.push("/home")} />
       </div>
 
       {/* Scrollable content area */}

@@ -12,11 +12,12 @@ import ScanFlowPage from "./pages/ScanFlowPage";
 import ItemConfirmationPage from "./pages/ItemConfirmationPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 import EditItemPage from "./pages/EditItemPage";
-import ScanItemDetailPage from "./pages/ScanItemDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import MainLayout from "./components/MainLayout";
 import SortFilterPage from "./pages/SortFilterPage";
+import BuyerSettingsPage from "./pages/BuyerSettingsPage";
+import BuyerSavedPage from "./pages/BuyerSavedPage";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -115,15 +116,6 @@ const App: React.FC = () => {
             </Route>
             <Route
               exact
-              path="/item-scan/:itemId"
-              render={() => (
-                <MainLayout>
-                  <ScanItemDetailPage />
-                </MainLayout>
-              )}
-            />
-            <Route
-              exact
               path="/settings"
               render={() => (
                 <MainLayout>
@@ -133,6 +125,12 @@ const App: React.FC = () => {
             />
             <Route exact path="/buyer">
               <BuyerDashboard />
+            </Route>
+            <Route exact path="/buyer-settings">
+              <BuyerSettingsPage />
+            </Route>
+            <Route exact path="/buyer-saved">
+              <BuyerSavedPage />
             </Route>
             <Route exact path="/camera">
               <CameraPage />

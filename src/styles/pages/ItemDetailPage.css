@@ -1,3 +1,5 @@
+@import url("https://fonts.cdnfonts.com/css/itc-souvenir");
+
 .item-detail-page {
   min-height: 100vh;
   background-color: #e8e8e8;
@@ -31,6 +33,11 @@
   --padding-start: 0;
   --padding-end: 0;
   --padding-bottom: 20px;
+}
+
+/* Buyer View - Yellow/Green with fitcheck */
+.item-detail-page.buyer-view .item-detail-body {
+  --background: #ffeda8;
 }
 
 /* Header section with back button and title */
@@ -96,6 +103,58 @@
   background-color: #023e38;
 }
 
+/* ============================================
+   BUYER VIEW NAVBAR - EXACT COPY FROM BUYERDASHBOARD
+   ============================================ */
+
+/* Navbar container for buyer view */
+.item-detail-page.buyer-view .item-detail-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+}
+
+/* Bookmark icon - left side - EXACT Figma specs */
+.item-detail-page.buyer-view .buyer-navbar-icon-left {
+  position: absolute;
+  left: 28.52px;
+  top: 19px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Logo - centered - EXACT Figma specs */
+.item-detail-page.buyer-view .buyer-navbar-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 21px;
+  width: 105px;
+  margin: 0;
+  object-fit: contain;
+}
+
+/* Profile icon - right side - EXACT Figma specs */
+.item-detail-page.buyer-view .buyer-navbar-icon-right {
+  position: absolute;
+  right: 28px;
+  top: 20.27px;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Make More Info button full width in buyer view */
+.item-detail-page.buyer-view .action-buttons-row {
+  grid-template-columns: 1fr;
+}
+
 .item-detail-page.buyer-view .contact-seller-button {
   --background: #023e38;
   --background-activated: #01332e;
@@ -154,7 +213,7 @@
   font-size: 20px;
   font-weight: 700;
   color: #1f2937;
-  margin: 0;
+  margin: 5px;
 }
 
 .item-meta {
@@ -168,7 +227,7 @@
   font-family: "DM Sans", sans-serif;
   font-size: 14px;
   color: #1f2937;
-  margin: 0;
+  margin: 5px;
 }
 
 .meta-label {
@@ -414,4 +473,74 @@
 
 .cancel-button::part(container) {
   border: none !important;
+}
+
+/*Updates for buyer side item card*/
+
+/* Buyer Info Grid - matching Figma layout */
+.buyer-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0px 5px;
+  font-family: "DM Sans", sans-serif;
+}
+
+.buyer-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buyer-meta-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #023e38;
+}
+
+.buyer-meta-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #023e38;
+}
+
+/* Update buttons for Directions and Save */
+.item-detail-page.buyer-view .action-buttons-row {
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 0px;
+}
+
+.directions-button {
+  --border-color: #023e38;
+  --border-width: 2px;
+  --border-radius: 50px;
+  --color: #023e38;
+  --background: transparent;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.directions-button::part(native)::after {
+  width: 39px;
+  height: 143px;
+}
+
+.save-button {
+  --background: #023e38;
+  --background-activated: #01332e;
+  --border-radius: 50px;
+  --color: #ffffff;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  transition: all 0.3s ease;
+}
+
+.save-button.saved {
+  --background: #7b9996;
+  --background-activated: #6b8986;
 }

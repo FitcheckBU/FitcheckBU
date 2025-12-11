@@ -1,13 +1,11 @@
-/* Item Card Styles - Matching Figma */
-@import url("https://fonts.cdnfonts.com/css/itc-souvenir"); /*import itc-souvenir*/
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"); /*import dm-sans*/
+/* Item Card Styles - Figma Design Exact Match */
 
 ion-item.figma-item-card {
   --background: #ffffff;
   --padding-start: 0;
   --padding-end: 0;
   --inner-padding-end: 0;
-  margin: 0 auto;
+  margin: 0;
   border-radius: 15px;
   box-shadow: 0px 4px 4px #7b9996;
   overflow: hidden;
@@ -109,14 +107,10 @@ ion-item.figma-item-card {
   letter-spacing: -0.011em;
 }
 
-/* Swipeable action styles - Center the cards */
+/* Swipeable action styles */
 ion-item-sliding {
   margin-bottom: 0;
   overflow: visible;
-  width: 100%;
-  max-width: 350px;
-  display: flex;
-  justify-content: center;
 }
 
 .swipe-actions {

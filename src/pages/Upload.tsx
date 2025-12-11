@@ -1,6 +1,6 @@
 import { IonButton } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import "./Upload.css";
+import "../styles/pages/Upload.css";
 
 const Upload: React.FC = () => {
   const history = useHistory();

@@ -11,7 +11,7 @@ import {
   IonSpinner,
 } from "@ionic/react";
 import { cameraReverse, checkmarkDoneCircle } from "ionicons/icons";
-import "./ScanCameraPage.css";
+import "../styles/pages/ScanCameraPage.css";
 
 const ScanCameraPage: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);

@@ -11,7 +11,7 @@ import {
 import { cameraReverse, checkmarkDoneCircle } from "ionicons/icons";
 import { PHOTO_STAGES, PhotoRole } from "../constants/photoStages";
 import { usePhotoContext } from "../context/PhotoContext";
-import "./CameraPage.css";
+import "../styles/pages/CameraPage.css";
 
 const isPhotoRole = (value: string | null): value is PhotoRole =>
   Boolean(value && PHOTO_STAGES.some((stage) => stage.role === value));

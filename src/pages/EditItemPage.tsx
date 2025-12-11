@@ -19,7 +19,7 @@ import {
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebaseClient";
 import Logo from "../components/Logo";
-import "./EditItemPage.css";
+import "../styles/pages/EditItemPage.css";
 
 const EditItemPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -151,7 +151,7 @@ const EditItemPage: React.FC = () => {
     <IonPage className="edit-item-page">
       {/* Navbar with logo */}
       <div className="edit-item-navbar">
-        <Logo variant="default" />
+        <Logo variant="default" onClick={() => history.push("/home")} />
       </div>
 
       {/* Scrollable content area */}
