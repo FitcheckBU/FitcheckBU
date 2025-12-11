@@ -291,28 +291,28 @@ const ItemDetailPage: React.FC = () => {
                 // NEW: Buyer info grid showing size, color, distance, price, store
                 <div className="buyer-info-grid">
                   <span className="buyer-info-left">
-                    {extractSize(item.labels) || item.size || "Medium"}
+                    <span className="info-label">Brand:</span> {item.brand || "Unknown"}
                   </span>
                   <span className="buyer-info-right">
-                    ${item.price?.toFixed(2) || "11.99"}
+                    <span className="info-label">Price:</span> ${item.price?.toFixed(2) || "10.00"}
                   </span>
 
                   <span className="buyer-info-left">
-                    {item.color || "Blue"}
+                    <span className="info-label">Color:</span> {item.color || "Black"}
                   </span>
                   <span className="buyer-info-right">
-                    {calculateDistance()}
+                    <span className="info-label">Distance:</span> {calculateDistance()}
                   </span>
 
                   <span className="buyer-info-left">
-                    {item.sex === "men"
+                    <span className="info-label">Sex:</span> {item.sex === "men"
                       ? "Men's"
                       : item.sex === "women"
                         ? "Women's"
                         : "Unisex"}
                   </span>
                   <span className="buyer-info-right">
-                    {getStoreName() || "Goodwill"}
+                    <span className="info-label">Location:</span> {getStoreName()}
                   </span>
                 </div>
               ) : (
