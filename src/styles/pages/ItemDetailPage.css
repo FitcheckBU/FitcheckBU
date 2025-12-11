@@ -486,6 +486,11 @@
   font-family: "DM Sans", sans-serif;
 }
 
+.buyer-info-grid .info-label {
+  font-weight: 600;
+  color: #023e38;
+}
+
 .buyer-info-row {
   display: flex;
   justify-content: space-between;

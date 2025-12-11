@@ -103,8 +103,8 @@ const BuyerSavedPage: React.FC = () => {
   };
 
   const handleItemClick = (itemId: string) => {
-    // Navigate to item detail page
-    history.push(`/item/${itemId}`);
+    // Navigate to item detail page with buyer view flag
+    history.push(`/item/${itemId}`, { fromBuyer: true });
   };
 
   const handleBack = () => {

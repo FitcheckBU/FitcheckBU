@@ -177,22 +177,23 @@ const Dashboard: React.FC = () => {
 
   return (
     <IonPage>
+      {/* Header outside IonContent for true sticky behavior */}
+      <div className="dashboard-header">
+        <Logo onClick={() => history.push("/home")} />
+        <IonButton
+          fill="clear"
+          className="menu-button"
+          onClick={() => setSidebarOpen(!isSidebarOpen)}
+          data-testid="button-menu"
+        >
+          <IonIcon icon={menuOutline} slot="icon-only" />
+        </IonButton>
+      </div>
+
       <IonContent className="dashboard-container">
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
-
-        <div className="dashboard-header">
-          <Logo onClick={() => history.push("/home")} />
-          <IonButton
-            fill="clear"
-            className="menu-button"
-            onClick={() => setSidebarOpen(!isSidebarOpen)}
-            data-testid="button-menu"
-          >
-            <IonIcon icon={menuOutline} slot="icon-only" />
-          </IonButton>
-        </div>
 
         <div
           className={`page-overlay ${isSidebarOpen ? "active" : ""}`}

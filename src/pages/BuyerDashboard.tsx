@@ -30,6 +30,12 @@ interface GeoapifyFeature {
   };
 }
 
+interface ThriftStore {
+  name: string;
+  address: string;
+  imageUrl: string;
+}
+
 const BuyerDashboard: React.FC = () => {
   const history = useHistory();
   const [searchText, setSearchText] = useState("");
@@ -57,6 +63,24 @@ const BuyerDashboard: React.FC = () => {
     AddressSuggestion[]
   >([]);
   const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  
+  const thriftStores: ThriftStore[] = [
+    {
+      name: "Shop Local Thrift",
+      address: "Find unique pieces near you",
+      imageUrl: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&q=80"
+    },
+    {
+      name: "Goodwill",
+      address: "965 Commonwealth Ave, Boston",
+      imageUrl: "/goodwill-commave.png"
+    },
+    {
+      name: "Boomerangs",
+      address: "716 Centre St, Jamaica Plain",
+      imageUrl: "/boomerangs-jp.png"
+    }
+  ];
 
   const carouselSlides = [
     {
@@ -108,6 +132,14 @@ const BuyerDashboard: React.FC = () => {
     };
   }, [showSearchDropdown]);
 
+  // Carousel auto-advance
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % thriftStores.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [thriftStores.length]);
+
   // Load all items on mount
   useEffect(() => {
     const loadItems = async () => {
@@ -130,15 +162,40 @@ const BuyerDashboard: React.FC = () => {
     }
 
     const searchLower = searchText.toLowerCase();
+    
+    // Map display categories to actual categories
+    const categoryMap: { [key: string]: string[] } = {
+      'shirts': ['tops', 'shirt'],
+      'tees': ['tops', 'tee', 't-shirt'],
+      'jeans': ['bottoms', 'jean', 'denim'],
+      'sweat pants': ['bottoms', 'sweatpants', 'jogger'],
+      'sweatpants': ['bottoms', 'sweatpants', 'jogger'],
+      'sneakers': ['shoes', 'sneaker'],
+      'heels': ['shoes', 'heel', 'pump'],
+    };
+    
+    const mappedTerms = categoryMap[searchLower] || [searchLower];
+    
     let filtered = allItems.filter((item) => {
-      return (
+      // Check if any mapped term matches
+      const matchesMappedTerm = mappedTerms.some(term => 
+        item.name?.toLowerCase().includes(term) ||
+        item.category?.toLowerCase().includes(term) ||
+        item.style?.toLowerCase().includes(term) ||
+        item.description?.toLowerCase().includes(term)
+      );
+      
+      // Also do regular search
+      const matchesSearch = 
         item.name?.toLowerCase().includes(searchLower) ||
         item.brand?.toLowerCase().includes(searchLower) ||
         item.category?.toLowerCase().includes(searchLower) ||
         item.color?.toLowerCase().includes(searchLower) ||
         item.size?.toLowerCase().includes(searchLower) ||
-        item.description?.toLowerCase().includes(searchLower)
-      );
+        item.style?.toLowerCase().includes(searchLower) ||
+        item.description?.toLowerCase().includes(searchLower);
+      
+      return matchesMappedTerm || matchesSearch;
     });
 
     // Apply price filter if selected
@@ -301,7 +358,6 @@ const BuyerDashboard: React.FC = () => {
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                onFocus={() => setShowSearchDropdown(true)}
                 placeholder="Search Name, Size, Color, Etc."
                 className="buyer-search-input"
                 data-testid="input-search"
@@ -321,6 +377,8 @@ const BuyerDashboard: React.FC = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 data-testid="icon-filter"
+                onClick={() => setShowSearchDropdown(!showSearchDropdown)}
+                style={{ cursor: "pointer" }}
               >
                 <path
                   d="M3 7H9M9 7C9 8.65685 10.3431 10 12 10C13.6569 10 15 8.65685 15 7M9 7C9 5.34315 10.3431 4 12 4C13.6569 4 15 5.34315 15 7M15 7H21M3 17H9M9 17C9 18.6569 10.3431 20 12 20C13.6569 20 15 18.6569 15 17M9 17C9 15.3431 10.3431 14 12 14C13.6569 14 15 15.3431 15 17M15 17H21"
@@ -594,28 +652,35 @@ const BuyerDashboard: React.FC = () => {
               {/* Promo Card Section - Carousel */}
               <div className="promo-section">
                 <div className="promo-card" data-testid="card-promo">
-                  <div className="promo-image-container">
-                    <img
-                      src={carouselSlides[currentSlide].image}
-                      alt="Featured items"
-                      className="promo-image"
-                    />
-                  </div>
-                  <div className="promo-content">
-                    <div className="promo-title">
-                      {carouselSlides[currentSlide].title}
-                    </div>
-                    <div className="promo-subtitle">
-                      {carouselSlides[currentSlide].subtitle}
+                  <div className="promo-carousel">
+                    <div 
+                      className="promo-slides"
+                      style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                    >
+                      {thriftStores.map((store, index) => (
+                        <div key={index} className="promo-slide">
+                          <div className="promo-image-container">
+                            <img
+                              src={store.imageUrl}
+                              alt={store.name}
+                              className="promo-image"
+                            />
+                          </div>
+                          <div className="promo-content">
+                            <div className="promo-title">{store.name}</div>
+                            <div className="promo-subtitle">{store.address}</div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                   <div className="promo-dots">
-                    {carouselSlides.map((_, index) => (
-                      <div
+                    {thriftStores.map((_, index) => (
+                      <div 
                         key={index}
-                        className={`promo-dot ${index === currentSlide ? "active" : ""}`}
+                        className={`promo-dot ${currentSlide === index ? 'active' : ''}`}
                         onClick={() => setCurrentSlide(index)}
-                        style={{ cursor: "pointer" }}
+                        data-testid={`carousel-dot-${index}`}
                       />
                     ))}
                   </div>

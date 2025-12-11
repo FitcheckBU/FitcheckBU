@@ -31,6 +31,7 @@
     "ionicons": "^7.4.0",
     "leaflet": "^1.9.4",
     "react": "19.0.0",
+    "react-barcode": "^1.6.1",
     "react-dom": "19.0.0",
     "react-leaflet": "^5.0.0",
     "react-router": "^5.3.4",

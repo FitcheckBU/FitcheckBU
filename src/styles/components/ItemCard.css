@@ -111,6 +111,10 @@ ion-item.figma-item-card {
 ion-item-sliding {
   margin-bottom: 0;
   overflow: visible;
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  justify-content: center;
 }
 
 .swipe-actions {
