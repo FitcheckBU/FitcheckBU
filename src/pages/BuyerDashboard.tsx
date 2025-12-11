@@ -60,21 +60,19 @@ const BuyerDashboard: React.FC = () => {
 
   const carouselSlides = [
     {
-      image:
-        "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80",
-      title: "Shop Local Thrift",
-      subtitle: "Find unique pieces near you",
+      image: "public/groovythriftystore.jpg",
+      title: "Groovy Thrifty",
+      subtitle: "Explore their niche, upcycled styles",
     },
     {
-      image:
-        "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&q=80",
-      title: "Sustainable Fashion",
-      subtitle: "Reduce waste, look great",
+      image: "public/garment_district.jpg",
+      title: "The Garment District",
+      subtitle:
+        "See the latest arrivals from one of the largest vintage stores in Cambridge",
     },
     {
-      image:
-        "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80",
-      title: "Unique Finds",
+      image: "public/spark_logo.png",
+      title: "BU Demo Day Thrift",
       subtitle: "One-of-a-kind pieces waiting for you",
     },
   ];
