@@ -45,6 +45,7 @@ const BuyerDashboard: React.FC = () => {
     "Tops",
   ]);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [showProximityDropdown, setShowProximityDropdown] = useState(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [selectedProximity, setSelectedProximity] = useState<string | null>(
@@ -56,6 +57,36 @@ const BuyerDashboard: React.FC = () => {
     AddressSuggestion[]
   >([]);
   const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+
+  const carouselSlides = [
+    {
+      image:
+        "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80",
+      title: "Shop Local Thrift",
+      subtitle: "Find unique pieces near you",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&q=80",
+      title: "Sustainable Fashion",
+      subtitle: "Reduce waste, look great",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80",
+      title: "Unique Finds",
+      subtitle: "One-of-a-kind pieces waiting for you",
+    },
+  ];
+
+  // Auto-advance carousel every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -156,8 +187,18 @@ const BuyerDashboard: React.FC = () => {
     setIsSearching(false);
   };
 
+  const categoryMap: { [key: string]: string } = {
+    Shirts: "shirt",
+    Tees: "graphic",
+    Jeans: "jean",
+    "Sweat pants": "sweat pant",
+    Sneakers: "sneaker",
+    Heels: "heel",
+  };
+
   const handleCategoryClick = (category: string) => {
-    setSearchText(category);
+    const searchTerm = categoryMap[category] || category;
+    setSearchText(searchTerm);
     setShowSearchDropdown(false);
   };
 
@@ -552,26 +593,33 @@ const BuyerDashboard: React.FC = () => {
           {/* Show content only when not searching */}
           {!isSearching && (
             <>
-              {/* Promo Card Section - Exact Figma specs */}
+              {/* Promo Card Section - Carousel */}
               <div className="promo-section">
                 <div className="promo-card" data-testid="card-promo">
                   <div className="promo-image-container">
                     <img
-                      src="https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80"
+                      src={carouselSlides[currentSlide].image}
                       alt="Featured items"
                       className="promo-image"
                     />
                   </div>
                   <div className="promo-content">
-                    <div className="promo-title">Shop Local Thrift</div>
+                    <div className="promo-title">
+                      {carouselSlides[currentSlide].title}
+                    </div>
                     <div className="promo-subtitle">
-                      Find unique pieces near you
+                      {carouselSlides[currentSlide].subtitle}
                     </div>
                   </div>
                   <div className="promo-dots">
-                    <div className="promo-dot active" />
-                    <div className="promo-dot" />
-                    <div className="promo-dot" />
+                    {carouselSlides.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`promo-dot ${index === currentSlide ? "active" : ""}`}
+                        onClick={() => setCurrentSlide(index)}
+                        style={{ cursor: "pointer" }}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
